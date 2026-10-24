@@ -122,7 +122,7 @@ function prepare_computations(i, r, xs)	{
 				color_ = lighting(h.object.material, l, { id: 'Dave' }, point_, eye, normal_, 0)
 	*/
 	comps.eyev  = negate(r.direction);
-	comps.normalv = normal_at(comps.object, comps.point);
+	comps.normalv = normal_at(comps.object, comps.point, i);
 	comps.reflectv = reflect(r.direction, comps.normalv)
 	
 	if (dot(comps.normalv, comps.eyev) < 0)	{

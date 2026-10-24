@@ -135,7 +135,15 @@ function triangle(p1, p2, p3, id2, vn1, vn2, vn3)	{
 	
 	t.normal = normalize(cross(t.e2, t.e1))
 	
-	t.local_normal_at = function(p)	{
+	t.local_normal_at = function(p, i)	{
+		if (this.vn1 && this.vn2 && this.vn3 && i && Number.isFinite(i.u) && Number.isFinite(i.v)) {
+			var n1_weight = 1 - i.u - i.v;
+			var interpolated = add(
+				multiplyInt(this.vn1, n1_weight),
+				add(multiplyInt(this.vn2, i.u), multiplyInt(this.vn3, i.v))
+			);
+			return normalize(interpolated);
+		}
 		
 		return this.normal;
 	};
@@ -195,25 +203,113 @@ function triangle(p1, p2, p3, id2, vn1, vn2, vn3)	{
 				  this.e2.y * origin_cross_e1_Y +
 				  this.e2.z * origin_cross_e1_Z);
 		
-		return [{ object: this, t: t }]
+		return [{ object: this, t: t, u: u, v: v }]
 		//return [new intersection(this, t)]
 	};
 	
 	return t;
 }
 
-function fan_triangulation(vertices, _vn)	{
+function fan_triangulation(vertices, vertex_normals)	{
 	
-	var ts = []
+	if (vertices.length < 3)
+		return [];
 	
-	for (var i = 1; i < vertices.length-1; i++)	{
-		//console.log("1: " + vertices[0] + ", 2: " + vertices[1] +", 3: " + vertices[2]);
-		var t = triangle(vertices[0], vertices[i], vertices[i+1], undefined, _vn[0], _vn[i], _vn[i+1])
-		
-		ts.push(t)
+	var nx = 0, ny = 0, nz = 0;
+	for (var i = 0; i < vertices.length; i++) {
+		var current = vertices[i];
+		var next = vertices[(i + 1) % vertices.length];
+		nx += (current.y - next.y) * (current.z + next.z);
+		ny += (current.z - next.z) * (current.x + next.x);
+		nz += (current.x - next.x) * (current.y + next.y);
 	}
 	
-	return ts
+	var abs_nx = Math.abs(nx), abs_ny = Math.abs(ny), abs_nz = Math.abs(nz);
+	if (Math.max(abs_nx, abs_ny, abs_nz) < EPSILON)
+		return [];
+	
+	var projected = [];
+	for (var i = 0; i < vertices.length; i++) {
+		var p = vertices[i];
+		if (abs_nx >= abs_ny && abs_nx >= abs_nz)
+			projected.push({ x: p.y, y: p.z });
+		else if (abs_ny >= abs_nz)
+			projected.push({ x: p.x, y: p.z });
+		else
+			projected.push({ x: p.x, y: p.y });
+	}
+	
+	function cross2(a, b, c) {
+		return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+	}
+	
+	var signed_area = 0;
+	for (var i = 0; i < projected.length; i++) {
+		var a = projected[i];
+		var b = projected[(i + 1) % projected.length];
+		signed_area += a.x * b.y - b.x * a.y;
+	}
+	if (Math.abs(signed_area) < EPSILON)
+		return [];
+	
+	var winding = signed_area > 0 ? 1 : -1;
+	var indices = [];
+	for (var i = 0; i < vertices.length; i++)
+		indices.push(i);
+	
+	function contains_point(a, b, c, p) {
+		var ab = winding * cross2(a, b, p);
+		var bc = winding * cross2(b, c, p);
+		var ca = winding * cross2(c, a, p);
+		return ab >= -EPSILON && bc >= -EPSILON && ca >= -EPSILON;
+	}
+	
+	function make_triangle(a, b, c) {
+		var normals = vertex_normals || [];
+		return triangle(vertices[a], vertices[b], vertices[c], undefined,
+			normals[a], normals[b], normals[c]);
+	}
+	
+	var triangles = [];
+	while (indices.length > 3) {
+		var ear_found = false;
+		for (var i = 0; i < indices.length; i++) {
+			var previous = indices[(i + indices.length - 1) % indices.length];
+			var current = indices[i];
+			var following = indices[(i + 1) % indices.length];
+			var a = projected[previous];
+			var b = projected[current];
+			var c = projected[following];
+			
+			if (winding * cross2(a, b, c) <= EPSILON)
+				continue;
+			
+			var contains_vertex = false;
+			for (var j = 0; j < indices.length; j++) {
+				var candidate = indices[j];
+				if (candidate === previous || candidate === current || candidate === following)
+					continue;
+				if (contains_point(a, b, c, projected[candidate])) {
+					contains_vertex = true;
+					break;
+				}
+			}
+			
+			if (contains_vertex)
+				continue;
+			
+			triangles.push(make_triangle(previous, current, following));
+			indices.splice(i, 1);
+			ear_found = true;
+			break;
+		}
+		
+		if (!ear_found)
+			return [];
+	}
+	
+	triangles.push(make_triangle(indices[0], indices[1], indices[2]));
+	return triangles;
 }
 
 function cylinder(id2)	{
@@ -526,60 +622,74 @@ function group(id2)	{
 	
 	g.partition_children = function()	{
 		
-		var left = [], right = []
-		/*
-		 To see if a child (this.s[i]) fits into either
-		 left or right, check if it's BB fits into
-		 either this.bb.left or this.bb.right.
-		*/
-		 
-		this.bounds_of()
-		var _bb = this.bb.split_bounds()
+		var children = []
+		var axes = ["x", "y", "z"]
+		var center_min = { x: Infinity, y: Infinity, z: Infinity }
+		var center_max = { x: -Infinity, y: -Infinity, z: -Infinity }
 		
-		var ch_b, child;
+		if (this.s.length < 2)
+			return { left: [], right: [] }
 		
-		for (var i = 0; i<this.s.length; i++)	{
-			
-			child = this.s[i]
-			ch_b = child.bounds_of()
-			
-			/*
-			If so, remove the child
-			from this.s and add to 'left', or 'right'.			
-			*/
-			//debugger;
-			if (_bb.left.containsBox(ch_b))
-				// child BB fits into this.left
-				left.push(this.s.splice(i--, 1)[0])
-				//console.log("Adding to left partition.")
-			
-			else if (_bb.right.containsBox(ch_b))
-				// child BB fits into this.right
-				right.push(this.s.splice(i--, 1)[0])
-				//console.log("Adding to right partition.")
-
+		for (var i = 0; i < this.s.length; i++) {
+			var child = this.s[i]
+			var bounds = child.parent_space_bounds_of()
+			var center = {}
+			for (var axis_index = 0; axis_index < axes.length; axis_index++) {
+				var axis = axes[axis_index]
+				var min = bounds.min[axis]
+				var max = bounds.max[axis]
+				if (Number.isFinite(min) && Number.isFinite(max))
+					center[axis] = min + (max - min) / 2
+				else if (Number.isFinite(min))
+					center[axis] = min
+				else if (Number.isFinite(max))
+					center[axis] = max
+				else
+					center[axis] = 0
+				center_min[axis] = Math.min(center_min[axis], center[axis])
+				center_max[axis] = Math.max(center_max[axis], center[axis])
+			}
+			children.push({ shape: child, center: center })
 		}
 		
-		/*
-		 Once all children have been processed, store
-		 'left' in this.left, 'right' in this.right,and
-		 return { left: left, right: right }
-		*/
+		var split_axis = "x"
+		var widest_spread = -1
+		for (var axis_index = 0; axis_index < axes.length; axis_index++) {
+			var axis = axes[axis_index]
+			var spread = center_max[axis] - center_min[axis]
+			if (spread > widest_spread) {
+				widest_spread = spread
+				split_axis = axis
+			}
+		}
 		
+		children.sort(function(a, b) {
+			return (a.center[split_axis] - b.center[split_axis]) || (a.shape.id - b.shape.id)
+		})
+		
+		var midpoint = Math.floor(children.length / 2)
+		var left = children.slice(0, midpoint).map(function(entry) { return entry.shape; })
+		var right = children.slice(midpoint).map(function(entry) { return entry.shape; })
+		if (left.length === 0 || right.length === 0)
+			return { left: [], right: [] }
+		
+		this.s = []
 		this.left = left, this.right = right
 		return { left: left, right: right }
 	};
 	
 	g.make_subgroup = function(partition)	{
 		
-		var g = group()
+		if (partition.length === 0)
+			return
+		
+		var subgroup = group()
 		var L = partition.length
 		
 		for (var i = 0; i < L; i++)
-			g.addChild(partition[i])
+			subgroup.addChild(partition[i])
 		
-		this.s.push(g)
-		this.hasGenBB = false
+		this.addChild(subgroup)
 	};
 	
 	g.divide = function(t)	{
@@ -587,11 +697,11 @@ function group(id2)	{
 		if(t<=this.s.length)	{
 			
 			var l_r = this.partition_children()
-			if(l_r.left)
+			if(l_r.left.length > 0)
 				//console.log("l_r.left contains children.")
 				this.make_subgroup(l_r.left)
 				
-			if(l_r.right)
+			if(l_r.right.length > 0)
 				//console.log("l_r.right contains children.")
 				this.make_subgroup(l_r.right)
 		}
@@ -610,55 +720,47 @@ function group(id2)	{
 			arguments[i].parent = this;
 			this.s.push(arguments[i]);
 		}
+		
+		var parent = this;
+		while (parent) {
+			parent.hasGenBB = false;
+			parent = parent.parent;
+		}
 	};
 	
 	g.bounds_of = function()	{
 		
 		if(!this.hasGenBB)	{
-			
 			var box = new BB()
 			var l = this.s.length
-			for(var i=0;i<l;i++)	{
-				
+			for(var i=0;i<l;i++) {
 				var cbox = this.s[i].parent_space_bounds_of()
 				box.addBB(cbox)
 			}
-			
 			this.bb = box
 			this.hasGenBB = true
 		}
-		
 		return this.bb
 	};
 	
 	g.local_intersect = function(r)	{
-		
-		if(this.bounds_of().intersects(r))	{
-		
-			var res = [];
-		
-			for (var i = 0; i<this.s.length;i++)	{
-			
-				var xs = intersect(this.s[i], r);
-			
+		if(this.bounds_of().intersects(r)) {
+			var res = []
+			for (var i = 0; i<this.s.length;i++) {
+				var xs = intersect(this.s[i], r)
 				for (var j=0;j<xs.length;j++)
-				res.push(xs[j])
+					res.push(xs[j])
 			}
-		
-			res = order(res);
-		
-			return res;
+			return order(res)
 		}
-		
-		return [];
+		return []
 	};
 	
 	g.local_normal_at = function(p)	{
-		
-		console.log("Error! Attempt to call local_normal_at() on group " + this.id + ", " + this.id2 + "\n");
+		console.log("Error! Attempt to call local_normal_at() on group " + this.id + ", " + this.id2 + "\n")
 	};
 	
-	return g 
+	return g
 }
 
 function BB(min,max)	{
@@ -825,10 +927,29 @@ function test_shape()	{
 
 function Shape(type, id2)	{
 	
+	var _transform = identity_matrix();
+	
 	this.id2 = id2 || 0;
 	this.id = GetUID()
-	this.transform = identity_matrix()
 	this.material = new material()
+	
+	Object.defineProperty(this, "transform", {
+		get: function() { return _transform; },
+		set: function(m) {
+			_transform = m;
+			invalidate_shape_transform_cache(this);
+			invalidate_world_transform_cache(this);
+			var parent = this.parent;
+			while (parent) {
+				parent.hasGenBB = false;
+				parent = parent.parent;
+			}
+		},
+		enumerable: true,
+		configurable: true
+	});
+	
+	this.transform = identity_matrix();
 	
 	this.type = type // "sphere", "plane", etc
 	

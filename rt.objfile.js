@@ -14,7 +14,8 @@ function convert3(vertices)	{
 	for (var m = 0; m < vertices.length/* - 1 */; m++)	{
 		
 		var vdata = Data["v"][vertices[m][0]-1];
-		var vndata =Data["vn"][vertices[m][1]-1];
+		var normal_index = vertices[m][1];
+		var vndata = normal_index && Data["vn"] ? Data["vn"][normal_index-1] : undefined;
 		
 		if(flag17)
 			debugger;
@@ -36,7 +37,7 @@ function convert3(vertices)	{
 			x = undefined, y = undefined, z = undefined;
 		}
 		
-		vn2.push(vector(x,y,z))
+		vn2.push(vndata ? vector(x,y,z) : undefined)
 			
 	}
 	

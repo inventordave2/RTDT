@@ -21,6 +21,15 @@ var ist = [];
 var indice = -1;
 var i_no = 0, i_yes = 0;
 
+function invalidate_shape_transform_cache(shape) {
+	
+	if (!shape || typeof shape.id !== "number")
+		return;
+	
+	if (typeof ist !== "undefined")
+		delete ist[shape.id];
+}
+
 function intersect(shape, ray)	{
 	
 	var sh = shape
@@ -123,7 +132,7 @@ function transform(r_in, m)	{ // p69
 	return r;
 }
 
-function normal_at(s, world_point)	{
+function normal_at(s, world_point, intersection)	{
 	
 	/* // pre-p200
 	var obj_point = mul(inverse(shape.transform), world_point);
@@ -136,7 +145,7 @@ function normal_at(s, world_point)	{
 	return normalize(world_normal)*/
 	
 	var lp = world_to_object(s, world_point)
-	var ln = s.local_normal_at(lp)
+	var ln = s.local_normal_at(lp, intersection)
 	
 	return normal_to_world(s, ln)
 }

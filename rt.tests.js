@@ -783,3 +783,194 @@ function linetest1()	{
 	debugger
 	
 }
+
+function test_transform_cache_invalidates_when_transform_changes() {
+	
+	var s = sphere();
+	var r = new ray(point(0,0,-5), vector(0,0,1));
+	
+	var before = intersect(s, r).map(function(i) { return i.t; });
+	
+	s.transform = scaling(2, 2, 2);
+	
+	var after = intersect(s, r).map(function(i) { return i.t; });
+	
+	if (before[0] === after[0] && before[1] === after[1])
+		throw new Error("Transform cache did not invalidate after shape transform changed.");
+	
+	return { before: before, after: after };
+}
+
+function test_group_bounds_update_after_child_transform_changes() {
+	
+	var g = group();
+	var s = sphere();
+	g.addChild(s);
+	
+	intersect(g, new ray(point(0,0,-5), vector(0,0,1)));
+	s.transform = translation(10, 0, 0);
+	
+	var after = intersect(g, new ray(point(10,0,-5), vector(0,0,1)));
+	
+	if (after.length !== 2)
+		throw new Error("Group bounds stayed stale after a child transform changed.");
+	
+	return after.map(function(i) { return i.t; });
+}
+
+function test_bvh_divide_stops_when_bounds_cannot_split() {
+	
+	var g = group();
+	var p = point(0, 0, 0);
+	var first = triangle(p, p, p);
+	var second = triangle(p, p, p);
+	g.addChild(first, second);
+	
+	g.divide(2);
+	
+	var pending = [g];
+	var count = 0;
+	while (pending.length > 0) {
+		var current = pending.pop();
+		for (var i = 0; i < current.s.length; i++) {
+			if (current.s[i].type === "group")
+				pending.push(current.s[i]);
+			else
+				count++;
+		}
+	}
+	
+	if (count !== 2)
+		throw new Error("BVH subdivision lost degenerate children.");
+	
+	return count;
+}
+
+function test_bvh_splits_wide_triangles_by_centroid() {
+	
+	var g = group();
+	var left = triangle(point(-10, 0, 0), point(1, 0, 0), point(-5, 1, 0));
+	var right = triangle(point(-1, 0, 0), point(10, 0, 0), point(5, 1, 0));
+	g.addChild(left, right);
+	
+	g.divide(2);
+	
+	if (g.s.length !== 2 || g.s[0].type !== "group" || g.s[1].type !== "group")
+		throw new Error("BVH did not split children whose bounds cross the midpoint.");
+	
+	if (g.s[0].s.length !== 1 || g.s[1].s.length !== 1)
+		throw new Error("BVH centroid split did not produce balanced leaves.");
+	
+	return g.s.map(function(child) { return child.s[0].id; });
+}
+
+function test_bvh_partitions_transformed_children_and_keeps_parent_links() {
+	
+	var g = group();
+	var left = sphere();
+	var right = sphere();
+	left.transform = translation(-5, 0, 0);
+	right.transform = translation(5, 0, 0);
+	g.addChild(left, right);
+	
+	g.divide(2);
+	
+	if (g.s.length !== 2 || g.s[0].type !== "group" || g.s[1].type !== "group")
+		throw new Error("BVH did not partition children using their transformed bounds.");
+	
+	for (var i = 0; i < g.s.length; i++) {
+		if (g.s[i].parent !== g || g.s[i].s.length !== 1 || g.s[i].s[0].parent !== g.s[i])
+			throw new Error("BVH subgroup parent links are incorrect.");
+	}
+	
+	var hits = intersect(g, new ray(point(5, 0, -5), vector(0, 0, 1)));
+	if (hits.length !== 2)
+		throw new Error("Transformed child became unreachable after BVH subdivision.");
+	
+	return hits.map(function(i) { return i.t; });
+}
+
+function test_smooth_triangle_interpolates_vertex_normals() {
+	
+	var s = triangle(
+		point(0, 1, 0),
+		point(-1, 0, 0),
+		point(1, 0, 0),
+		undefined,
+		vector(0, 1, 0),
+		vector(-1, 0, 0),
+		vector(1, 0, 0)
+	);
+	var r = new ray(point(-0.2, 0.3, -2), vector(0, 0, 1));
+	var xs = intersect(s, r);
+	var comps = prepare_computations(xs[0], r, xs);
+	var expected = vector(-0.5547, 0.83205, 0);
+	
+	if (!cmp(comps.normalv, expected))
+		throw new Error("Smooth triangle did not interpolate its vertex normals.");
+	
+	return { u: xs[0].u, v: xs[0].v, normal: comps.normalv };
+}
+
+function test_concave_polygon_triangulation_preserves_notch() {
+	
+	var vertices = [
+		point(0, 0, 0),
+		point(3, 0, 0),
+		point(3, 3, 0),
+		point(2, 3, 0),
+		point(2, 1, 0),
+		point(1, 1, 0),
+		point(1, 3, 0),
+		point(0, 3, 0)
+	];
+	var triangles = fan_triangulation(vertices, []);
+	var area = 0;
+	
+	if (triangles.length !== 6)
+		throw new Error("Concave polygon did not produce n-2 triangles.");
+	
+	for (var i = 0; i < triangles.length; i++) {
+		var t = triangles[i];
+		var twiceArea = (t.p2.x - t.p1.x) * (t.p3.y - t.p1.y) - (t.p2.y - t.p1.y) * (t.p3.x - t.p1.x);
+		area += Math.abs(twiceArea) / 2;
+		var centerX = (t.p1.x + t.p2.x + t.p3.x) / 3;
+		var centerY = (t.p1.y + t.p2.y + t.p3.y) / 3;
+		if (centerX > 1 && centerX < 2 && centerY > 1)
+			throw new Error("Triangulation filled the concave polygon's notch.");
+	}
+	
+	if (!equal(area, 7))
+		throw new Error("Concave polygon triangulation changed the polygon area.");
+	
+	return { count: triangles.length, area: area };
+}
+
+function test_obj_face_normals_are_optional_and_preserved() {
+	
+	var previous_vertices = Data.v;
+	var previous_normals = Data.vn;
+	var has_previous_normals = Object.prototype.hasOwnProperty.call(Data, "vn");
+	var vertices = [["1", "1"], ["2", "2"], ["3", "3"]];
+	
+	try {
+		Data.v = [[0, 1, 0], [-1, 0, 0], [1, 0, 0]];
+		Data.vn = [[0, 1, 0], [-1, 0, 0], [1, 0, 0]];
+		var smooth = convert3(vertices)[0];
+		if (!smooth.vn1 || !smooth.vn2 || !smooth.vn3)
+			throw new Error("OBJ conversion discarded indexed vertex normals.");
+		
+		delete Data.vn;
+		var flat = convert3([["1", undefined], ["2", undefined], ["3", undefined]])[0];
+		if (flat.vn1 || flat.vn2 || flat.vn3)
+			throw new Error("OBJ face without normals created invalid smooth normals.");
+		
+		return true;
+	} finally {
+		Data.v = previous_vertices;
+		if (has_previous_normals)
+			Data.vn = previous_normals;
+		else
+			delete Data.vn;
+	}
+}

@@ -6,6 +6,22 @@ function world()	{
 }
 
 var wto_ic = []
+
+function invalidate_world_transform_cache(shape) {
+	
+	if (!shape || typeof shape.id !== "number")
+		return;
+	
+	if (wto_ic && wto_ic[shape.id] !== undefined)
+		delete wto_ic[shape.id];
+	
+	if (ntw_ic && ntw_ic[shape.id] !== undefined)
+		delete ntw_ic[shape.id];
+	
+	if (typeof ist !== "undefined")
+		delete ist[shape.id];
+}
+
 function world_to_object(s, p)	{
 	
 	if (s.parent)
@@ -103,11 +119,23 @@ function view_transform(from, to, up)	{
 
 function camera(hsize, vsize, fov)	{
 	
+	var _transform = identity_matrix();
+	
 	this.hsize = hsize;
 	this.vsize = vsize;
 	this.fov = fov;
-	this.transform = identity_matrix();
 	
+	Object.defineProperty(this, "transform", {
+		get: function() { return _transform; },
+		set: function(m) {
+			_transform = m;
+			this.it_c = inverse(m);
+		},
+		enumerable: true,
+		configurable: true
+	});
+	
+	this.transform = identity_matrix();
 	this.it_c = inverse(this.transform); // NOTE: MUST update this every time this.transform is set
 	
 	this.setCTransform = function(m)	{ // Pass output from view_transform (above) as argument 'm'
