@@ -8,7 +8,7 @@
 
 .selectButton {
   background-color: #4CAF50;
-  border: none;
+  border: 1px solid #387a38;
   color: white;
   padding: 15px 32px;
   text-align: center;
@@ -17,14 +17,12 @@
   font-size: 16px;
   margin: 4px 2px;
   cursor: pointer;
-  border-radius: 8px;
 }
 
 .selectFileButton	{
 
 	font-size: 10px;
 	padding: 7px 16px;
-	border-radius: 6px;
 }
 
 .buttonCamera	{
@@ -43,7 +41,7 @@
 }
 
 .selectButton:hover {
-  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+  background-color: #39843b;
 }
 
 
@@ -57,8 +55,7 @@
   width: 100%; /* Full width */
   height: 100%; /* Full height */
   overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  background-color: transparent;
 }
 
 /* Modal Content/Box */
@@ -70,12 +67,73 @@
   width: 80%; /* Could be more or less, depending on screen size */
 }
 
+.app-dialog-content {
+  background-color: #fff;
+  color: #222;
+  width: 320px;
+}
+
+.camera-menu-content {
+  background-color: #fff;
+  color: #222;
+  width: 520px;
+}
+
+.lights-menu-content {
+  background-color: #fff;
+  color: #222;
+  width: 300px;
+}
+
+.camera-vector-row {
+  margin: 10px 0;
+}
+
+.camera-coordinate {
+  width: 70px;
+  margin: 3px;
+}
+
+.camera-scene-info {
+  padding: 8px;
+  border: 1px solid #999;
+  white-space: pre;
+}
+
+.light-color-option {
+  display: block;
+  width: 100%;
+  margin: 4px 0;
+  padding: 6px;
+  border: 1px solid #777;
+  background-color: #fff;
+  text-align: left;
+  cursor: pointer;
+}
+
+.light-color-option:hover {
+  background-color: #eee;
+}
+
+.light-color-swatch {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  border: 1px solid #555;
+  vertical-align: middle;
+}
+
 /* The Close Button */
 .close {
   color: #aaa;
   float: right;
   font-size: 28px;
   font-weight: bold;
+  background-color: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
 }
 
 .close:hover,
@@ -128,7 +186,6 @@
   position: absolute;
   background-color: #f9f9f9;
   min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 1;
 }
 
@@ -237,28 +294,50 @@ function myFunction(i) {
 			
 	}
 	
-  document.getElementById(el).classList.toggle("show");
-  document.getElementById(nel).classList.remove('show');
+  var dropdown = document.getElementById(el);
+  if (hasClass(dropdown, "show"))
+    removeClass(dropdown, "show");
+  else
+    addClass(dropdown, "show");
+  removeClass(document.getElementById(nel), "show");
+}
+
+function hasClass(element, name) {
+  return (" " + element.className + " ").indexOf(" " + name + " ") !== -1;
+}
+
+function addClass(element, name) {
+  if (!hasClass(element, name))
+    element.className += " " + name;
+}
+
+function removeClass(element, name) {
+  element.className = (" " + element.className + " ").replace(" " + name + " ", " ").replace(/^\s+|\s+$/g, "");
+}
+
+function hasClassInAncestors(element, name) {
+  while (element) {
+    if (element.nodeType === 3)
+      element = element.parentNode;
+    if (element && hasClass(element, name))
+      return true;
+    element = element && element.parentNode;
+  }
+  return false;
 }
 
 // Close the dropdown if the user clicks outside of it
 window.onclick = function(e) {
-  if (!e.target.matches('.dropbtn')) {
+  if (!hasClassInAncestors(e.target, "dropbtn")) {
 
   var myDropdown = document.getElementById("myDropdownFile");
-    if (myDropdown.classList.contains('show')) {
-      myDropdown.classList.remove('show');
-    }
+    removeClass(myDropdown, "show");
 
   myDropdown = document.getElementById("myDropdownRender");
-    if (myDropdown.classList.contains('show')) {
-      myDropdown.classList.remove('show');
-    }
+    removeClass(myDropdown, "show");
 
    myDropdown = document.getElementById("myDropdownHelp");
-    if (myDropdown.classList.contains('show')) {
-      myDropdown.classList.remove('show');
-    }
+  removeClass(myDropdown, "show");
 	
 	if (e.target == modal) {
 		modal.style.display = "none";
@@ -268,9 +347,17 @@ window.onclick = function(e) {
 		camModal.style.display = "none";
 	}
 	
+  if (e.target == lightsModal) {
+    lightsModal.style.display = "none";
+  }
+	
 	if (e.target == openFileModal)	{
 		openFileModal.style.display = "none"
 	}
+	
+  if (e.target == appDialog) {
+    closeDialog();
+  }
   }
 
 }
@@ -308,7 +395,7 @@ window.onclick = function(e) {
 <div style="text-align: center;">
 
 <button class="selectButton buttonCamera"onclick="option('cameraOptions'); return false;">Camera</button>
-<button class="selectButton buttonLights">Lights</button>
+<button class="selectButton buttonLights" onclick="option('lightsOptions'); return false;">Lights</button>
 <button class="selectButton buttonScene">Scene</button>
 </div>
 <br>
@@ -321,7 +408,7 @@ window.onclick = function(e) {
 
   <!-- Modal content -->
   <div class="modal-content">
-    <span class="close">&times;</span>
+    <button type="button" class="close" id="close-about" aria-label="Close">x</button>
     <p>
 	Hello! My name is Dave! This Graphics app is ultimately meant for Node.js when it's completed, to be typically run on the command line. The work
 	is built on Jamis Buck's raytracer guide, but I am extending the code to incorporate raster graphics (ideal for previewing 3d scenes
@@ -340,32 +427,73 @@ window.onclick = function(e) {
 
 <div id="myModal_Camera" class="modal">
 
-  <!-- Modal content -->
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <p>
-	Enter Field-of-view:&nbsp;<input type="text" id="cam-fov"><br>
-	Enter From vector:&nbsp;<input type="text" id="cam-from"><br>
-	
-	<label for="campresets">Select a Camera:</label>
-
-<select id="campresets" name="camoptions" onchange="camPresetSelected(); return false;">
-  <option value="1">1</option>
-  <option value="2">2</option>
-  <option value="3">3</option>
-</select>
-	</p>
+  <div class="modal-content camera-menu-content">
+    <button type="button" class="close" id="close-camera" aria-label="Close">x</button>
+    <h2>Camera setup</h2>
+    <div class="camera-vector-row">
+      <strong>From position</strong><br>
+      <label for="cam-from-x">X</label><input type="text" id="cam-from-x" class="camera-coordinate">
+      <label for="cam-from-y">Y</label><input type="text" id="cam-from-y" class="camera-coordinate">
+      <label for="cam-from-z">Z</label><input type="text" id="cam-from-z" class="camera-coordinate">
+    </div>
+    <div class="camera-vector-row">
+      <strong>Look at</strong><br>
+      <label for="cam-to-x">X</label><input type="text" id="cam-to-x" class="camera-coordinate">
+      <label for="cam-to-y">Y</label><input type="text" id="cam-to-y" class="camera-coordinate">
+      <label for="cam-to-z">Z</label><input type="text" id="cam-to-z" class="camera-coordinate">
+    </div>
+    <div class="camera-vector-row">
+      <label for="cam-fov">Field of view (degrees)</label>
+      <input type="text" id="cam-fov" class="camera-coordinate">
+      <label for="campresets">Camera preset</label>
+      <select id="campresets" name="camoptions" onchange="camPresetSelected(); return false;">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+      </select>
+    </div>
+    <p id="camera-scene-info" class="camera-scene-info">No scene loaded.</p>
+    <button type="button" class="selectButton selectFileButton" onclick="applyCameraSettings(); return false;">Apply camera</button>
   </div>
 
+</div>
+
+<div id="myModal_Lights" class="modal">
+  <div class="modal-content lights-menu-content">
+    <button type="button" class="close" id="close-lights" aria-label="Close">x</button>
+    <h2>Light colour</h2>
+    <p>Choose the colour for the scene light:</p>
+    <button type="button" class="light-color-option" onclick="selectLightColour(1, 1, 1); return false;"><span class="light-color-swatch" style="background-color: #fff;"></span>White</button>
+    <button type="button" class="light-color-option" onclick="selectLightColour(1, 0.88, 0.67); return false;"><span class="light-color-swatch" style="background-color: #ffe0aa;"></span>Warm</button>
+    <button type="button" class="light-color-option" onclick="selectLightColour(1, 0.2, 0.2); return false;"><span class="light-color-swatch" style="background-color: #ff3333;"></span>Red</button>
+    <button type="button" class="light-color-option" onclick="selectLightColour(0.2, 1, 0.35); return false;"><span class="light-color-swatch" style="background-color: #33ff59;"></span>Green</button>
+    <button type="button" class="light-color-option" onclick="selectLightColour(0.25, 0.45, 1); return false;"><span class="light-color-swatch" style="background-color: #4073ff;"></span>Blue</button>
+  </div>
 </div>
 
 <div id="myModal_OpenFile" class="modal">
 
   <!-- Modal content -->
   <div class="modal-content">
-    <span class="close">&times;</span>
+    <button type="button" class="close" id="close-open-file" aria-label="Close">x</button>
     <p>
-	Select a file:
+	Select a file from the app folder:
+      <div>
+      <select id="app-file-select">
+        <option value="">Choose an app file...</option>
+        <optgroup label="OBJ meshes">
+          <option value="12221_Cat_v1_l3.obj">12221_Cat_v1_l3.obj</option>
+          <option value="FinalBaseMesh.obj">FinalBaseMesh.obj</option>
+          <option value="teapot.obj">teapot.obj</option>
+          <option value="teddy.obj">teddy.obj</option>
+        </optgroup>
+        <optgroup label="PPM images">
+          <option value="earth.ppm">earth.ppm</option>
+        </optgroup>
+      </select>
+      <button type="button" class="selectButton selectFileButton" onclick="loadAppFile(); return false;">Load app file</button>
+    </div>
+	<br>Or choose a file from this computer:
       <div>
       <input id="file-input2" type="file" name="files">
     </div>
@@ -378,7 +506,7 @@ window.onclick = function(e) {
 
   <!-- Modal content -->
   <div class="modal-content">
-    <span class="close">&times;</span>
+    <button type="button" class="close" id="close-bugs" aria-label="Close">x</button>
     <p>
 		<h2>Enter Bug Report.</h2>
 		<hr>
@@ -388,6 +516,14 @@ window.onclick = function(e) {
 	</p>
   </div>
 
+</div>
+
+<div id="app-dialog" class="modal">
+  <div class="modal-content app-dialog-content" role="dialog" aria-labelledby="app-dialog-title" aria-describedby="app-dialog-message">
+    <h2 id="app-dialog-title">Message</h2>
+    <p id="app-dialog-message"></p>
+    <button type="button" class="selectButton selectFileButton" id="app-dialog-close">OK</button>
+  </div>
 </div>
 
 <script src="rt.p+e.js"></script>
@@ -428,6 +564,8 @@ function renderImage(l, o)	{
 	
 	if(o)
 		Data.o = o
+	
+  applySelectedLightColour();
 	
 	w.light = Data.l
 	w.objects = [Data.o]
@@ -480,6 +618,7 @@ function option(opt)	{
 	
 	if (opt=="cameraOptions")	{
 	
+    populateCameraMenu();
 		camModal.style.display = "block"
 	}
 	
@@ -511,28 +650,20 @@ var lightsModal = document.getElementById("myModal_Lights")
 var sceneModal = document.getElementById("myModal_Scene")
 
 var openFileModal = document.getElementById("myModal_OpenFile")
+var appDialog = document.getElementById("app-dialog")
 
-// Get the <span> element that closes the modal
-var span = document.getElementsByClassName("close")[0];
-var span_CameraModal = document.getElementsByClassName("close")[1]; 
-var span_OpenFileModal = document.getElementsByClassName("close")[2];
-var span_bugModal = document.getElementsByClassName("close")[3];
-// When the user clicks on <span> (x), close the modal
-span.onclick = function() {
-  modal.style.display = "none";
+function bindCloseButton(buttonId, dialog) {
+  document.getElementById(buttonId).onclick = function() {
+    dialog.style.display = "none";
+  }
 }
 
-span_CameraModal.onclick = function()	{
-	camModal.style.display = "none"
-}
-
-span_OpenFileModal.onclick = function()	{
-	openFileModal.style.display = "none"
-}
-
-span_bugModal.onclick = function()	{
-	bugModal.style.display = "none"
-}
+bindCloseButton("close-about", modal);
+bindCloseButton("close-camera", camModal);
+bindCloseButton("close-lights", lightsModal);
+bindCloseButton("close-open-file", openFileModal);
+bindCloseButton("close-bugs", bugModal);
+document.getElementById("app-dialog-close").onclick = closeDialog;
 
 document.getElementById('file-input')
   .addEventListener('change', readObjectFile, false);

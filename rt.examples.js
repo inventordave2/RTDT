@@ -264,7 +264,7 @@ function earth()	{
 	var c = Data.PPM["earth.ppm"];
 	if(!c)	{
 		
-		alert("Please load 'earth.ppm' file first, via File->Load File")
+		showDialog("Load earth.ppm from File > Load File before starting the earth scene.");
 		return
 	}
 	var tm = TextureMap(image_pattern(c), spherical_map)
@@ -284,22 +284,27 @@ function earth()	{
 	renderImage(l, o)	
 }
 
+function exampleSkyboxPattern() {
+	return CubeMap(
+		colour(0.08, 0.12, 0.35),
+		colour(0.2, 0.45, 0.8),
+		colour(0.85, 0.3, 0.12),
+		colour(0.1, 0.55, 0.35),
+		colour(0.05, 0.35, 0.55),
+		colour(0.3, 0.15, 0.5),
+		colour(0.75, 0.55, 0.08),
+		colour(0.85, 0.85, 0.75)
+	)
+}
+
 function endGame()	{
 	
 	var l = new point_light(point(-10, 10, -50), colour(1,1,1)) 
 	Data.c.setCTransform(view_transform(point(0,0,-20), point(0,0,0), vector(0,1,0)));
 	
-	var left = ppmObj("left.ppm")
-	var right = ppmObj("right.ppm")
-	var front = ppmObj("front.ppm")
-	var back = ppmObj("back.ppm")
-	var top = ppmObj("top.ppm")
-	var bottom = ppmObj("bottom.ppm")
-	
-	
 	var cb = cube()
 	cb.transform = m().scaling(60,60,60).rotation_y(Math.PI/4, 1).rotation_z(Math.PI/4, 1)
-	cb.material.pattern = SkyBox(left, right, front, back, top, bottom)
+	cb.material.pattern = exampleSkyboxPattern()
 	
 	scene(cb)
 	
@@ -317,17 +322,9 @@ function mySkyBox()	{
 	Data.c = new camera(WIDTH, HEIGHT, (Math.PI/4))
 	Data.c.setCTransform(view_transform(point(0,0,60), point(0,-60,-60), vector(0,1,0)));
 	
-	var left = ppmObj("block.ppm")
-	var right = ppmObj("block.ppm")
-	var front = ppmObj("block.ppm")
-	var back = ppmObj("block.ppm")
-	var top = ppmObj("grass.ppm")
-	var bottom = ppmObj("grass.ppm")
-	
-	
 	var cb = cube()
 	cb.transform = m().scaling(60,60,60)
-	cb.material.pattern = SkyBox(left, right, front, back, top, bottom)
+	cb.material.pattern = exampleSkyboxPattern()
 	
 	var s = glass_sphere()
 	s.transform = m().translation(0, -55, -50).scaling(5,5,5)

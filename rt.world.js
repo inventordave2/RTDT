@@ -41,15 +41,12 @@ function normal_to_world(s, n)	{
 	if(!ntw_ic[s.id])
 		ntw_ic[s.id] = transpose(inverse(s.transform))
 	
+	n = mul(ntw_ic[s.id], n)
+	n.w = 0
 	if (s.parent)
 		n = normal_to_world(s.parent, n)
-	
-	else	{
-	
-		n = mul(ntw_ic[s.id], n)
-		n.w = 0
+	else
 		n = normalize(n)
-	}
 
 	
 	return n

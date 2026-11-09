@@ -890,6 +890,58 @@ function test_bvh_partitions_transformed_children_and_keeps_parent_links() {
 	return hits.map(function(i) { return i.t; });
 }
 
+function test_bvh_keeps_infinite_plane_intersections() {
+	
+	var g = group();
+	var left = sphere();
+	var middle = plane();
+	var right = sphere();
+	left.transform = translation(-10, 0, 0);
+	right.transform = translation(10, 0, 0);
+	g.addChild(left, middle, right);
+	g.divide(3);
+	
+	var hits = intersect(g, new ray(point(0, 1, 0), vector(0, -1, 0)));
+	if (!hits.some(function(i) { return i.object === middle; }))
+		throw new Error("BVH bounds culled an infinite plane intersection.");
+	
+	return hits.map(function(i) { return i.object.type; });
+}
+
+function test_bvh_divide_is_idempotent_for_same_threshold() {
+	
+	var g = group();
+	g.addChild(sphere(), sphere());
+	g.divide(2);
+	var firstSubgroup = g.s[0];
+	var secondSubgroup = g.s[1];
+	
+	g.divide(2);
+	if (g.s[0] !== firstSubgroup || g.s[1] !== secondSubgroup || g.s.length !== 2)
+		throw new Error("Repeated BVH division added redundant group levels.");
+	
+	return g.s.length;
+}
+
+function test_grouped_shape_normal_includes_child_transform() {
+	
+	var g = group();
+	var scaled = sphere();
+	var translated = sphere();
+	scaled.transform = scaling(1, 0.5, 1);
+	translated.transform = translation(4, 0, 0);
+	g.addChild(scaled, translated);
+	g.divide(2);
+	
+	var worldPoint = point(1 / Math.sqrt(3), 1 / (2 * Math.sqrt(3)), 1 / Math.sqrt(3));
+	var normal = normal_at(scaled, worldPoint);
+	var expected = normalize(vector(1, 2, 1));
+	if (!cmp(normal, expected))
+		throw new Error("Grouped shape normal omitted the child transform.");
+	
+	return normal;
+}
+
 function test_smooth_triangle_interpolates_vertex_normals() {
 	
 	var s = triangle(

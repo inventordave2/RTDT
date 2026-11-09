@@ -694,7 +694,7 @@ function group(id2)	{
 	
 	g.divide = function(t)	{
 		
-		if(t<=this.s.length)	{
+		if(this._divideThreshold !== t && t<=this.s.length)	{
 			
 			var l_r = this.partition_children()
 			if(l_r.left.length > 0)
@@ -704,6 +704,7 @@ function group(id2)	{
 			if(l_r.right.length > 0)
 				//console.log("l_r.right contains children.")
 				this.make_subgroup(l_r.right)
+			this._divideThreshold = t
 		}
 		
 		var l = this.s.length
@@ -714,6 +715,8 @@ function group(id2)	{
 	};
 	
 	g.addChild =  function()	{
+		
+		this._divideThreshold = undefined
 		
 		for (var i = 0; i < arguments.length; i++)	{
 			
@@ -814,6 +817,44 @@ function BB(min,max)	{
 	
 	this.transform = function(m)	{
 		
+			if (this.min.x > this.max.x || this.min.y > this.max.y || this.min.z > this.max.z)
+				return new BB()
+			
+			var source_min = [this.min.x, this.min.y, this.min.z]
+			var source_max = [this.max.x, this.max.y, this.max.z]
+			var has_infinite_bounds = source_min.concat(source_max).some(function(value) {
+				return !Number.isFinite(value)
+			})
+			
+			if (has_infinite_bounds) {
+				var transformed_min = []
+				var transformed_max = []
+				for (var row = 0; row < 3; row++) {
+					var min = m[row][3]
+					var max = m[row][3]
+					for (var column = 0; column < 3; column++) {
+						var coefficient = m[row][column]
+						if (coefficient === 0)
+							continue
+						var low = coefficient * source_min[column]
+						var high = coefficient * source_max[column]
+						if (coefficient < 0) {
+							var temp = low
+							low = high
+							high = temp
+						}
+						min += low
+						max += high
+					}
+					transformed_min[row] = Number.isNaN(min) ? -Infinity : min
+					transformed_max[row] = Number.isNaN(max) ? Infinity : max
+				}
+				return new BB(
+					point(transformed_min[0], transformed_min[1], transformed_min[2]),
+					point(transformed_max[0], transformed_max[1], transformed_max[2])
+				)
+			}
+			
 			var p = []
 			p.push(this.min)
 			p.push(point(this.min.x, this.min.y, this.max.z))
