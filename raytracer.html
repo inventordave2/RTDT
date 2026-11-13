@@ -536,13 +536,14 @@ window.onclick = function(e) {
 <script src="rt.shade.js"></script>
 <script src="rt.core.js"></script>
 <script src="rt.light.js"></script>
-<script src="raytracer.js"></script>
+<script src="raytracer-core.js"></script>
 <script src="rt.examples.js"></script>
 <script src="rt.objfile.js"></script>
 <script src="rt.material.js"></script>
 <script src="rt.ray.js"></script>
 
 <script src="rt.graphics.js"></script>
+<script src="raytracer-ui.js"></script>
 
 <script>
 function prepCanvas()	{
@@ -671,11 +672,9 @@ document.getElementById('file-input')
 document.getElementById('file-input2')
   .addEventListener('change', readFile, false);
 
-console.log = function(str)	{
-
+console.log = function(str) {
 	document.getElementById("msg-output").value = (document.getElementById("msg-output").value + '\n' + str)
 }
-init();
 </script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 # rt/dt
-Javascript implementation of Jamis Buck's Raytracer Challenge.
+Javascript implementation of a raytracer.
 
 Once you have downloaded the project files, simply load "raytracer.html" into your browser. *This program is a work in progress.* Included are some .obj mesh files you can load into the program by selecting the "choose file" button below the canvas window. Then,
 
@@ -15,5 +15,5 @@ Alternately, define a collection of primitives (look in "rt.p+e.js" to see the o
 
 rt/dt stands for raytracer/distance-tracer because I am developing it as a quasi-rasterisation-and-raytracing app.
 
-Some optimisations have been performed, but the code largely has not been refactored yet, as like I said, the program is still under development.
+Some optimisations have been performed, the program is still under development.
 

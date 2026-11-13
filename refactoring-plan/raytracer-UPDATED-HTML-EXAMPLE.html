@@ -1,0 +1,268 @@
+<!-- raytracer.html - UPDATED VERSION (Universal)
+
+This file works EXACTLY the same, just updated script loading order
+to work with our new modular structure
+
+-->
+
+<!DOCTYPE html>
+<head>
+  <title>rt/dt (Beta)</title>
+  <meta charset="utf-8"/>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/504ca65532.js" crossorigin="anonymous"></script>
+  
+  <style>
+    /* (keep existing styles) */
+    body {
+      font-family: 'Fredoka One', cursive;
+      background-color: #222;
+      color: #fff;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    canvas {
+      border: 2px solid #999;
+      background-color: #2222cc;
+      display: block;
+      margin: 20px 0;
+    }
+    
+    button {
+      background-color: #4CAF50;
+      border: 1px solid #387a38;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+    }
+    
+    button:hover {
+      background-color: #39843b;
+    }
+    
+    button.button-camera {
+      background-color: #008CBA;
+    }
+    
+    button.button-lights {
+      background-color: #f44336;
+    }
+    
+    button.button-scene {
+      background-color: #555555;
+    }
+    
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+    
+    .modal-content {
+      background-color: #fff;
+      color: #222;
+      margin: 10% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 600px;
+    }
+    
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    
+    .close:hover {
+      color: #000;
+    }
+    
+    select, input {
+      padding: 8px;
+      margin: 5px 0;
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      color: #222;
+    }
+    
+    input[type="file"] {
+      padding: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>rt/dt - Raytracer Challenge</h1>
+  
+  <!-- IMPORTANT: Load modules in correct order -->
+  
+  <!-- Core math modules (pure, no dependencies) -->
+  <script src="rt.math.js"></script>
+  <script src="rt.core.js"></script>
+  <script src="rt.matrix.js"></script>
+  <script src="rt.matrix-transform.js"></script>
+  
+  <!-- Ray tracing and geometry -->
+  <script src="rt.ray.js"></script>
+  <script src="rt.light.js"></script>
+  <script src="rt.material.js"></script>
+  <script src="rt.world.js"></script>
+  <script src="rt.shade.js"></script>
+  
+  <!-- Primitives and advanced features -->
+  <script src="rt.p+e.js"></script>
+  <script src="rt.pattern.js"></script>
+  
+  <!-- Browser-only modules -->
+  <script src="rt.graphics.js"></script>      <!-- Canvas drawing -->
+  <script src="rt.objfile.js"></script>       <!-- Browser OBJ loader -->
+  
+  <!-- Scene definitions (examples) -->
+  <script src="rt.examples.js"></script>
+  
+  <!-- SHARED rendering logic (works in browser AND Node.js) -->
+  <script src="raytracer-core.js"></script>
+  
+  <!-- Browser UI code (ONLY loaded in browser) -->
+  <script src="raytracer-ui.js"></script>
+  
+  <!-- UI Elements -->
+  
+  <div id="controls">
+    <h2>Controls</h2>
+    
+    <!-- Canvas size selector -->
+    <label for="os">Canvas Size:</label>
+    <select id="os">
+      <option value="0">Small (150x84)</option>
+      <option value="1" selected>Medium (500x281)</option>
+      <option value="2">Large (900x550)</option>
+    </select>
+    <br><br>
+    
+    <!-- Camera controls -->
+    <button class="button-camera" id="camera-btn">Camera Settings</button>
+    <button class="button-lights" id="lights-btn">Light Settings</button>
+    <button class="button-scene" id="scene-btn">Load Scene</button>
+    <br><br>
+    
+    <!-- Camera preset -->
+    <label for="campresets">Camera Preset:</label>
+    <select id="campresets">
+      <option value="0">Preset 1</option>
+      <option value="1">Preset 2</option>
+      <option value="2">Preset 3</option>
+    </select>
+    <br><br>
+    
+    <!-- Render controls -->
+    <button id="generate-bvh-btn" style="background-color: #ff9800;">Generate BVH</button>
+    <button id="render-btn" style="background-color: #00aa00; font-size: 18px; font-weight: bold;">RENDER!</button>
+    <br><br>
+    
+    <!-- File loading -->
+    <input type="file" id="obj-file" accept=".obj" />
+  </div>
+  
+  <!-- Main canvas -->
+  <canvas id="canvas" width="500" height="281"></canvas>
+  
+  <!-- Scene info -->
+  <div id="scene-info" style="background-color: #333; padding: 10px; margin-top: 10px;">
+    No scene loaded.
+  </div>
+  
+  <!-- Camera Modal -->
+  <div id="camera-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="document.getElementById('camera-modal').style.display='none'">&times;</span>
+      <h2>Camera Settings</h2>
+      
+      <div class="camera-vector-row">
+        <label>From:</label>
+        <input type="text" id="cam-from-x" class="camera-coordinate" /> X
+        <input type="text" id="cam-from-y" class="camera-coordinate" /> Y
+        <input type="text" id="cam-from-z" class="camera-coordinate" /> Z
+      </div>
+      
+      <div class="camera-vector-row">
+        <label>To:</label>
+        <input type="text" id="cam-to-x" class="camera-coordinate" /> X
+        <input type="text" id="cam-to-y" class="camera-coordinate" /> Y
+        <input type="text" id="cam-to-z" class="camera-coordinate" /> Z
+      </div>
+      
+      <div class="camera-vector-row">
+        <label>Up:</label>
+        <input type="text" id="cam-up-x" class="camera-coordinate" /> X
+        <input type="text" id="cam-up-y" class="camera-coordinate" /> Y
+        <input type="text" id="cam-up-z" class="camera-coordinate" /> Z
+      </div>
+      
+      <button onclick="document.getElementById('camera-modal').style.display='none'">Close</button>
+    </div>
+  </div>
+  
+  <!-- Lights Modal -->
+  <div id="lights-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="document.getElementById('lights-modal').style.display='none'">&times;</span>
+      <h2>Light Settings</h2>
+      
+      <label>Light Intensity:</label><br>
+      <input type="range" id="light-intensity" min="0" max="2" step="0.1" value="1" />
+      
+      <br><br>
+      
+      <label>Light Position:</label><br>
+      <input type="text" id="light-x" placeholder="X" /> 
+      <input type="text" id="light-y" placeholder="Y" /> 
+      <input type="text" id="light-z" placeholder="Z" />
+      
+      <br><br>
+      
+      <button onclick="document.getElementById('lights-modal').style.display='none'">Close</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Simple modal handlers
+document.getElementById('camera-btn').addEventListener('click', function() {
+  document.getElementById('camera-modal').style.display = 'block';
+});
+
+document.getElementById('lights-btn').addEventListener('click', function() {
+  document.getElementById('lights-modal').style.display = 'block';
+});
+
+// OBJ file handler
+document.getElementById('obj-file').addEventListener('change', function(e) {
+  handleFileSelected(e);
+});
+</script>
+
+</body>
+</html>
