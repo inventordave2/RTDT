@@ -6,6 +6,7 @@
 var cliConfig = {
 
 	sceneName: 'scene1',
+	sceneFile: null,
 	width: 500,
 	height: 281,
 	outputFile: 'render.ppm',
@@ -22,7 +23,8 @@ USAGE:
   node cli-bootstrap.js [OPTIONS]
 
 OPTIONS:
-  --scene NAME        Scene to render (default: scene1)
+  --scene NAME        Scene to render by name (default: scene1)
+  --scene-file FILE   Load scene from YAML file
   --width NUM         Image width in pixels (default: 500)
   --height NUM        Image height in pixels (default: 281)
   --output FILE       PPM output file (default: render.ppm)
@@ -37,25 +39,34 @@ EXAMPLES:
   # Render scene1 at 900x550
   node cli-bootstrap.js --scene scene1 --width 900 --height 550
 
+  # Render from YAML scene file
+  node cli-bootstrap.js --scene-file spiral_garden.scene.yaml --output garden.ppm
+
   # Small preview render
   node cli-bootstrap.js --scene scene1 --width 150 --height 84 --output preview.ppm
 
   # High quality render
   node cli-bootstrap.js --scene scene1 --quality 3 --output hires.ppm
 
-AVAILABLE SCENES:
+AVAILABLE BUILT-IN SCENES:
   scene1        Default scene
   mySkyBox      Sky box scene
   earth         Earth scene
   cm_cube       Cube scene
   endGame       End game scene
 
+SCENE FILES:
+  Use --scene-file to load scenes from .scene.yaml files
+  Example files in ./examples/ directory:
+    - spiral_garden.scene.yaml  (ornate spiral with loops)
+    - simple_grid.scene.yaml    (5x5 grid pattern)
+    - ornate_tower.scene.yaml   (tapered tower structure)
+
 NOTES:
   - Output is P3 PPM format (plain text, can be large)
   - Rendering is synchronous (blocks until complete)
   - Progress logged every 10 lines
-
-`);
+  - Scene files use YAML format with expression evaluation);
 }
 
 function parseArguments(argv) {
@@ -73,6 +84,10 @@ function parseArguments(argv) {
 		else if (arg === '--scene' && i + 1 < argv.length) {
 		
 			cliConfig.sceneName = argv[++i];
+		}
+		else if (arg === '--scene-file' && i + 1 < argv.length) {
+		
+			cliConfig.sceneFile = argv[++i];
 		}
 		else if (arg === '--width' && i + 1 < argv.length) {
 		

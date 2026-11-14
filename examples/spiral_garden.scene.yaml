@@ -1,0 +1,107 @@
+# Spiral Garden - Complex Ornate Scene
+# 
+# This scene demonstrates:
+#   - Repeat loops with mathematical transformations
+#   - Material definitions and references
+#   - Nested groups and hierarchies
+#   - Expression evaluation (i variable, math functions)
+
+metadata:
+  name: "Spiral Garden"
+  author: "RTDT User"
+  description: "An ornate spiral of spheres with varying materials and reflectivity"
+  version: 1.0
+
+materials:
+  marble:
+    color: [0.8, 0.8, 0.8]
+    ambient: 0.1
+    diffuse: 0.8
+    specular: 0.5
+    shininess: 100
+    reflective: 0.3
+    transparency: 0.0
+    refractive_index: 1.0
+    casts_shadow: true
+    
+  ruby:
+    color: [1, 0, 0.1]
+    ambient: 0.1
+    diffuse: 0.9
+    specular: 0.8
+    shininess: 200
+    reflective: 0.5
+    transparency: 0.0
+    refractive_index: 1.0
+    casts_shadow: true
+    
+  emerald:
+    color: [0, 1, 0.5]
+    ambient: 0.1
+    diffuse: 0.8
+    specular: 0.7
+    shininess: 150
+    reflective: 0.4
+    transparency: 0.1
+    refractive_index: 1.57
+    casts_shadow: true
+
+cameras:
+  - position: [0, 5, 15]
+    target: [0, 2, 0]
+    up: [0, 1, 0]
+    fov: 45
+
+lights:
+  - position: [-15, 15, 15]
+    intensity: [1, 1, 1]
+  - position: [15, 8, 5]
+    intensity: [0.5, 0.5, 0.5]
+  - position: [0, 20, 0]
+    intensity: [0.3, 0.3, 0.3]
+
+objects:
+  # Floor plane
+  - type: plane
+    position: [0, -1, 0]
+    material: marble
+
+  # Main spiral: spheres arranged in ascending spiral
+  - type: group
+    name: main_spiral
+    repeat:
+      count: 20
+      transform: |
+        rotation_y(i * 2*pi/20) @
+        translation(4 + i*0.3, i*0.5, 0)
+    children:
+      - type: sphere
+        radius: "0.5 + i*0.03"
+        material: ruby
+        reflective: "0.3 + i*0.01"
+
+  # Decorative ring: spheres around the perimeter
+  - type: group
+    name: decorative_ring
+    repeat:
+      count: 12
+      transform: "rotation_y(i * 2*pi/12)"
+    children:
+      - type: sphere
+        radius: 0.3
+        position: [8, 5, 0]
+        material: emerald
+        reflective: "0.2 + i*0.03"
+
+  # Ornamental base ring
+  - type: group
+    name: base_ring
+    repeat:
+      count: 16
+      transform: "rotation_y(i * 2*pi/16)"
+    children:
+      - type: sphere
+        radius: 0.2
+        position: [6, 0.5, 0]
+        material: marble
+        reflective: 0.4
