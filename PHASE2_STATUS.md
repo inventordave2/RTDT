@@ -4,7 +4,7 @@
 
 Successfully created a complete Node.js command-line interface for the raytracer, using shared rendering logic from Phase 1.
 
-## Files Created in `/workspaces/RTDT/phase2-cli/`
+## Files Created in `/workspaces/RTDT/cli/`
 
 ### Core Implementation
 
@@ -25,7 +25,7 @@ Successfully created a complete Node.js command-line interface for the raytracer
    - Rendering orchestration
    - PPM file output with error handling
 
-4. **rt.objfile-node.js** (4.4 KB)
+4. **rtdt_objfile-node.js** (4.4 KB)
    - Node.js implementation of OBJ file loading
    - Uses fs module instead of browser FileReader
    - Vertex and face parsing
@@ -68,21 +68,21 @@ Interactive display              PPM file (static)
 cli-bootstrap.js loads these in sequence:
 
 ```
-1. rt.p+e.js              (Math utilities)
-2. rt.pattern.js          (Pattern support)
-3. rt.math.js             (Core math)
-4. rt.matrix-transform.js (Transforms)
-5. rt.matrix.js           (Matrix operations)
-6. rt.tests.js            (Test utilities)
-7. rt.world.js            (World container)
-8. rt.shade.js            (Shading)
-9. rt.core.js             (Core rendering)
-10. rt.light.js           (Lighting)
+1. rtdt_p+e.js              (Math utilities)
+2. rtdt_pattern.js          (Pattern support)
+3. rtdt_math.js             (Core math)
+4. rtdt_matrix-transform.js (Transforms)
+5. rtdt_matrix.js           (Matrix operations)
+6. rtdt_tests.js            (Test utilities)
+7. rtdt_world.js            (World container)
+8. rtdt_shade.js            (Shading)
+9. rtdt_core.js             (Core rendering)
+10. rtdt_light.js           (Lighting)
 11. raytracer-core.js     (Shared logic from Phase 1)
-12. rt.examples.js        (Scene definitions)
-13. rt.material.js        (Materials)
-14. rt.ray.js             (Ray operations)
-15. rt.objfile-node.js    (Node.js file I/O)
+12. rtdt_examples.js        (Scene definitions)
+13. rtdt_material.js        (Materials)
+14. rtdt_ray.js             (Ray operations)
+15. rtdt_objfile-node.js    (Node.js file I/O)
 16. cli.js                (CLI interface)
 ```
 
@@ -96,7 +96,7 @@ cli-bootstrap.js loads these in sequence:
 ✅ **Shared Rendering Logic**
 - Uses identical `renderSceneSync()` from raytracer-core.js
 - Same `color_at()` calculations
-- Same scene functions from rt.examples.js
+- Same scene functions from rtdt_examples.js
 - Identical output to browser rendering
 
 ✅ **Full CLI Support**
@@ -116,8 +116,8 @@ cli-bootstrap.js loads these in sequence:
 ## Usage Examples
 
 ```bash
-# Navigate to phase2-cli
-cd /workspaces/RTDT/phase2-cli
+# Navigate to cli
+cd /workspaces/RTDT/cli
 
 # Show help
 node cli-bootstrap.js --help
@@ -143,7 +143,7 @@ node cli-bootstrap.js --scene scene1 --no-verbose --output silent.ppm
 
 ## Available Scenes
 
-All scenes from `rt.examples.js`:
+All scenes from `rtdt_examples.js`:
 - `scene1` - Default scene (recommended)
 - `mySkyBox` - Sky box scene
 - `earth` - Textured earth
@@ -211,7 +211,7 @@ Times vary based on scene complexity and hardware.
 ✅ **Separation of Concerns**
 - raytracer-core.js: Pure rendering logic
 - cli.js: CLI argument handling
-- rt.objfile-node.js: File I/O
+- rtdt_objfile-node.js: File I/O
 
 ✅ **Shared Code**
 - Browser and CLI use identical rendering
@@ -227,7 +227,7 @@ Times vary based on scene complexity and hardware.
 
 ✅ **Platform Independence**
 - raytracer-core.js runs in both browser and CLI
-- rt.objfile-node.js provides Node.js file I/O
+- rtdt_objfile-node.js provides Node.js file I/O
 - raytracer-ui.js only in browser
 
 ## Testing Checklist
@@ -236,7 +236,7 @@ Times vary based on scene complexity and hardware.
 - [x] package.json is valid JSON
 - [x] cli-bootstrap.js loads all modules
 - [x] cli.js handles arguments correctly
-- [x] rt.objfile-node.js provides file I/O
+- [x] rtdt_objfile-node.js provides file I/O
 - [x] Documentation is complete
 - [x] Help text works (`--help`)
 - [x] Example commands provided
@@ -254,7 +254,7 @@ Phase 3 would add:
 ## Quick Start
 
 ```bash
-cd /workspaces/RTDT/phase2-cli
+cd /workspaces/RTDT/cli
 
 # Test the CLI
 node cli-bootstrap.js --help

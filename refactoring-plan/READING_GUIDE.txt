@@ -194,7 +194,7 @@ Phase 2 - Add Node.js (45 min):
   □ Create package.json
   □ Create cli-bootstrap.js
   □ Create cli.js
-  □ Create rt.objfile-node.js
+  □ Create rtdt_objfile-node.js
   □ Test CLI rendering
 
 Phase 3 - Polish (1 hour):

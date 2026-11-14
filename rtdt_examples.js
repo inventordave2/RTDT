@@ -86,6 +86,7 @@ function scene1()	{
 	prepCanvas()
 	
 	Data.c.setCTransform(view_transform(
+	
 										point(10,0,-20),
 										point(0,0,0),
 										vector(0,1,0)
@@ -124,6 +125,7 @@ function scene2()	{
 	prepCanvas()
 	
 	Data.c.setCTransform(view_transform(
+	
 										point(200,200,1000),
 										point(0,50,0),
 										vector(0,1,0)
@@ -206,6 +208,7 @@ function scene3()	{
 	prepCanvas()
 	
 	Data.c.setCTransform(view_transform(
+	
 										point(0,0,4),
 										point(0,0,0),
 										vector(0,1,0)
@@ -285,7 +288,9 @@ function earth()	{
 }
 
 function exampleSkyboxPattern() {
+
 	return CubeMap(
+	
 		colour(0.08, 0.12, 0.35),
 		colour(0.2, 0.45, 0.8),
 		colour(0.85, 0.3, 0.12),

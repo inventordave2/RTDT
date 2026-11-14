@@ -40,7 +40,9 @@ canvas.height = 600;
   //4 slots per pixel, r, g, b, alpha (255)
   
    for (var ix = 0; ix < width; ++ix) {
+   
     for (var iy = 0; iy < height; ++iy) {
+    
       var x = xmin + (xmax - xmin) * ix / (width - 1);
       var y = ymin + (ymax - ymin) * iy / (height - 1);
      
@@ -173,6 +175,7 @@ function CubeMap(c1, c2, c3, c4, c5, c6, c7, c8)	{
 }
 
 function SkyBox(left, right, front, back, top, bottom)	{
+
 	// { arr[], width, height }
 	var sb = new Pattern()
 	

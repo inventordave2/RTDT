@@ -1,8 +1,9 @@
 // https://rosettacode.org/wiki/Mandelbrot_set#JavaScript
 
 
-// The gay bit.
+// The plotting bit.
 function mandel_iterate(cx, cy, maxIter) {
+  
   var x = 0.0;
   var y = 0.0;
   var xx = 0;

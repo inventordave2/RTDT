@@ -34,20 +34,20 @@ node cli-bootstrap.js --help
 ### Code Architecture (Refactored)
 ```
 SHARED CODE:        → Works in both environments
-├─ rt.math.js       (pure math functions)
-├─ rt.core.js       (raytracer fundamentals)
-├─ rt.matrix.js     (linear algebra)
-├─ rt.ray.js        (ray casting)
-├─ rt.*.js          (all other core modules)
+├─ rtdt_math.js       (pure math functions)
+├─ rtdt_core.js       (raytracer fundamentals)
+├─ rtdt_matrix.js     (linear algebra)
+├─ rtdt_ray.js        (ray casting)
+├─ rtdt_*.js          (all other core modules)
 └─ raytracer-core.js (SHARED rendering logic)
 
 BROWSER ONLY:       → Loaded only in HTML
-├─ rt.graphics.js   (canvas drawing)
-├─ rt.objfile.js    (FileReader OBJ loader)
+├─ rtdt_graphics.js   (canvas drawing)
+├─ rtdt_objfile.js    (FileReader OBJ loader)
 └─ raytracer-ui.js  (UI controllers, DOM manipulation)
 
 NODE.JS ONLY:       → Loaded only in CLI
-├─ rt.objfile-node.js (fs-based OBJ loader)
+├─ rtdt_objfile-node.js (fs-based OBJ loader)
 ├─ cli-bootstrap.js  (module loader)
 ├─ cli.js            (command-line handler)
 └─ package.json      (Node.js metadata)
@@ -83,8 +83,8 @@ function renderImage() { /* call renderSceneToPixels */ }
 **Time**: 5 minutes  
 **What**: Load all modules in correct order
 ```javascript
-require('./rt.math.js');
-require('./rt.core.js');
+require('./rtdt_math.js');
+require('./rtdt_core.js');
 // ... all modules ...
 require('./raytracer-core.js');
 require('./cli.js');
@@ -100,7 +100,7 @@ function main() { /* orchestrate rendering */ }
 function writePPMFile(path, pixels) { /* write output */ }
 ```
 
-### 5. rt.objfile-node.js
+### 5. rtdt_objfile-node.js
 **Size**: ~50-100 lines  
 **Time**: 15 minutes  
 **What**: Node.js version of OBJ loader (use fs instead of FileReader)
@@ -132,7 +132,7 @@ function loadOBJFile(path) {
 - **Tuesday** (30 min): Create raytracer-ui.js  
 - **Wednesday** (30 min): Update raytracer.html, test browser
 - **Thursday** (30 min): Create cli-bootstrap.js, package.json
-- **Friday** (60 min): Create cli.js, rt.objfile-node.js, test CLI
+- **Friday** (60 min): Create cli.js, rtdt_objfile-node.js, test CLI
 
 ### Testing (1-2 hours)
 - Browser: Open HTML, verify all features work
@@ -164,14 +164,14 @@ function bar() {}
 ### 2. Load Order Matters
 ❌ **Wrong**:
 ```html
-<script src="rt.ray.js"></script>    <!-- needs rt.core -->
-<script src="rt.core.js"></script>
+<script src="rtdt_ray.js"></script>    <!-- needs rtdt_core -->
+<script src="rtdt_core.js"></script>
 ```
 
 ✅ **Right**:
 ```html
-<script src="rt.core.js"></script>
-<script src="rt.ray.js"></script>
+<script src="rtdt_core.js"></script>
+<script src="rtdt_ray.js"></script>
 ```
 
 ### 3. Check Environment When Needed
@@ -186,7 +186,7 @@ if (typeof window !== 'undefined') {
 
 ### 4. One Responsibility Per File
 ✅ **Good**:
-- rt.math.js: Math functions only
+- rtdt_math.js: Math functions only
 - raytracer-ui.js: UI code only
 - cli.js: CLI code only
 
@@ -281,7 +281,7 @@ if (require.main === module) main();
 ## Common Questions
 
 ### Q: Do I need to rewrite all my math code?
-**A**: NO! All your rt.*.js files work as-is. Zero changes needed.
+**A**: NO! All your rtdt_*.js files work as-is. Zero changes needed.
 
 ### Q: What about testing?
 **A**: Create simple test scenarios in both browser and CLI.
@@ -291,9 +291,9 @@ if (require.main === module) main();
 ```
 
 ### Q: Can I add more scenes?
-**A**: Yes! Add functions to rt.examples.js, use in both environments:
+**A**: Yes! Add functions to rtdt_examples.js, use in both environments:
 ```javascript
-// rt.examples.js
+// rtdt_examples.js
 function myScene() {
     var w = new world();
     w.light = new point_light(...);
@@ -316,7 +316,7 @@ function writeJSONFile(path, pixels) { /* raw data */ }
 
 ### Q: What if I add new features later?
 **A**: If pure math:
-- Add to rt.*.js file
+- Add to rtdt_*.js file
 - Works in both browser and CLI automatically
 
 If browser-specific:
@@ -342,7 +342,7 @@ If Node.js-specific:
 - [x] package.json created
 - [x] cli-bootstrap.js created
 - [x] cli.js created
-- [x] rt.objfile-node.js created
+- [x] rtdt_objfile-node.js created
 - [x] CLI renders to PPM file
 - [x] No Node.js errors
 

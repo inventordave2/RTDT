@@ -10,7 +10,7 @@
 
 ### Current Architecture (Browser-Based)
 - **Main entry point**: `raytracer.html` (UI container)
-- **Core library**: Multiple modular JavaScript files (`rt.*.js`)
+- **Core library**: Multiple modular JavaScript files (`rtdt_*.js`)
 - **Global state**: Centralized in `Data` and `DataR` objects in `raytracer.js`
 - **UI coupling**: Rendering and scene management are tightly coupled with DOM manipulation
 
@@ -42,73 +42,73 @@
 
 ## 2. MODULE ANALYSIS
 
-### 2.1 rt.core.js ✅ **CLI-Ready**
+### 2.1 rtdt_core.js ✅ **CLI-Ready**
 - Pure mathematical functions for ray tracing
 - No DOM dependencies
 - Functions: `tuple()`, `point()`, `vector()`, `magnitude()`, `normalize()`, `dot()`, `cross()`
 - **Status**: Can be used directly in CLI version
 - **Minor Issue**: Uses `throw` for error handling; could benefit from more descriptive messages
 
-### 2.2 rt.math.js ✅ **CLI-Ready**
+### 2.2 rtdt_math.js ✅ **CLI-Ready**
 - Utility math functions (`equal()`, `round()`, `add()`, `subtract()`, `multiply()`, etc.)
 - EPSILON-based floating-point comparison (good practice)
 - No dependencies or side effects
 - **Status**: Fully reusable
 - **Note**: `modulusA()` and `modulusB()` have console.log() calls - remove for production
 
-### 2.3 rt.matrix.js ⚠️ **Mostly CLI-Ready**
+### 2.3 rtdt_matrix.js ⚠️ **Mostly CLI-Ready**
 - Matrix operations for transformations
 - Contains helper function `initArray()` not shown in review
 - **Minor Issue**: `identity_matrix()` has commented-out code (lines with `.m.m` prefix) - cleanup needed
 - **Status**: Usable with minor cleanup
 
-### 2.4 rt.matrix-transform.js ⚠️ **Likely CLI-Ready**
+### 2.4 rtdt_matrix-transform.js ⚠️ **Likely CLI-Ready**
 - Transformation matrices (translation, scaling, rotation, etc.)
 - File not fully reviewed but name suggests pure math operations
 - **Recommendation**: Verify no DOM dependencies
 
-### 2.5 rt.p+e.js (Primitives + Effects) ⚠️ **Mixed**
+### 2.5 rtdt_p+e.js (Primitives + Effects) ⚠️ **Mixed**
 - Contains primitive shape definitions (spheres, cylinders, cubes, triangles)
 - 24KB file (largest core module) - may have maintenance complexity
 - **Status**: Likely usable but needs review for any canvas/DOM calls
 
-### 2.6 rt.ray.js ✅ **CLI-Ready**
+### 2.6 rtdt_ray.js ✅ **CLI-Ready**
 - Ray casting logic
 - **Status**: Expected to be pure, needs quick verification
 
-### 2.7 rt.shade.js ⚠️ **Likely CLI-Ready**
+### 2.7 rtdt_shade.js ⚠️ **Likely CLI-Ready**
 - Shading calculations
 - **Status**: Likely pure math, verify for no rendering calls
 
-### 2.8 rt.world.js ✅ **CLI-Ready**
+### 2.8 rtdt_world.js ✅ **CLI-Ready**
 - World and scene management
 - **Status**: Expected to be scene/object management, check for dependencies
 
-### 2.9 rt.graphics.js ❌ **NOT CLI-Ready**
+### 2.9 rtdt_graphics.js ❌ **NOT CLI-Ready**
 - Almost certainly contains canvas drawing code
 - **Status**: Requires complete refactoring for Node.js
 - **Plan**: Replace with file-based output (PPM, PNG, etc.)
 
-### 2.10 rt.pattern.js ⚠️ **Mostly CLI-Ready**
+### 2.10 rtdt_pattern.js ⚠️ **Mostly CLI-Ready**
 - Pattern/texture definitions
 - 11KB file
 - **Status**: Likely pure (procedural textures) but verify
 
-### 2.11 rt.light.js ✅ **CLI-Ready**
+### 2.11 rtdt_light.js ✅ **CLI-Ready**
 - Light source definitions
 - **Status**: Expected to be pure data structures with calculations
 
-### 2.12 rt.material.js ✅ **CLI-Ready**
+### 2.12 rtdt_material.js ✅ **CLI-Ready**
 - Material property definitions
 - **Status**: Expected to be pure data structures
 
-### 2.13 rt.objfile.js ⚠️ **Needs Verification**
+### 2.13 rtdt_objfile.js ⚠️ **Needs Verification**
 - OBJ file parsing (external mesh loading)
 - **Issue**: Likely uses browser file APIs (FileReader, etc.)
 - **For CLI**: Must use `fs` module instead
 - **Status**: Significant refactoring needed
 
-### 2.14 rt.tests.js ✅ **Useful Reference**
+### 2.14 rtdt_tests.js ✅ **Useful Reference**
 - Contains test scenarios (scene2, scene3, etc.)
 - Good reference for features and expected behavior
 - **Status**: Can be extracted as example configurations
@@ -239,7 +239,7 @@
 
 ### Current State ❌
 - No formal test suite
-- Test functions in `rt.tests.js` are ad-hoc and browser-dependent
+- Test functions in `rtdt_tests.js` are ad-hoc and browser-dependent
 - No unit test framework
 
 ### For CLI Conversion
@@ -324,19 +324,19 @@ Add:
    - Fix: Encapsulate in class or factory function
 
 2. **Canvas context dependency in rendering**
-   - File: Likely in `rt.graphics.js` and `raytracer.js`
+   - File: Likely in `rtdt_graphics.js` and `raytracer.js`
    - Impact: Cannot output to anything but canvas
    - Fix: Abstract rendering backend (strategy pattern)
 
 3. **Browser file API in OBJ loader**
-   - File: `rt.objfile.js`
+   - File: `rtdt_objfile.js`
    - Impact: Cannot load mesh files in Node.js
    - Fix: Use `fs` module for Node.js version
 
 ### High Priority Issues 🟠
 
 4. **Unused test functions cluttering namespace**
-   - File: `rt.tests.js`
+   - File: `rtdt_tests.js`
    - Fix: Move to separate test files or remove
 
 5. **No input validation**
@@ -350,7 +350,7 @@ Add:
 ### Medium Priority Issues 🟡
 
 7. **Commented-out code**
-   - File: `rt.matrix.js` (identity_matrix function)
+   - File: `rtdt_matrix.js` (identity_matrix function)
    - Fix: Remove or document why it's commented
 
 8. **Inconsistent error messages**
@@ -417,7 +417,7 @@ node cli.js --config scenes.json --output-dir ./renders
 - ❌ Input handling: Needs CLI infrastructure
 
 **Next Steps**:
-1. Review `rt.graphics.js` to understand canvas integration fully
+1. Review `rtdt_graphics.js` to understand canvas integration fully
 2. Plan output abstraction (use strategy pattern for multiple formats)
 3. Create Renderer class to encapsulate state
 4. Establish project structure for CLI version

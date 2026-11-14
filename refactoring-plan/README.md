@@ -213,10 +213,10 @@ Your rendering algorithm is independent of how pixels get displayed:
 ### The Load Order: Critical!
 Each file can only use things defined before it:
 ```
-rt.math.js           ← Load first (no dependencies)
-rt.core.js           ← Needs rt.math
-rt.matrix.js         ← Needs rt.math, rt.core
-rt.matrix-transform  ← Needs rt.matrix
+rtdt_math.js           ← Load first (no dependencies)
+rtdt_core.js           ← Needs rtdt_math
+rtdt_matrix.js         ← Needs rtdt_math, rtdt_core
+rtdt_matrix-transform  ← Needs rtdt_matrix
 ...                  ← Dependencies flow down
 raytracer-core.js    ← Shared logic (needs all above)
 raytracer-ui.js      ← Browser only (needs raytracer-core)
@@ -228,7 +228,7 @@ cli.js               ← Node.js only (needs raytracer-core)
 ## ❓ FREQUENTLY ASKED QUESTIONS
 
 **Q: Do I need to rewrite my math code?**  
-A: NO! All rt.*.js files work as-is. Only ~1% of code changes.
+A: NO! All rtdt_*.js files work as-is. Only ~1% of code changes.
 
 **Q: Will my browser version still work?**  
 A: YES! Exactly the same as today, pixel-perfect.

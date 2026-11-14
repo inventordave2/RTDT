@@ -41,13 +41,13 @@ RTDT/
 ├── cli-bootstrap.js            ← NEW: Entry for Node.js
 ├── cli.js                       ← NEW: CLI handler
 │
-├── rt.math.js                  ← NO CHANGES
-├── rt.core.js                  ← NO CHANGES
-├── (all other rt.*.js files)   ← NO CHANGES
+├── rtdt_math.js                  ← NO CHANGES
+├── rtdt_core.js                  ← NO CHANGES
+├── (all other rtdt_*.js files)   ← NO CHANGES
 │
 ├── raytracer-core.js           ← NEW: Extracted from raytracer.js (shared)
 ├── raytracer-ui.js             ← NEW: Extracted from raytracer.js (browser only)
-└── rt.objfile-node.js          ← NEW: Node.js OBJ loader
+└── rtdt_objfile-node.js          ← NEW: Node.js OBJ loader
 ```
 
 ---
@@ -56,9 +56,9 @@ RTDT/
 
 ```html
 <!-- In raytracer.html - just add scripts in order -->
-<script src="rt.math.js"></script>
-<script src="rt.core.js"></script>
-<!-- ... all other rt.*.js files ... -->
+<script src="rtdt_math.js"></script>
+<script src="rtdt_core.js"></script>
+<!-- ... all other rtdt_*.js files ... -->
 <script src="raytracer-core.js"></script>   ← NEW: Shared logic
 <script src="raytracer-ui.js"></script>     ← NEW: Browser UI only
 ```
@@ -251,19 +251,19 @@ if (require.main === module) {
 #!/usr/bin/env node
 
 // Just load all files in correct order
-require('./rt.math.js');
-require('./rt.core.js');
-require('./rt.matrix.js');
-require('./rt.matrix-transform.js');
-require('./rt.ray.js');
-require('./rt.light.js');
-require('./rt.material.js');
-require('./rt.world.js');
-require('./rt.shade.js');
-require('./rt.p+e.js');
-require('./rt.pattern.js');
-require('./rt.objfile-node.js');
-require('./rt.examples.js');
+require('./rtdt_math.js');
+require('./rtdt_core.js');
+require('./rtdt_matrix.js');
+require('./rtdt_matrix-transform.js');
+require('./rtdt_ray.js');
+require('./rtdt_light.js');
+require('./rtdt_material.js');
+require('./rtdt_world.js');
+require('./rtdt_shade.js');
+require('./rtdt_p+e.js');
+require('./rtdt_pattern.js');
+require('./rtdt_objfile-node.js');
+require('./rtdt_examples.js');
 require('./raytracer-core.js');
 require('./cli.js');
 ```
@@ -293,7 +293,7 @@ require('./cli.js');
 ## Adding New Features (Both Platforms)
 
 ### To add a new rendering feature:
-1. Add function to `rt.*.js` file (pure math)
+1. Add function to `rtdt_*.js` file (pure math)
 2. Use it in `raytracer-core.js` (shared logic)
 3. Exposed automatically in both browser and CLI
 4. No changes to HTML or cli-bootstrap.js needed
@@ -312,7 +312,7 @@ require('./cli.js');
 
 ## Zero Dependencies (Start Simple)
 
-You don't need any npm packages to start. All pure JavaScript.
+You don't need any npm packages to startdt_ All pure JavaScript.
 
 When you want to add features later:
 - **CLI argument parsing**: Use `yargs` (small, popular)

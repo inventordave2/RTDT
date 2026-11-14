@@ -31,6 +31,7 @@ function convert3(vertices)	{
 		
 		// the if-clause is a hack to support teapot format, with no vertice_normal data
 		if(vndata)	{
+		
 			x = vndata[0], y = vndata[1], z = vndata[2];
 		}
 		else	{
@@ -149,6 +150,7 @@ function parse_obj_file()	{
 			Data[curr_e].push(body);
 			
 			if(curr_e=="v")	{
+			
 				if(body[0]==0)
 					body[0]=0
 				

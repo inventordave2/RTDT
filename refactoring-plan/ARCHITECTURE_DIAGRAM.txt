@@ -7,39 +7,39 @@ SHARED CORE (Works EVERYWHERE)
 ═════════════════════════════════════════════════════════════════════════════════
 
                           ┌─────────────────────────┐
-                          │   rt.math.js            │
+                          │   rtdt_math.js            │
                           │  (Pure Math Functions)  │
                           └──────────────┬──────────┘
                                          │
                           ┌──────────────▼──────────┐
-                          │   rt.core.js            │
+                          │   rtdt_core.js            │
                           │   (Ray Tracer Core)     │
                           └──────────────┬──────────┘
                                          │
                   ┌──────────────────────┼──────────────────────┐
                   │                      │                      │
          ┌────────▼─────────┐  ┌────────▼─────────┐  ┌────────▼──────────┐
-         │  rt.matrix.js    │  │   rt.ray.js      │  │  rt.light.js      │
+         │  rtdt_matrix.js    │  │   rtdt_ray.js      │  │  rtdt_light.js      │
          │ (Linear Algebra) │  │  (Ray Casting)   │  │  (Lighting Defs)  │
          └────────┬─────────┘  └────────┬─────────┘  └────────┬──────────┘
                   │                     │                     │
          ┌────────▼──────────────────────▼─────────────────────▼──────────┐
          │                                                                  │
-         │  rt.matrix-transform.js  rt.material.js  rt.world.js           │
+         │  rtdt_matrix-transform.js  rtdt_material.js  rtdt_world.js           │
          │  (Transformations)       (Materials)     (Scene Mgmt)          │
          │                                                                  │
          └────────┬───────────────────────────────────────────────────────┘
                   │
          ┌────────▼──────────────────────────────────────────────────────┐
          │                                                                │
-         │  rt.shade.js  rt.p+e.js  rt.pattern.js                        │
+         │  rtdt_shade.js  rtdt_p+e.js  rtdt_pattern.js                        │
          │  (Shading)    (Prims)    (Patterns)                           │
          │                                                                │
          └────────┬───────────────────────────────────────────────────────┘
                   │
          ┌────────▼──────────────────────────────────────────────────────┐
          │                                                                │
-         │  rt.examples.js (Scene Definitions)                           │
+         │  rtdt_examples.js (Scene Definitions)                           │
          │  ✓ Available to both browser and CLI                          │
          │                                                                │
          └────────┬───────────────────────────────────────────────────────┘
@@ -67,12 +67,12 @@ BROWSER PATH (HTML-based UI)
 ═════════════════════════════════════════════════════════════════════════════════
 
   raytracer.html
-  ├─ Loads all rt.*.js in order
+  ├─ Loads all rtdt_*.js in order
   ├─ Loads raytracer-core.js (shared logic)
-  ├─ Loads rt.graphics.js ◄────────── BROWSER ONLY
+  ├─ Loads rtdt_graphics.js ◄────────── BROWSER ONLY
   │  (Canvas drawing, no Node.js)
   │
-  ├─ Loads rt.objfile.js ◄─────────── BROWSER ONLY
+  ├─ Loads rtdt_objfile.js ◄─────────── BROWSER ONLY
   │  (FileReader API, no Node.js)
   │
   └─ Loads raytracer-ui.js ◄────────── BROWSER ONLY
@@ -96,12 +96,12 @@ NODE.JS PATH (CLI-based)
 
   cli-bootstrap.js ◄────── Entry point: node cli-bootstrap.js --scene scene1
   │
-  ├─ require('./rt.math.js')
-  ├─ require('./rt.core.js')
-  ├─ ... all other rt.*.js files ...
+  ├─ require('./rtdt_math.js')
+  ├─ require('./rtdt_core.js')
+  ├─ ... all other rtdt_*.js files ...
   ├─ require('./raytracer-core.js')  ◄─ SHARED LOGIC
   │
-  ├─ require('./rt.objfile-node.js') ◄─ NODE.JS ONLY
+  ├─ require('./rtdt_objfile-node.js') ◄─ NODE.JS ONLY
   │  (fs-based file reading, no FileReader)
   │
   └─ require('./cli.js')  ◄─────────── NODE.JS ONLY
@@ -132,36 +132,36 @@ LOAD ORDER DEPENDENCY CHAIN
 ═════════════════════════════════════════════════════════════════════════════════
 
 Level 0 (No dependencies):
-  rt.math.js ◄── START HERE
+  rtdt_math.js ◄── START HERE
 
 Level 1 (Depends on Level 0):
-  rt.core.js ◄── Needs: tuple, point, vector
-  rt.light.js
+  rtdt_core.js ◄── Needs: tuple, point, vector
+  rtdt_light.js
 
 Level 2 (Depends on Level 0-1):
-  rt.matrix.js
-  rt.ray.js
-  rt.material.js
+  rtdt_matrix.js
+  rtdt_ray.js
+  rtdt_material.js
 
 Level 3 (Depends on Level 0-2):
-  rt.matrix-transform.js
-  rt.world.js
-  rt.shade.js
+  rtdt_matrix-transform.js
+  rtdt_world.js
+  rtdt_shade.js
 
 Level 4 (Depends on Level 0-3):
-  rt.p+e.js
-  rt.pattern.js
+  rtdt_p+e.js
+  rtdt_pattern.js
 
 Level 5 (Platform-specific):
   BROWSER:
-    rt.graphics.js ◄── Canvas API
-    rt.objfile.js ◄──── FileReader API
+    rtdt_graphics.js ◄── Canvas API
+    rtdt_objfile.js ◄──── FileReader API
   
   NODE.JS:
-    rt.objfile-node.js ◄ fs module
+    rtdt_objfile-node.js ◄ fs module
 
 Level 6 (Shared logic):
-  rt.examples.js
+  rtdt_examples.js
   raytracer-core.js ◄── Works in BOTH
 
 Level 7 (Platform UI):
@@ -181,9 +181,9 @@ FILE DEPENDENCIES VISUAL
                   ┌───────────┴───────────┐
                   │                       │
             ┌─────▼──────┐        ┌──────▼────────┐
-            │rt.graphics.js       │  rt.shade.js  │
-            │(Browser Only)       │  rt.world.js  │
-            │Canvas API           │  rt.p+e.js    │
+            │rtdt_graphics.js       │  rtdt_shade.js  │
+            │(Browser Only)       │  rtdt_world.js  │
+            │Canvas API           │  rtdt_p+e.js    │
             └─────┬──────┘        └──────┬────────┘
                   │                       │
             ┌─────▼────────────────────────────┐
@@ -201,7 +201,7 @@ FILE DEPENDENCIES VISUAL
                   ┌───────────┴───────────┐
                   │                       │
             ┌─────▼──────┐        ┌──────▼────────┐
-            │rt.objfile-node.js  │  rt.examples  │
+            │rtdt_objfile-node.js  │  rtdt_examples  │
             │(Node.js Only)       │  (Scenes)     │
             │fs module            └──────┬────────┘
             └─────┬──────┘              │
@@ -255,7 +255,7 @@ ARCHITECTURE PATTERN
 ═════════════════════════════════════════════════════════════════════════════════
 
 ┌──────────────────────────┐
-│    PURE LOGIC LAYER      │  All rt.*.js + raytracer-core.js
+│    PURE LOGIC LAYER      │  All rtdt_*.js + raytracer-core.js
 │  (Math, Rendering, etc)  │  • No dependencies on platform
 │  "Model" in MVC          │  • Reusable everywhere
 └──────────────────────────┘

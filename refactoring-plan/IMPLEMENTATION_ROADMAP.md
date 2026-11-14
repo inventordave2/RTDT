@@ -85,20 +85,20 @@ typeof renderSceneSync      // "function"
 - [x] Any script that loads old raytracer.js
 
 **Order must be** (already in your HTML, just verify):
-1. rt.math.js
-2. rt.core.js
-3. rt.matrix.js
-4. rt.matrix-transform.js
-5. rt.ray.js
-6. rt.light.js
-7. rt.material.js
-8. rt.world.js
-9. rt.shade.js
-10. rt.p+e.js
-11. rt.pattern.js
-12. rt.graphics.js
-13. rt.objfile.js
-14. rt.examples.js
+1. rtdt_math.js
+2. rtdt_core.js
+3. rtdt_matrix.js
+4. rtdt_matrix-transform.js
+5. rtdt_ray.js
+6. rtdt_light.js
+7. rtdt_material.js
+8. rtdt_world.js
+9. rtdt_shade.js
+10. rtdt_p+e.js
+11. rtdt_pattern.js
+12. rtdt_graphics.js
+13. rtdt_objfile.js
+14. rtdt_examples.js
 15. **raytracer-core.js** ← NEW
 16. **raytracer-ui.js** ← NEW
 
@@ -146,19 +146,19 @@ typeof renderSceneSync      // "function"
 #!/usr/bin/env node
 
 // Load core modules
-require('./rt.math.js');
-require('./rt.core.js');
-require('./rt.matrix.js');
-require('./rt.matrix-transform.js');
-require('./rt.ray.js');
-require('./rt.light.js');
-require('./rt.material.js');
-require('./rt.world.js');
-require('./rt.shade.js');
-require('./rt.p+e.js');
-require('./rt.pattern.js');
-require('./rt.objfile-node.js');
-require('./rt.examples.js');
+require('./rtdt_math.js');
+require('./rtdt_core.js');
+require('./rtdt_matrix.js');
+require('./rtdt_matrix-transform.js');
+require('./rtdt_ray.js');
+require('./rtdt_light.js');
+require('./rtdt_material.js');
+require('./rtdt_world.js');
+require('./rtdt_shade.js');
+require('./rtdt_p+e.js');
+require('./rtdt_pattern.js');
+require('./rtdt_objfile-node.js');
+require('./rtdt_examples.js');
 
 // Load shared logic
 require('./raytracer-core.js');
@@ -205,8 +205,8 @@ node cli-bootstrap.js --scene scene1 --output test.ppm
 
 ---
 
-### Task 2.4: Create rt.objfile-node.js
-**File**: Create `rt.objfile-node.js` in root directory
+### Task 2.4: Create rtdt_objfile-node.js
+**File**: Create `rtdt_objfile-node.js` in root directory
 
 **Content**: Node.js version of OBJ loader
 ```javascript
@@ -393,7 +393,7 @@ npm install express
 - [ ] Created package.json
 - [ ] Created cli-bootstrap.js
 - [ ] Created cli.js
-- [ ] Created rt.objfile-node.js
+- [ ] Created rtdt_objfile-node.js
 - [ ] `node cli-bootstrap.js --help` works
 - [ ] `node cli-bootstrap.js --scene scene1 --output test.ppm` works
 - [ ] test.ppm file is created and valid

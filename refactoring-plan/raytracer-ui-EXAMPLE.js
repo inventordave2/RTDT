@@ -4,6 +4,7 @@
 
 // Check we're in a browser
 if (typeof window === 'undefined') {
+
     throw new Error("raytracer-ui.js should only be loaded in browsers!");
 }
 
@@ -14,6 +15,7 @@ var selectedLightColour;
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
+
     canvas = document.getElementById('canvas');
     ctx = canvas.getContext('2d');
     
@@ -26,30 +28,37 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function setupEventListeners() {
+
     var renderBtn = document.getElementById('render-btn');
     if (renderBtn) {
+    
         renderBtn.addEventListener('click', renderImage);
     }
     
     var generateBVHBtn = document.getElementById('generate-bvh-btn');
     if (generateBVHBtn) {
+    
         generateBVHBtn.addEventListener('click', generateBVH);
     }
     
     var osSelect = document.getElementById('os');
     if (osSelect) {
+    
         osSelect.addEventListener('change', optionSelected);
     }
     
     var camPresetsSelect = document.getElementById('campresets');
     if (camPresetsSelect) {
+    
         camPresetsSelect.addEventListener('change', camPresetSelected);
     }
 }
 
 function optionSelected() {
+
     var ct;
     switch(document.getElementById("os").selectedIndex) {
+    
         case 0:
             WIDTH = 150;
             HEIGHT = Math.round(150 * (9/16));
@@ -79,6 +88,7 @@ function optionSelected() {
 }
 
 function camPresetSelected() {
+
     var v = document.getElementById("campresets");
     Data.c.setCTransform(Data.presets.camera[v.selectedIndex]);
     populateCameraMenu();
@@ -86,6 +96,7 @@ function camPresetSelected() {
 }
 
 function sceneCameraBounds() {
+
     if (!Data.o || typeof Data.o.parent_space_bounds_of !== "function")
         return undefined;
 
@@ -96,6 +107,7 @@ function sceneCameraBounds() {
 }
 
 function boundsCenter(min, max) {
+
     if (isFinite(min) && isFinite(max))
         return min + (max - min) / 2;
     if (isFinite(min))
@@ -106,6 +118,7 @@ function boundsCenter(min, max) {
 }
 
 function formatCameraValue(value) {
+
     if (value === Infinity)
         return "Infinity";
     if (value === -Infinity)
@@ -116,12 +129,14 @@ function formatCameraValue(value) {
 }
 
 function setCameraVectorFields(prefix, value) {
+
     document.getElementById(prefix + "-x").value = formatCameraValue(value.x);
     document.getElementById(prefix + "-y").value = formatCameraValue(value.y);
     document.getElementById(prefix + "-z").value = formatCameraValue(value.z);
 }
 
 function populateCameraMenu() {
+
     var cameraPosition = multiply_matrix_by_tuple(inverse(Data.c.transform), point(0, 0, 0));
     setCameraVectorFields("cam-from", cameraPosition);
     
@@ -130,7 +145,9 @@ function populateCameraMenu() {
     var info = "No scene loaded.";
     
     if (bounds) {
+    
         center = point(
+        
             boundsCenter(bounds.min.x, bounds.max.x),
             boundsCenter(bounds.min.y, bounds.max.y),
             boundsCenter(bounds.min.z, bounds.max.z)
@@ -148,11 +165,13 @@ function populateCameraMenu() {
     
     var sceneInfo = document.getElementById('scene-info');
     if (sceneInfo) {
+    
         sceneInfo.textContent = info;
     }
 }
 
 function selectLightColour(r, g, b) {
+
     selectedLightColour = colour(r, g, b);
     applySelectedLightColour();
     
@@ -164,14 +183,17 @@ function selectLightColour(r, g, b) {
 }
 
 function applySelectedLightColour() {
+
     if (selectedLightColour && Data.l)
         Data.l.intensity = selectedLightColour;
 }
 
 function renderImage() {
+
     console.log("Starting render to canvas...");
     
     if (!Data.c || !Data.l || !Data.o) {
+    
         console.error("Scene not initialized");
         return;
     }
@@ -188,15 +210,19 @@ function renderImage() {
     
     // Start async rendering
     renderSceneToPixels(world, Data.c, 1).then(function(pixels) {
+    
         displayPixelsOnCanvas(pixels);
     });
 }
 
 function displayPixelsOnCanvas(pixels) {
+
     var pixelIndex = 0;
     
     for (var y = 0; y < HEIGHT; y++) {
+    
         for (var x = 0; x < WIDTH; x++) {
+        
             var c = pixels[pixelIndex++];
             var rgb = colorTo255(c);
             
@@ -213,6 +239,7 @@ function displayPixelsOnCanvas(pixels) {
 }
 
 function handleFileSelected(event) {
+
     var file = event.target.files[0];
     if (!file)
         return;
@@ -221,6 +248,7 @@ function handleFileSelected(event) {
     
     var reader = new FileReader();
     reader.onload = function(e) {
+    
         var contents = e.target.result;
         loadOBJFromString(contents);
         populateCameraMenu();
@@ -230,6 +258,7 @@ function handleFileSelected(event) {
 }
 
 function loadOBJFromString(objString) {
+
     // Parse OBJ data
     Data.v = [];
     Data.vn = [];
@@ -237,19 +266,23 @@ function loadOBJFromString(objString) {
     
     var lines = objString.split('\n');
     for (var i = 0; i < lines.length; i++) {
+    
         var line = lines[i].trim();
         
         if (line.startsWith('v ')) {
+        
             var parts = line.split(/\s+/).slice(1);
             var v = vector(parseFloat(parts[0]), parseFloat(parts[1]), parseFloat(parts[2]));
             Data.v.push(v);
         }
         else if (line.startsWith('vn ')) {
+        
             var parts = line.split(/\s+/).slice(1);
             var vn = vector(parseFloat(parts[0]), parseFloat(parts[1]), parseFloat(parts[2]));
             Data.vn.push(vn);
         }
         else if (line.startsWith('f ')) {
+        
             // Face data - store for triangle creation
             Data.f.push(line);
         }

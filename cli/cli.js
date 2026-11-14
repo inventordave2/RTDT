@@ -4,6 +4,7 @@
 
 // Global variable: will be set by argument parsing
 var cliConfig = {
+
 	sceneName: 'scene1',
 	width: 500,
 	height: 281,
@@ -13,6 +14,7 @@ var cliConfig = {
 };
 
 function printHelp() {
+
 	console.log(`
 RTDT Ray Tracer - Command Line Interface
 
@@ -57,51 +59,65 @@ NOTES:
 }
 
 function parseArguments(argv) {
+
 	// argv[0] is 'node', argv[1] is 'cli-bootstrap.js'
 	for (let i = 2; i < argv.length; i++) {
+	
 		const arg = argv[i];
 		
 		if (arg === '--help' || arg === '-h') {
+		
 			printHelp();
 			process.exit(0);
 		}
 		else if (arg === '--scene' && i + 1 < argv.length) {
+		
 			cliConfig.sceneName = argv[++i];
 		}
 		else if (arg === '--width' && i + 1 < argv.length) {
+		
 			const w = parseInt(argv[++i], 10);
 			if (isNaN(w) || w < 1) {
+			
 				console.error('Error: width must be a positive integer');
 				process.exit(1);
 			}
 			cliConfig.width = w;
 		}
 		else if (arg === '--height' && i + 1 < argv.length) {
+		
 			const h = parseInt(argv[++i], 10);
 			if (isNaN(h) || h < 1) {
+			
 				console.error('Error: height must be a positive integer');
 				process.exit(1);
 			}
 			cliConfig.height = h;
 		}
 		else if (arg === '--output' && i + 1 < argv.length) {
+		
 			cliConfig.outputFile = argv[++i];
 		}
 		else if (arg === '--quality' && i + 1 < argv.length) {
+		
 			const q = parseInt(argv[++i], 10);
 			if (isNaN(q) || q < 1) {
+			
 				console.error('Error: quality must be a positive integer');
 				process.exit(1);
 			}
 			cliConfig.quality = q;
 		}
 		else if (arg === '--verbose' && i + 1 < argv.length) {
+		
 			cliConfig.verbose = argv[++i].toLowerCase() !== 'false';
 		}
 		else if (arg === '--no-verbose') {
+		
 			cliConfig.verbose = false;
 		}
 		else {
+		
 			console.error('Error: unknown option: ' + arg);
 			process.exit(1);
 		}
@@ -109,12 +125,15 @@ function parseArguments(argv) {
 }
 
 function getScene(sceneName) {
-	// scenes is defined by rt.examples.js
+
+	// scenes is defined by rtdt_examples.js
 	if (typeof scenes === 'undefined') {
+	
 		throw new Error('Scene data not loaded');
 	}
 	
 	if (typeof scenes[sceneName] !== 'function') {
+	
 		throw new Error('Scene not found: ' + sceneName + '. Available: ' + Object.keys(scenes).join(', '));
 	}
 	
@@ -122,7 +141,9 @@ function getScene(sceneName) {
 }
 
 function renderScene() {
+
 	try {
+	
 		log('Rendering scene: ' + cliConfig.sceneName);
 		log('Resolution: ' + cliConfig.width + 'x' + cliConfig.height);
 		log('Quality: ' + cliConfig.quality);
@@ -141,6 +162,7 @@ function renderScene() {
 		
 		// Data.o should now contain the scene
 		if (!Data.o || !Data.o.s) {
+		
 			throw new Error('Scene did not populate scene data');
 		}
 		
@@ -161,9 +183,11 @@ function renderScene() {
 		writePPMFile(cliConfig.outputFile, pixels);
 		
 	} catch (e) {
+	
 		console.error('Error during rendering:');
 		console.error('  ' + e.message);
 		if (e.stack) {
+		
 			console.error(e.stack);
 		}
 		process.exit(1);
@@ -171,17 +195,21 @@ function renderScene() {
 }
 
 function writePPMFile(filename, pixels) {
+
 	const fs = require('fs');
 	
 	if (!pixels || pixels.length === 0) {
+	
 		throw new Error('No pixels to write');
 	}
 	
 	if (pixels.length !== WIDTH * HEIGHT) {
+	
 		throw new Error('Pixel count mismatch: expected ' + (WIDTH * HEIGHT) + ', got ' + pixels.length);
 	}
 	
 	try {
+	
 		// PPM P3 format (plain text)
 		let ppmData = 'P3\n';
 		ppmData += WIDTH + ' ' + HEIGHT + '\n';
@@ -190,8 +218,10 @@ function writePPMFile(filename, pixels) {
 		// Write pixels
 		let pixelIndex = 0;
 		for (let y = 0; y < HEIGHT; y++) {
+		
 			let line = '';
 			for (let x = 0; x < WIDTH; x++) {
+			
 				const c = pixels[pixelIndex++];
 				const rgb = colorTo255(c);
 				
@@ -209,22 +239,28 @@ function writePPMFile(filename, pixels) {
 		log('✓ PPM file written: ' + filename + ' (' + sizeKB + ' KB)');
 		
 	} catch (e) {
+	
 		throw new Error('Failed to write PPM file: ' + e.message);
 	}
 }
 
 function log(message) {
+
 	if (cliConfig.verbose) {
+	
 		console.log(message);
 	}
 }
 
 function processCommandLine() {
+
 	try {
+	
 		parseArguments(process.argv);
 		renderScene();
 		process.exit(0);
 	} catch (e) {
+	
 		console.error('Fatal error: ' + e.message);
 		process.exit(1);
 	}

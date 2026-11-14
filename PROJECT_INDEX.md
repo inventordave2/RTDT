@@ -39,30 +39,30 @@ PHASE 1: BROWSER ARCHITECTURE
 ├── raytracer.js              ← Original (preserved as backup)
 
 PHASE 2: NODE.JS CLI
-└── phase2-cli/               ← NEW SUBFOLDER
+└── cli/               ← NEW SUBFOLDER
     ├── package.json          ← NPM metadata
     ├── cli-bootstrap.js      ← Entry point (2.1 KB)
     ├── cli.js                ← CLI logic (5.7 KB)
-    ├── rt.objfile-node.js    ← Node.js file I/O (4.4 KB)
+    ├── rtdt_objfile-node.js    ← Node.js file I/O (4.4 KB)
     ├── README.md             ← Full documentation (5.1 KB)
     └── QUICK_START.md        ← Quick reference (5.0 KB)
 
 CORE RAYTRACER (UNCHANGED)
-├── rt.p+e.js
-├── rt.pattern.js
-├── rt.math.js
-├── rt.matrix-transform.js
-├── rt.matrix.js
-├── rt.tests.js
-├── rt.world.js
-├── rt.shade.js
-├── rt.core.js
-├── rt.light.js
-├── rt.examples.js            ← Scene definitions
-├── rt.objfile.js             ← Browser file I/O
-├── rt.material.js
-├── rt.ray.js
-├── rt.graphics.js
+├── rtdt_p+e.js
+├── rtdt_pattern.js
+├── rtdt_math.js
+├── rtdt_matrix-transform.js
+├── rtdt_matrix.js
+├── rtdt_tests.js
+├── rtdt_world.js
+├── rtdt_shade.js
+├── rtdt_core.js
+├── rtdt_light.js
+├── rtdt_examples.js            ← Scene definitions
+├── rtdt_objfile.js             ← Browser file I/O
+├── rtdt_material.js
+├── rtdt_ray.js
+├── rtdt_graphics.js
 └── ... (other modules)
 ```
 
@@ -81,7 +81,7 @@ python3 -m http.server 8000
 
 ### Node.js CLI Version
 ```bash
-cd /workspaces/RTDT/phase2-cli
+cd /workspaces/RTDT/cli
 node cli-bootstrap.js --help
 node cli-bootstrap.js --scene scene1 --width 150 --height 84 --output test.ppm
 ```
@@ -90,13 +90,13 @@ node cli-bootstrap.js --scene scene1 --width 150 --height 84 --output test.ppm
 
 ### Getting Started
 1. **PHASE1_STATUS.md** - Overview of browser architecture
-2. **phase2-cli/QUICK_START.md** - Quick reference for CLI
+2. **cli/QUICK_START.md** - Quick reference for CLI
 3. **PROJECT_INDEX.md** - This file (you are here)
 
 ### Complete Reference
 1. **SEPARATION_COMPLETE.md** - Detailed Phase 1 documentation
 2. **PHASE2_STATUS.md** - Detailed Phase 2 documentation
-3. **phase2-cli/README.md** - Full CLI reference
+3. **cli/README.md** - Full CLI reference
 
 ### Planning & Architecture
 1. **refactoring-plan/CODE_REVIEW.md** - Code analysis
@@ -107,11 +107,11 @@ node cli-bootstrap.js --scene scene1 --width 150 --height 84 --output test.ppm
 ## 🏗️ Architecture Overview
 
 ### Layer 1: Core Raytracer Modules
-- `rt.math.js` - Mathematical operations
-- `rt.matrix.js` - Matrix operations
-- `rt.core.js` - Ray tracing core
-- `rt.shade.js` - Shading and lighting
-- `rt.examples.js` - Scene definitions
+- `rtdt_math.js` - Mathematical operations
+- `rtdt_matrix.js` - Matrix operations
+- `rtdt_core.js` - Ray tracing core
+- `rtdt_shade.js` - Shading and lighting
+- `rtdt_examples.js` - Scene definitions
 
 ### Layer 2: Shared Rendering Logic
 - **raytracer-core.js** (NEW)
@@ -137,17 +137,17 @@ node cli-bootstrap.js --scene scene1 --width 150 --height 84 --output test.ppm
   - Loads raytracer-core.js then raytracer-ui.js
 
 #### Node.js
-- **phase2-cli/cli-bootstrap.js** (NEW)
+- **cli/cli-bootstrap.js** (NEW)
   - Entry point for Node.js
   - Loads modules in dependency order
   - Sets up global scope for eval
 
-- **phase2-cli/cli.js** (NEW)
+- **cli/cli.js** (NEW)
   - Command-line argument parsing
   - Scene selection and rendering
   - PPM file output
 
-- **phase2-cli/rt.objfile-node.js** (NEW)
+- **cli/rtdt_objfile-node.js** (NEW)
   - Node.js file I/O (fs-based)
   - Replaces browser FileReader API
 
@@ -184,7 +184,7 @@ renderImage();       // Render to canvas
 
 ### CLI: Render to PPM File
 ```bash
-cd phase2-cli
+cd cli
 node cli-bootstrap.js --scene mySkyBox --width 500 --height 281 --output sky.ppm
 ```
 
@@ -244,18 +244,18 @@ PPM file written to disk
 - ✅ raytracer.html (updated script loading)
 
 ### Created (Phase 2)
-- ✅ phase2-cli/package.json
-- ✅ phase2-cli/cli-bootstrap.js
-- ✅ phase2-cli/cli.js
-- ✅ phase2-cli/rt.objfile-node.js
-- ✅ phase2-cli/README.md
-- ✅ phase2-cli/QUICK_START.md
+- ✅ cli/package.json
+- ✅ cli/cli-bootstrap.js
+- ✅ cli/cli.js
+- ✅ cli/rtdt_objfile-node.js
+- ✅ cli/README.md
+- ✅ cli/QUICK_START.md
 - ✅ PHASE2_STATUS.md
 
 ### Preserved
 - ✅ raytracer.js (original, not loaded by updated HTML)
-- ✅ All rt.*.js modules (unchanged)
-- ✅ All scene data in rt.examples.js
+- ✅ All rtdt_*.js modules (unchanged)
+- ✅ All scene data in rtdt_examples.js
 
 ## 🧪 Testing Checklist
 
@@ -320,7 +320,7 @@ open http://localhost:8000/raytracer.html
 
 ### CLI Development
 ```bash
-cd /workspaces/RTDT/phase2-cli
+cd /workspaces/RTDT/cli
 
 # Show help
 node cli-bootstrap.js --help
@@ -340,11 +340,11 @@ convert test.ppm test.png
 
 1. **Start Here**
    - Read: PHASE1_STATUS.md
-   - Read: phase2-cli/QUICK_START.md
+   - Read: cli/QUICK_START.md
 
 2. **Understand Architecture**
    - Read: SEPARATION_COMPLETE.md
-   - Read: phase2-cli/README.md
+   - Read: cli/README.md
 
 3. **Detailed Reference**
    - Read: refactoring-plan/CODE_REVIEW.md
@@ -353,7 +353,7 @@ convert test.ppm test.png
 4. **Hands-On**
    - Try browser version
    - Try CLI version
-   - Modify scenes in rt.examples.js
+   - Modify scenes in rtdt_examples.js
    - Create custom scenes
 
 ## 📞 Troubleshooting
@@ -386,10 +386,10 @@ convert test.ppm test.png
 | Component | Status | Location |
 |-----------|--------|----------|
 | Browser rendering | ✅ Working | /workspaces/RTDT/raytracer.html |
-| CLI rendering | ✅ Working | /workspaces/RTDT/phase2-cli/ |
+| CLI rendering | ✅ Working | /workspaces/RTDT/cli/ |
 | Shared logic | ✅ Complete | raytracer-core.js |
 | Documentation | ✅ Complete | Multiple .md files |
-| Examples | ✅ Available | rt.examples.js |
+| Examples | ✅ Available | rtdt_examples.js |
 
 ---
 

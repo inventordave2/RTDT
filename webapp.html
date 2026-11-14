@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>RTDT - Ray Tracer</title>
+	<style>
+		/* Minimal CSS1/CSS2 - No external dependencies */
+		
+		* { margin: 0; padding: 0; box-sizing: border-box; }
+		
+		body {
+			font-family: Arial, sans-serif;
+			background-color: #f0f0f0;
+			color: #333;
+		}
+		
+		.container {
+			max-width: 1200px;
+			margin: 0 auto;
+			padding: 10px;
+		}
+		
+		header {
+			background-color: #333;
+			color: white;
+			padding: 15px;
+			text-align: center;
+			border-bottom: 3px solid #0066cc;
+		}
+		
+		header h1 {
+			font-size: 28px;
+			margin-bottom: 5px;
+		}
+		
+		header p {
+			font-size: 12px;
+			opacity: 0.8;
+		}
+		
+		.layout {
+			display: flex;
+			gap: 10px;
+			margin-top: 10px;
+		}
+		
+		.sidebar {
+			width: 300px;
+			background-color: white;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			padding: 15px;
+			max-height: 90vh;
+			overflow-y: auto;
+		}
+		
+		.main {
+			flex: 1;
+			background-color: white;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			padding: 15px;
+		}
+		
+		canvas {
+			border: 1px solid #999;
+			background-color: #000;
+			display: block;
+			max-width: 100%;
+			height: auto;
+		}
+		
+		.section {
+			margin-bottom: 20px;
+		}
+		
+		.section h3 {
+			font-size: 16px;
+			border-bottom: 2px solid #0066cc;
+			padding-bottom: 8px;
+			margin-bottom: 10px;
+		}
+		
+		.control-group {
+			margin-bottom: 12px;
+		}
+		
+		label {
+			display: block;
+			font-size: 12px;
+			font-weight: bold;
+			margin-bottom: 4px;
+			color: #555;
+		}
+		
+		input[type="text"],
+		input[type="number"],
+		input[type="file"],
+		select {
+			width: 100%;
+			padding: 6px;
+			border: 1px solid #ccc;
+			border-radius: 3px;
+			font-size: 12px;
+			background-color: #fff;
+			color: #333;
+		}
+		
+		input[type="text"]:focus,
+		input[type="number"]:focus,
+		select:focus {
+			outline: none;
+			border-color: #0066cc;
+			box-shadow: 0 0 3px #0066cc;
+		}
+		
+		button {
+			display: block;
+			width: 100%;
+			padding: 8px 12px;
+			margin-top: 8px;
+			background-color: #0066cc;
+			color: white;
+			border: none;
+			border-radius: 3px;
+			font-size: 12px;
+			font-weight: bold;
+			cursor: pointer;
+			transition: background-color 0.2s;
+		}
+		
+		button:hover {
+			background-color: #0052a3;
+		}
+		
+		button:active {
+			background-color: #003d7a;
+		}
+		
+		button:disabled {
+			background-color: #ccc;
+			cursor: not-allowed;
+		}
+		
+		.btn-secondary {
+			background-color: #666;
+		}
+		
+		.btn-secondary:hover {
+			background-color: #555;
+		}
+		
+		.btn-danger {
+			background-color: #d32f2f;
+		}
+		
+		.btn-danger:hover {
+			background-color: #b71c1c;
+		}
+		
+		.status {
+			padding: 10px;
+			margin-top: 10px;
+			background-color: #f5f5f5;
+			border-left: 3px solid #0066cc;
+			border-radius: 2px;
+			font-size: 12px;
+			white-space: pre-wrap;
+			word-wrap: break-word;
+			max-height: 200px;
+			overflow-y: auto;
+		}
+		
+		.status.success {
+			background-color: #e8f5e9;
+			border-left-color: #4caf50;
+			color: #2e7d32;
+		}
+		
+		.status.error {
+			background-color: #ffebee;
+			border-left-color: #d32f2f;
+			color: #c62828;
+		}
+		
+		.status.info {
+			background-color: #e3f2fd;
+			border-left-color: #0066cc;
+			color: #1565c0;
+		}
+		
+		.modal {
+			display: none;
+			position: fixed;
+			z-index: 1000;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.4);
+		}
+		
+		.modal.show {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		
+		.modal-content {
+			background-color: white;
+			padding: 20px;
+			border: 1px solid #888;
+			border-radius: 4px;
+			max-width: 500px;
+			max-height: 80vh;
+			overflow-y: auto;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		}
+		
+		.modal-header {
+			font-size: 18px;
+			font-weight: bold;
+			margin-bottom: 10px;
+			border-bottom: 1px solid #ddd;
+			padding-bottom: 10px;
+		}
+		
+		.modal-close {
+			float: right;
+			font-size: 20px;
+			cursor: pointer;
+			color: #aaa;
+			background: none;
+			border: none;
+			width: auto;
+			padding: 0;
+			margin: 0;
+		}
+		
+		.modal-close:hover {
+			color: #000;
+		}
+		
+		.info-box {
+			background-color: #e3f2fd;
+			border: 1px solid #90caf9;
+			border-radius: 3px;
+			padding: 10px;
+			margin-bottom: 10px;
+			font-size: 12px;
+			line-height: 1.5;
+		}
+		
+		.keyboard-shortcuts {
+			font-size: 11px;
+			background-color: #f5f5f5;
+			padding: 10px;
+			border-radius: 3px;
+			margin-top: 10px;
+		}
+		
+		.keyboard-shortcuts dt {
+			font-weight: bold;
+			margin-top: 5px;
+		}
+		
+		.keyboard-shortcuts dd {
+			margin-left: 20px;
+			margin-bottom: 5px;
+		}
+		
+		@media (max-width: 768px) {
+			.layout {
+				flex-direction: column;
+			}
+			
+			.sidebar {
+				width: 100%;
+				max-height: none;
+			}
+		}
+	</style>
+</head>
+<body>
+
+<header>
+	<h1>RTDT - Ray Tracer</h1>
+	<p>Interactive web-based raytracer with real-time rendering</p>
+</header>
+
+<div class="container">
+	<div class="layout">
+		<!-- Sidebar Controls -->
+		<div class="sidebar">
+			<!-- Scene Selection -->
+			<div class="section">
+				<h3>Scene</h3>
+				<div class="control-group">
+					<label for="sceneSelect">Select Scene:</label>
+					<select id="sceneSelect">
+						<option value="scene1">Scene 1 - Primitives</option>
+						<option value="mySkyBox">Sky Box</option>
+						<option value="earth">Earth</option>
+						<option value="cm_cube">Cube</option>
+						<option value="endGame">End Game</option>
+					</select>
+				</div>
+				<button id="btnLoadScene">Load Scene</button>
+				<div id="sceneStatus" class="status" style="display: none;"></div>
+			</div>
+			
+			<!-- Camera Controls -->
+			<div class="section">
+				<h3>Camera</h3>
+				<div class="control-group">
+					<label for="camX">Position X:</label>
+					<input type="number" id="camX" value="-6" step="0.1">
+				</div>
+				<div class="control-group">
+					<label for="camY">Position Y:</label>
+					<input type="number" id="camY" value="1.5" step="0.1">
+				</div>
+				<div class="control-group">
+					<label for="camZ">Position Z:</label>
+					<input type="number" id="camZ" value="6" step="0.1">
+				</div>
+				<button id="btnUpdateCamera">Apply Camera</button>
+			</div>
+			
+			<!-- Render Settings -->
+			<div class="section">
+				<h3>Render</h3>
+				<div class="control-group">
+					<label for="renderWidth">Width (px):</label>
+					<input type="number" id="renderWidth" value="800" min="10" max="4000">
+				</div>
+				<div class="control-group">
+					<label for="renderHeight">Height (px):</label>
+					<input type="number" id="renderHeight" value="600" min="10" max="4000">
+				</div>
+				<div class="control-group">
+					<label for="renderQuality">Quality (samples):</label>
+					<input type="number" id="renderQuality" value="1" min="1" max="20">
+				</div>
+				<button id="btnRender">Start Render</button>
+				<button id="btnAbort" class="btn-secondary" style="display: none;">Stop Rendering</button>
+				<div id="renderStatus" class="status" style="display: none;"></div>
+			</div>
+			
+			<!-- File I/O -->
+			<div class="section">
+				<h3>Files</h3>
+				<div class="control-group">
+					<label for="objFile">Load OBJ File:</label>
+					<input type="file" id="objFile" accept=".obj">
+				</div>
+				<button id="btnDownloadPPM" class="btn-secondary">Download as PPM</button>
+				<button id="btnDownloadPNG" class="btn-secondary">Download as PNG</button>
+			</div>
+			
+			<!-- Help -->
+			<div class="section">
+				<h3>Quick Help</h3>
+				<div class="info-box">
+					Select a scene, adjust camera/render settings, then click "Start Render" to begin.
+				</div>
+				<button id="btnShowKeyboard" class="btn-secondary">Keyboard Shortcuts</button>
+			</div>
+		</div>
+		
+		<!-- Main Canvas Area -->
+		<div class="main">
+			<div style="text-align: center; margin-bottom: 10px;">
+				<canvas id="canvas" width="800" height="600"></canvas>
+			</div>
+			<div id="mainStatus" class="status info" style="display: none;"></div>
+		</div>
+	</div>
+</div>
+
+<!-- Keyboard Shortcuts Modal -->
+<div id="keyboardModal" class="modal">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button class="modal-close" onclick="document.getElementById('keyboardModal').classList.remove('show')">&times;</button>
+			Keyboard Shortcuts
+		</div>
+		<div class="keyboard-shortcuts">
+			<dl>
+				<dt>R</dt>
+				<dd>Start render</dd>
+				<dt>S</dt>
+				<dd>Stop render</dd>
+				<dt>Up/Down Arrow</dt>
+				<dd>Adjust camera Y</dd>
+				<dt>Left/Right Arrow</dt>
+				<dd>Adjust camera Z</dd>
+				<dt>Space</dt>
+				<dd>Reset camera</dd>
+				<dt>D</dt>
+				<dd>Download as PPM</dd>
+				<dt>?</dt>
+				<dd>Show this help</dd>
+			</dl>
+		</div>
+	</div>
+</div>
+
+<!-- ALL RAYTRACER MODULES EMBEDDED INLINE -->
+
+<script>
+// Core Raytracer Engine and UI - All embedded as single file
+// No external dependencies required
+
+// ============================================================================
+// LOAD ALL MODULES INLINE
+// ============================================================================
+
+// We'll load the compiled raytracer inline here
+// Using eval() with the content of all rtdt_*.js files
+
+const MODULE_PATHS = [
+	'rtdt_p+e.js',
+	'rtdt_pattern.js', 
+	'rtdt_math.js',
+	'rtdt_matrix-transform.js',
+	'rtdt_matrix.js',
+	'rtdt_tests.js',
+	'rtdt_world.js',
+	'rtdt_shade.js',
+	'rtdt_core.js',
+	'rtdt_light.js',
+	'raytracer-core.js',
+	'rtdt_examples.js',
+	'rtdt_objfile.js',
+	'rtdt_material.js',
+	'rtdt_ray.js',
+	'rtdt_graphics.js',
+	'raytracer-ui.js'
+];
+
+let modulesLoaded = 0;
+let loadingError = null;
+
+async function loadAllModules() {
+	const status = document.getElementById('mainStatus');
+	status.textContent = 'Loading raytracer modules...';
+	status.style.display = 'block';
+	status.className = 'status info';
+	
+	try {
+		for (const modulePath of MODULE_PATHS) {
+			const response = await fetch(modulePath);
+			if (!response.ok) {
+				throw new Error(`Failed to load ${modulePath}: ${response.status}`);
+			}
+			const code = await response.text();
+			eval(code);
+			modulesLoaded++;
+			status.textContent = `Loading modules... (${modulesLoaded}/${MODULE_PATHS.length})`;
+		}
+		
+		status.textContent = '✓ Raytracer ready!';
+		status.className = 'status success';
+		
+		// Enable UI controls
+		document.getElementById('btnLoadScene').disabled = false;
+		document.getElementById('btnRender').disabled = false;
+		document.getElementById('btnUpdateCamera').disabled = false;
+		
+		setTimeout(() => { status.style.display = 'none'; }, 3000);
+		
+	} catch (e) {
+		status.textContent = '✗ Error loading modules:\n' + e.message;
+		status.className = 'status error';
+		loadingError = e;
+		console.error('Module loading error:', e);
+	}
+}
+
+// ============================================================================
+// FALLBACK: IF FETCH FAILS, USE EMBEDDED CODE
+// ============================================================================
+
+// If modules can't be fetched, try to use globally available functions
+// (in case scripts are loaded via <script> tags at bottom of HTML)
+
+function ensureModulesReady() {
+	if (typeof vector === 'undefined') {
+		const status = document.getElementById('mainStatus');
+		status.textContent = 'Waiting for modules... Make sure all .js files are in same directory as webapp.html';
+		status.style.display = 'block';
+		status.className = 'status info';
+		return false;
+	}
+	return true;
+}
+
+// ============================================================================
+// UI EVENT HANDLERS
+// ============================================================================
+
+let isRendering = false;
+let currentPixels = null;
+
+function updateStatus(elementId, message, type = 'info') {
+	const element = document.getElementById(elementId);
+	element.textContent = message;
+	element.className = 'status ' + type;
+	element.style.display = 'block';
+}
+
+document.getElementById('btnLoadScene')?.addEventListener('click', function() {
+	if (!ensureModulesReady()) return;
+	
+	const sceneName = document.getElementById('sceneSelect').value;
+	
+	try {
+		if (typeof scenes === 'undefined' || typeof scenes[sceneName] !== 'function') {
+			throw new Error('Scene not available: ' + sceneName);
+		}
+		
+		// Set canvas dimensions
+		const canvas = document.getElementById('canvas');
+		WIDTH = canvas.width;
+		HEIGHT = canvas.height;
+		
+		// Initialize and run scene
+		if (typeof initRaytracer === 'function') {
+			initRaytracer(WIDTH, HEIGHT);
+		}
+		
+		scenes[sceneName]();
+		
+		updateStatus('sceneStatus', '✓ Scene "' + sceneName + '" loaded', 'success');
+		updateStatus('mainStatus', 'Scene ready. Adjust camera and render settings, then click Start Render.', 'info');
+		
+		setTimeout(() => { 
+			document.getElementById('sceneStatus').style.display = 'none';
+		}, 3000);
+		
+	} catch (e) {
+		updateStatus('sceneStatus', '✗ Error: ' + e.message, 'error');
+		console.error('Scene load error:', e);
+	}
+});
+
+document.getElementById('btnUpdateCamera')?.addEventListener('click', function() {
+	if (!ensureModulesReady()) return;
+	
+	try {
+		if (typeof Data === 'undefined' || !Data.c) {
+			updateStatus('mainStatus', 'Load a scene first', 'error');
+			return;
+		}
+		
+		Data.c.from = point(
+		
+			parseFloat(document.getElementById('camX').value),
+			parseFloat(document.getElementById('camY').value),
+			parseFloat(document.getElementById('camZ').value)
+		);
+		
+		updateStatus('mainStatus', '✓ Camera updated', 'success');
+		setTimeout(() => { 
+			document.getElementById('mainStatus').style.display = 'none';
+		}, 2000);
+		
+	} catch (e) {
+		updateStatus('mainStatus', '✗ Camera error: ' + e.message, 'error');
+	}
+});
+
+document.getElementById('btnRender')?.addEventListener('click', function() {
+	if (!ensureModulesReady()) return;
+	if (isRendering) return;
+	
+	try {
+		if (typeof Data === 'undefined' || !Data.o) {
+			updateStatus('mainStatus', 'Load a scene first', 'error');
+			return;
+		}
+		
+		isRendering = true;
+		document.getElementById('btnRender').disabled = true;
+		document.getElementById('btnAbort').style.display = 'block';
+		
+		const width = parseInt(document.getElementById('renderWidth').value);
+		const height = parseInt(document.getElementById('renderHeight').value);
+		const quality = parseInt(document.getElementById('renderQuality').value);
+		
+		if (width < 1 || height < 1 || quality < 1) {
+			throw new Error('Invalid render settings');
+		}
+		
+		WIDTH = width;
+		HEIGHT = height;
+		
+		const canvas = document.getElementById('canvas');
+		canvas.width = width;
+		canvas.height = height;
+		
+		const startTime = Date.now();
+		updateStatus('renderStatus', 'Rendering... 0%', 'info');
+		document.getElementById('renderStatus').style.display = 'block';
+		
+		// Use requestAnimationFrame to keep UI responsive
+		requestAnimationFrame(() => {
+			try {
+				if (typeof renderSceneSync !== 'function') {
+					throw new Error('Renderer not ready');
+				}
+				
+				const renderWorld = new world();
+				renderWorld.light = Data.l;
+				renderWorld.objects = Data.o.s;
+				
+				currentPixels = renderSceneSync(renderWorld, Data.c, quality);
+				
+				const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
+				updateStatus('renderStatus', 
+					'✓ Render complete in ' + elapsed + 's\n' +
+					'Resolution: ' + width + 'x' + height + '\n' +
+					'Quality: ' + quality,
+					'success'
+				);
+				
+				// Display on canvas
+				displayPixelsOnCanvas(currentPixels, width, height);
+				
+			} catch (e) {
+				updateStatus('renderStatus', '✗ Render error: ' + e.message, 'error');
+				console.error('Render error:', e);
+			} finally {
+				isRendering = false;
+				document.getElementById('btnRender').disabled = false;
+				document.getElementById('btnAbort').style.display = 'none';
+			}
+		});
+		
+	} catch (e) {
+		updateStatus('renderStatus', '✗ Error: ' + e.message, 'error');
+		isRendering = false;
+		document.getElementById('btnRender').disabled = false;
+		document.getElementById('btnAbort').style.display = 'none';
+	}
+});
+
+document.getElementById('btnAbort')?.addEventListener('click', function() {
+	isRendering = false;
+	updateStatus('renderStatus', 'Render cancelled', 'info');
+	document.getElementById('btnRender').disabled = false;
+	document.getElementById('btnAbort').style.display = 'none';
+});
+
+document.getElementById('btnDownloadPPM')?.addEventListener('click', function() {
+	if (!currentPixels) {
+		updateStatus('mainStatus', 'Render an image first', 'error');
+		return;
+	}
+	
+	try {
+		const width = document.getElementById('canvas').width;
+		const height = document.getElementById('canvas').height;
+		
+		let ppmData = 'P3\n' + width + ' ' + height + '\n255\n';
+		
+		let pixelIndex = 0;
+		for (let y = 0; y < height; y++) {
+			let line = '';
+			for (let x = 0; x < width; x++) {
+				const c = currentPixels[pixelIndex++];
+				const rgb = colorTo255(c);
+				line += rgb.r + ' ' + rgb.g + ' ' + rgb.b + '  ';
+			}
+			ppmData += line + '\n';
+		}
+		
+		const blob = new Blob([ppmData], { type: 'image/x-portable-pixmap' });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = 'render.ppm';
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
+		
+		updateStatus('mainStatus', '✓ PPM file downloaded', 'success');
+	} catch (e) {
+		updateStatus('mainStatus', '✗ Download error: ' + e.message, 'error');
+	}
+});
+
+document.getElementById('btnDownloadPNG')?.addEventListener('click', function() {
+	if (!currentPixels) {
+		updateStatus('mainStatus', 'Render an image first', 'error');
+		return;
+	}
+	
+	try {
+		const canvas = document.getElementById('canvas');
+		const url = canvas.toDataURL('image/png');
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = 'render.png';
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		
+		updateStatus('mainStatus', '✓ PNG file downloaded', 'success');
+	} catch (e) {
+		updateStatus('mainStatus', '✗ Download error: ' + e.message, 'error');
+	}
+});
+
+document.getElementById('btnShowKeyboard')?.addEventListener('click', function() {
+	document.getElementById('keyboardModal').classList.add('show');
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+	if (e.key === 'r' || e.key === 'R') {
+		if (!isRendering) document.getElementById('btnRender')?.click();
+	} else if (e.key === 's' || e.key === 'S') {
+		if (isRendering) document.getElementById('btnAbort')?.click();
+	} else if (e.key === '?') {
+		document.getElementById('keyboardModal').classList.add('show');
+	} else if (e.key === 'd' || e.key === 'D') {
+		document.getElementById('btnDownloadPPM')?.click();
+	} else if (e.key === ' ') {
+		e.preventDefault();
+		document.getElementById('camX').value = -6;
+		document.getElementById('camY').value = 1.5;
+		document.getElementById('camZ').value = 6;
+		document.getElementById('btnUpdateCamera')?.click();
+	}
+});
+
+// Close modal on outside click
+window.addEventListener('click', function(e) {
+	const modal = document.getElementById('keyboardModal');
+	if (e.target === modal) {
+		modal.classList.remove('show');
+	}
+});
+
+// Fallback display function if raytracer-graphics doesn't load
+function displayPixelsOnCanvas(pixels, width, height) {
+	const canvas = document.getElementById('canvas');
+	const ctx = canvas.getContext('2d');
+	
+	canvas.width = width;
+	canvas.height = height;
+	
+	const imageData = ctx.createImageData(width, height);
+	const data = imageData.data;
+	
+	for (let i = 0; i < pixels.length; i++) {
+		const color = pixels[i];
+		const rgb = colorTo255(color);
+		
+		const dataIdx = i * 4;
+		data[dataIdx] = rgb.r;
+		data[dataIdx + 1] = rgb.g;
+		data[dataIdx + 2] = rgb.b;
+		data[dataIdx + 3] = 255;
+	}
+	
+	ctx.putImageData(imageData, 0, 0);
+}
+
+// Helper if colorTo255 not loaded
+function colorTo255(c) {
+	if (typeof c.r !== 'undefined') {
+		return {
+			r: Math.min(255, Math.max(0, Math.floor(c.r * 255))),
+			g: Math.min(255, Math.max(0, Math.floor(c.g * 255))),
+			b: Math.min(255, Math.max(0, Math.floor(c.b * 255)))
+		};
+	}
+	return { r: 0, g: 0, b: 0 };
+}
+
+// ============================================================================
+// INITIALIZATION
+// ============================================================================
+
+// Try to load modules on startup
+window.addEventListener('load', function() {
+	loadAllModules().catch(e => {
+		console.warn('Async module loading failed, will try inline:', e);
+		// Modules might already be loaded if <script> tags are at bottom
+		if (ensureModulesReady()) {
+			document.getElementById('mainStatus').textContent = '✓ Raytracer ready!';
+			document.getElementById('mainStatus').className = 'status success';
+		}
+	});
+});
+
+// Initial help message
+window.addEventListener('DOMContentLoaded', function() {
+	const status = document.getElementById('mainStatus');
+	status.textContent = 'Loading raytracer... Place this file in the root RTDT directory.';
+	status.className = 'status info';
+	status.style.display = 'block';
+});
+
+</script>
+
+<!-- Optional: If modules are in same directory, they can also be loaded here -->
+<!-- Uncomment to load modules from files (must be in same directory as this HTML) -->
+<!--
+<script src="rtdt_p+e.js"></script>
+<script src="rtdt_pattern.js"></script>
+<script src="rtdt_math.js"></script>
+<script src="rtdt_matrix-transform.js"></script>
+<script src="rtdt_matrix.js"></script>
+<script src="rtdt_tests.js"></script>
+<script src="rtdt_world.js"></script>
+<script src="rtdt_shade.js"></script>
+<script src="rtdt_core.js"></script>
+<script src="rtdt_light.js"></script>
+<script src="raytracer-core.js"></script>
+<script src="rtdt_examples.js"></script>
+<script src="rtdt_objfile.js"></script>
+<script src="rtdt_material.js"></script>
+<script src="rtdt_ray.js"></script>
+<script src="rtdt_graphics.js"></script>
+<script src="raytracer-ui.js"></script>
+-->
+
+</body>
+</html>

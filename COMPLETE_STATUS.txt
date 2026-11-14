@@ -12,12 +12,12 @@ Phase 1: JavaScript Separation (Browser Architecture)
   
 Phase 2: Node.js CLI Implementation  
   Status: ✅ COMPLETE
-  - phase2-cli/cli-bootstrap.js (2.1 KB) - Entry point
-  - phase2-cli/cli.js (5.7 KB) - CLI argument parsing
-  - phase2-cli/rt.objfile-node.js (4.4 KB) - Node.js file I/O
-  - phase2-cli/package.json - NPM metadata
-  - phase2-cli/README.md (5.1 KB) - Full documentation
-  - phase2-cli/QUICK_START.md (5.0 KB) - Quick reference
+  - cli/cli-bootstrap.js (2.1 KB) - Entry point
+  - cli/cli.js (5.7 KB) - CLI argument parsing
+  - cli/rtdt_objfile-node.js (4.4 KB) - Node.js file I/O
+  - cli/package.json - NPM metadata
+  - cli/README.md (5.1 KB) - Full documentation
+  - cli/QUICK_START.md (5.0 KB) - Quick reference
 
 Documentation Created:
   - PROJECT_INDEX.md - Complete overview (this session)
@@ -38,13 +38,13 @@ UNIVERSAL JAVASCRIPT DESIGN
   ✅ Platform-specific code isolated
 
 LOAD ORDER (Critical)
-  1. Math/matrix foundations (rt.p+e through rt.matrix)
-  2. Core rendering (rt.tests, rt.world, rt.shade, rt.core, rt.light)
+  1. Math/matrix foundations (rtdt_p+e through rtdt_matrix)
+  2. Core rendering (rtdt_tests, rtdt_world, rtdt_shade, rtdt_core, rtdt_light)
   3. Shared logic (raytracer-core.js)
-  4. Utilities (rt.examples, rt.material, rt.ray)
+  4. Utilities (rtdt_examples, rtdt_material, rtdt_ray)
   5. Platform-specific:
      - Browser: raytracer-ui.js
-     - CLI: rt.objfile-node.js, cli.js
+     - CLI: rtdt_objfile-node.js, cli.js
 
 ================================================================================
 QUICK START
@@ -58,7 +58,7 @@ BROWSER VERSION:
   # Then open http://localhost:8000/raytracer.html
 
 CLI VERSION:
-  cd /workspaces/RTDT/phase2-cli
+  cd /workspaces/RTDT/cli
   node cli-bootstrap.js --help
   node cli-bootstrap.js --scene scene1 --width 150 --height 84 --output test.ppm
 
@@ -74,22 +74,22 @@ Browser:
   └─ raytracer.html          Updated script loading
 
 CLI:
-  └─ phase2-cli/cli-bootstrap.js      (2.1 KB) Entry point
-  └─ phase2-cli/cli.js                (5.7 KB) CLI logic
-  └─ phase2-cli/rt.objfile-node.js    (4.4 KB) File I/O
-  └─ phase2-cli/package.json          NPM metadata
+  └─ cli/cli-bootstrap.js      (2.1 KB) Entry point
+  └─ cli/cli.js                (5.7 KB) CLI logic
+  └─ cli/rtdt_objfile-node.js    (4.4 KB) File I/O
+  └─ cli/package.json          NPM metadata
 
 DOCUMENTATION FILES (For Reference)
 
 Getting Started:
   └─ PROJECT_INDEX.md         Complete overview
   └─ PHASE1_STATUS.md         Browser architecture
-  └─ phase2-cli/QUICK_START.md   CLI quick reference
+  └─ cli/QUICK_START.md   CLI quick reference
 
 Detailed Reference:
   └─ SEPARATION_COMPLETE.md   Phase 1 architecture
   └─ PHASE2_STATUS.md         Phase 2 architecture
-  └─ phase2-cli/README.md     Full CLI reference
+  └─ cli/README.md     Full CLI reference
 
 Planning & Analysis:
   └─ refactoring-plan/CODE_REVIEW.md
@@ -143,7 +143,7 @@ DESIGN DECISIONS
 
 3. SEPARATE Platform Code
    WHY: Clean separation of concerns, easier maintenance
-   HOW: raytracer-ui.js (browser) vs rt.objfile-node.js + cli.js (Node.js)
+   HOW: raytracer-ui.js (browser) vs rtdt_objfile-node.js + cli.js (Node.js)
 
 4. NO BUILD TOOLS
    WHY: Maximum portability, zero configuration, trivial deployment
@@ -210,11 +210,11 @@ PROJECT STRUCTURE
 ├── raytracer.html                ← Browser entry point (MODIFIED)
 ├── raytracer.js                  ← Original (backup)
 │
-├── phase2-cli/                   ← Node.js CLI (NEW SUBFOLDER)
+├── cli/                   ← Node.js CLI (NEW SUBFOLDER)
 │   ├── package.json
 │   ├── cli-bootstrap.js
 │   ├── cli.js
-│   ├── rt.objfile-node.js
+│   ├── rtdt_objfile-node.js
 │   ├── README.md
 │   └── QUICK_START.md
 │
@@ -225,22 +225,22 @@ PROJECT STRUCTURE
 │   ├── UNIVERSAL_JS_ARCHITECTURE.md
 │   └── ... (11 more reference docs)
 │
-└── rt.*.js                       ← Core modules (UNCHANGED)
-    ├── rt.p+e.js
-    ├── rt.pattern.js
-    ├── rt.math.js
-    ├── rt.matrix-transform.js
-    ├── rt.matrix.js
-    ├── rt.tests.js
-    ├── rt.world.js
-    ├── rt.shade.js
-    ├── rt.core.js
-    ├── rt.light.js
-    ├── rt.examples.js
-    ├── rt.objfile.js
-    ├── rt.material.js
-    ├── rt.ray.js
-    └── rt.graphics.js
+└── rtdt_*.js                       ← Core modules (UNCHANGED)
+    ├── rtdt_p+e.js
+    ├── rtdt_pattern.js
+    ├── rtdt_math.js
+    ├── rtdt_matrix-transform.js
+    ├── rtdt_matrix.js
+    ├── rtdt_tests.js
+    ├── rtdt_world.js
+    ├── rtdt_shade.js
+    ├── rtdt_core.js
+    ├── rtdt_light.js
+    ├── rtdt_examples.js
+    ├── rtdt_objfile.js
+    ├── rtdt_material.js
+    ├── rtdt_ray.js
+    └── rtdt_graphics.js
 
 ================================================================================
 NEXT STEPS FOR USER
@@ -253,7 +253,7 @@ IMMEDIATE (Test What's Built):
      - Verify output looks correct
 
   2. Test CLI version
-     - cd /workspaces/RTDT/phase2-cli
+     - cd /workspaces/RTDT/cli
      - Run: node cli-bootstrap.js --help
      - Run: node cli-bootstrap.js --scene scene1 --width 50 --height 28 --output test.ppm
      - Verify test.ppm is created
@@ -276,7 +276,7 @@ SUPPORT INFORMATION
 
 For questions about:
   - Browser version → See SEPARATION_COMPLETE.md
-  - CLI version → See phase2-cli/README.md and QUICK_START.md
+  - CLI version → See cli/README.md and QUICK_START.md
   - Architecture → See refactoring-plan/ARCHITECTURE_DIAGRAM.txt
   - Code review → See refactoring-plan/CODE_REVIEW.md
   - Implementation details → See PHASE1_STATUS.md and PHASE2_STATUS.md
@@ -294,12 +294,12 @@ VERIFICATION CHECKLIST
 Files Created:
   ✅ raytracer-core.js
   ✅ raytracer-ui.js
-  ✅ phase2-cli/cli-bootstrap.js
-  ✅ phase2-cli/cli.js
-  ✅ phase2-cli/rt.objfile-node.js
-  ✅ phase2-cli/package.json
-  ✅ phase2-cli/README.md
-  ✅ phase2-cli/QUICK_START.md
+  ✅ cli/cli-bootstrap.js
+  ✅ cli/cli.js
+  ✅ cli/rtdt_objfile-node.js
+  ✅ cli/package.json
+  ✅ cli/README.md
+  ✅ cli/QUICK_START.md
   ✅ Documentation files (PROJECT_INDEX.md, PHASE1_STATUS.md, PHASE2_STATUS.md)
 
 Files Modified:
@@ -307,8 +307,8 @@ Files Modified:
 
 Files Preserved:
   ✅ raytracer.js (original backup)
-  ✅ All rt.*.js modules (unchanged)
-  ✅ All scene definitions (in rt.examples.js)
+  ✅ All rtdt_*.js modules (unchanged)
+  ✅ All scene definitions (in rtdt_examples.js)
 
 Ready to Use:
   ✅ Browser version (open raytracer.html)

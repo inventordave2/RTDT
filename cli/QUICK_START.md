@@ -4,25 +4,25 @@
 
 ```
 /workspaces/RTDT/
-├── phase2-cli/                    ← NEW: Node.js CLI implementation
+├── cli/                    ← NEW: Node.js CLI implementation
 │   ├── package.json               ← NPM metadata
 │   ├── cli-bootstrap.js           ← Entry point (executable)
 │   ├── cli.js                     ← CLI logic
-│   ├── rt.objfile-node.js         ← Node.js file I/O
+│   ├── rtdt_objfile-node.js         ← Node.js file I/O
 │   └── README.md                  ← Full documentation
 │
 ├── raytracer-core.js              ← Shared rendering logic (from Phase 1)
 ├── raytracer-ui.js                ← Browser UI (from Phase 1)
 ├── raytracer.html                 ← Browser entry point
-├── rt.*.js                        ← Core raytracer modules
+├── rtdt_*.js                        ← Core raytracer modules
 └── ...
 ```
 
 ## Test It Now
 
 ```bash
-# Navigate to phase2-cli
-cd /workspaces/RTDT/phase2-cli
+# Navigate to cli
+cd /workspaces/RTDT/cli
 
 # Try the help
 node cli-bootstrap.js --help
@@ -68,7 +68,7 @@ node cli-bootstrap.js --scene scene1 --no-verbose --output silent.ppm
 
 ## Available Scenes
 
-From `rt.examples.js`:
+From `rtdt_examples.js`:
 - `scene1` - Default scene (multiple objects)
 - `mySkyBox` - Sky box scene
 - `earth` - Textured earth
@@ -104,7 +104,7 @@ Canvas display                   PPM file
 | `parseArguments()` | cli.js | Parse command line |
 | `renderScene()` | cli.js | Orchestrate rendering |
 | `writePPMFile()` | cli.js | Write output file |
-| `loadOBJFile()` | rt.objfile-node.js | Load OBJ models |
+| `loadOBJFile()` | rtdt_objfile-node.js | Load OBJ models |
 
 ## Typical Performance
 
@@ -166,7 +166,7 @@ node cli-bootstrap.js --scene scene1 2>&1 | head -50
 ## Next Steps
 
 1. **Test renders** at various resolutions
-2. **Tweak scenes** - modify rt.examples.js
+2. **Tweak scenes** - modify rtdt_examples.js
 3. **Add new scenes** - create custom scene functions
 4. **Phase 3** - Add animation support, progress bar, etc.
 
@@ -179,6 +179,6 @@ See `README.md` in this folder for complete details.
 **Go render something!** 🚀
 
 ```bash
-cd /workspaces/RTDT/phase2-cli
+cd /workspaces/RTDT/cli
 node cli-bootstrap.js --scene scene1 --width 150 --height 84 --output my-render.ppm
 ```

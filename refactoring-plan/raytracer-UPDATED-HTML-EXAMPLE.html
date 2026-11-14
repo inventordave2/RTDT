@@ -15,18 +15,21 @@ to work with our new modular structure
   <style>
     /* (keep existing styles) */
     body {
+    
       font-family: 'Fredoka One', cursive;
       background-color: #222;
       color: #fff;
     }
     
     .container {
+    
       max-width: 1200px;
       margin: 0 auto;
       padding: 20px;
     }
     
     canvas {
+    
       border: 2px solid #999;
       background-color: #2222cc;
       display: block;
@@ -34,6 +37,7 @@ to work with our new modular structure
     }
     
     button {
+    
       background-color: #4CAF50;
       border: 1px solid #387a38;
       color: white;
@@ -47,23 +51,28 @@ to work with our new modular structure
     }
     
     button:hover {
+    
       background-color: #39843b;
     }
     
     button.button-camera {
+    
       background-color: #008CBA;
     }
     
     button.button-lights {
+    
       background-color: #f44336;
     }
     
     button.button-scene {
+    
       background-color: #555555;
     }
     
     /* Modal styles */
     .modal {
+    
       display: none;
       position: fixed;
       z-index: 1;
@@ -75,6 +84,7 @@ to work with our new modular structure
     }
     
     .modal-content {
+    
       background-color: #fff;
       color: #222;
       margin: 10% auto;
@@ -85,6 +95,7 @@ to work with our new modular structure
     }
     
     .close {
+    
       color: #aaa;
       float: right;
       font-size: 28px;
@@ -93,10 +104,12 @@ to work with our new modular structure
     }
     
     .close:hover {
+    
       color: #000;
     }
     
     select, input {
+    
       padding: 8px;
       margin: 5px 0;
       background-color: #f0f0f0;
@@ -105,6 +118,7 @@ to work with our new modular structure
     }
     
     input[type="file"] {
+    
       padding: 10px;
     }
   </style>
@@ -118,28 +132,28 @@ to work with our new modular structure
   <!-- IMPORTANT: Load modules in correct order -->
   
   <!-- Core math modules (pure, no dependencies) -->
-  <script src="rt.math.js"></script>
-  <script src="rt.core.js"></script>
-  <script src="rt.matrix.js"></script>
-  <script src="rt.matrix-transform.js"></script>
+  <script src="rtdt_math.js"></script>
+  <script src="rtdt_core.js"></script>
+  <script src="rtdt_matrix.js"></script>
+  <script src="rtdt_matrix-transform.js"></script>
   
   <!-- Ray tracing and geometry -->
-  <script src="rt.ray.js"></script>
-  <script src="rt.light.js"></script>
-  <script src="rt.material.js"></script>
-  <script src="rt.world.js"></script>
-  <script src="rt.shade.js"></script>
+  <script src="rtdt_ray.js"></script>
+  <script src="rtdt_light.js"></script>
+  <script src="rtdt_material.js"></script>
+  <script src="rtdt_world.js"></script>
+  <script src="rtdt_shade.js"></script>
   
   <!-- Primitives and advanced features -->
-  <script src="rt.p+e.js"></script>
-  <script src="rt.pattern.js"></script>
+  <script src="rtdt_p+e.js"></script>
+  <script src="rtdt_pattern.js"></script>
   
   <!-- Browser-only modules -->
-  <script src="rt.graphics.js"></script>      <!-- Canvas drawing -->
-  <script src="rt.objfile.js"></script>       <!-- Browser OBJ loader -->
+  <script src="rtdt_graphics.js"></script>      <!-- Canvas drawing -->
+  <script src="rtdt_objfile.js"></script>       <!-- Browser OBJ loader -->
   
   <!-- Scene definitions (examples) -->
-  <script src="rt.examples.js"></script>
+  <script src="rtdt_examples.js"></script>
   
   <!-- SHARED rendering logic (works in browser AND Node.js) -->
   <script src="raytracer-core.js"></script>
@@ -251,15 +265,18 @@ to work with our new modular structure
 <script>
 // Simple modal handlers
 document.getElementById('camera-btn').addEventListener('click', function() {
+
   document.getElementById('camera-modal').style.display = 'block';
 });
 
 document.getElementById('lights-btn').addEventListener('click', function() {
+
   document.getElementById('lights-modal').style.display = 'block';
 });
 
 // OBJ file handler
 document.getElementById('obj-file').addEventListener('change', function(e) {
+
   handleFileSelected(e);
 });
 </script>

@@ -39,6 +39,7 @@ function intersect(shape, ray)	{
 	*/
 	
 	if (sh.id != indice)	{
+	
 		//i_no++;
 		indice = sh.id;
 	}

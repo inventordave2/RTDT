@@ -1,4 +1,5 @@
 function shade_hit(w, comps, obj, remaining)	{
+
 	//console.log("shade::shade_hit()::remaining = " + remaining);
 	
 	var material = comps.object.material
@@ -15,6 +16,7 @@ function shade_hit(w, comps, obj, remaining)	{
 	//refracted = colour(0,0,0)
 	
 	if ((material.reflective > 0) && (material.transparency > 0))	{
+	
 		console.log("shade.js::shade_hit(...):Transparent & Reflective.\n")
 		
 		var reflectance = schlick(comps)
@@ -78,6 +80,7 @@ function is_shadowed(w, p)	{
 }
 
 function reflected_color(w, comps, remaining)	{
+
 	//console.log("ray::reflected_color()::remaining = " + remaining);
 	if (remaining <= 0)
 		return colour(0,0,0)

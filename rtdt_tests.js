@@ -684,6 +684,7 @@ function tm_2()	{
 }
 
 function cm_1()	{
+
 	// PASSED: http://www.raytracerchallenge.com/bonus/texture-mapping.html
 	var main = colour(1,1,1), ul = colour(1,0,0), ur = colour(1,1,0), bl = colour(0,1,0), br = colour(0,1,1)
 	var p =  align_check_pattern(main, ul, ur, bl, br)
@@ -741,6 +742,7 @@ function cm_plane()	{
 }
 
 function cm_2()	{
+
 	// PASSED
 	
 	var c1 = colour(1,0,0), c2 = colour(1,1,0), c3 = colour(1,0.5,0), c4 = colour(0,1,0), c5 = colour(0,1,1), c6 = colour(0,0,1), c7 = colour(1,0,1), c8 = colour(1,1,1)
@@ -831,8 +833,10 @@ function test_bvh_divide_stops_when_bounds_cannot_split() {
 	var pending = [g];
 	var count = 0;
 	while (pending.length > 0) {
+	
 		var current = pending.pop();
 		for (var i = 0; i < current.s.length; i++) {
+		
 			if (current.s[i].type === "group")
 				pending.push(current.s[i]);
 			else
@@ -879,6 +883,7 @@ function test_bvh_partitions_transformed_children_and_keeps_parent_links() {
 		throw new Error("BVH did not partition children using their transformed bounds.");
 	
 	for (var i = 0; i < g.s.length; i++) {
+	
 		if (g.s[i].parent !== g || g.s[i].s.length !== 1 || g.s[i].s[0].parent !== g.s[i])
 			throw new Error("BVH subgroup parent links are incorrect.");
 	}
@@ -945,6 +950,7 @@ function test_grouped_shape_normal_includes_child_transform() {
 function test_smooth_triangle_interpolates_vertex_normals() {
 	
 	var s = triangle(
+	
 		point(0, 1, 0),
 		point(-1, 0, 0),
 		point(1, 0, 0),
@@ -983,6 +989,7 @@ function test_concave_polygon_triangulation_preserves_notch() {
 		throw new Error("Concave polygon did not produce n-2 triangles.");
 	
 	for (var i = 0; i < triangles.length; i++) {
+	
 		var t = triangles[i];
 		var twiceArea = (t.p2.x - t.p1.x) * (t.p3.y - t.p1.y) - (t.p2.y - t.p1.y) * (t.p3.x - t.p1.x);
 		area += Math.abs(twiceArea) / 2;

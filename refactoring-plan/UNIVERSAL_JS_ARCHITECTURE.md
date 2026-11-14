@@ -13,19 +13,19 @@ This approach uses the classic JavaScript module pattern that works everywhere:
 
 ### Browser (in raytracer.html)
 ```html
-<script src="rt.math.js"></script>
-<script src="rt.core.js"></script>
-<script src="rt.matrix.js"></script>
-<script src="rt.matrix-transform.js"></script>
-<script src="rt.ray.js"></script>
-<script src="rt.light.js"></script>
-<script src="rt.material.js"></script>
-<script src="rt.world.js"></script>
-<script src="rt.shade.js"></script>
-<script src="rt.p+e.js"></script>
-<script src="rt.pattern.js"></script>
-<script src="rt.graphics.js"></script>  <!-- Browser-only -->
-<script src="rt.objfile.js"></script>
+<script src="rtdt_math.js"></script>
+<script src="rtdt_core.js"></script>
+<script src="rtdt_matrix.js"></script>
+<script src="rtdt_matrix-transform.js"></script>
+<script src="rtdt_ray.js"></script>
+<script src="rtdt_light.js"></script>
+<script src="rtdt_material.js"></script>
+<script src="rtdt_world.js"></script>
+<script src="rtdt_shade.js"></script>
+<script src="rtdt_p+e.js"></script>
+<script src="rtdt_pattern.js"></script>
+<script src="rtdt_graphics.js"></script>  <!-- Browser-only -->
+<script src="rtdt_objfile.js"></script>
 <script src="raytracer-core.js"></script>  <!-- Shared logic -->
 <script src="raytracer-ui.js"></script>    <!-- Browser-only -->
 ```
@@ -33,18 +33,18 @@ This approach uses the classic JavaScript module pattern that works everywhere:
 ### Node.js (in cli-bootstrap.js)
 ```javascript
 // Load in same order, using require()
-require('./rt.math.js');
-require('./rt.core.js');
-require('./rt.matrix.js');
-require('./rt.matrix-transform.js');
-require('./rt.ray.js');
-require('./rt.light.js');
-require('./rt.material.js');
-require('./rt.world.js');
-require('./rt.shade.js');
-require('./rt.p+e.js');
-require('./rt.pattern.js');
-require('./rt.objfile-node.js');  // Node.js version
+require('./rtdt_math.js');
+require('./rtdt_core.js');
+require('./rtdt_matrix.js');
+require('./rtdt_matrix-transform.js');
+require('./rtdt_ray.js');
+require('./rtdt_light.js');
+require('./rtdt_material.js');
+require('./rtdt_world.js');
+require('./rtdt_shade.js');
+require('./rtdt_p+e.js');
+require('./rtdt_pattern.js');
+require('./rtdt_objfile-node.js');  // Node.js version
 require('./raytracer-core.js');   // Shared logic
 require('./cli.js');               // CLI interface
 ```
@@ -60,23 +60,23 @@ RTDT/
 ├── cli.js                          ← NEW: CLI entry point for Node.js
 ├── cli-bootstrap.js               ← NEW: Loads all files for Node.js
 │
-├── rt.math.js                      ← SHARED (no changes)
-├── rt.core.js                      ← SHARED (no changes)
-├── rt.matrix.js                    ← SHARED (no changes)
-├── rt.matrix-transform.js          ← SHARED (no changes)
-├── rt.ray.js                       ← SHARED (no changes)
-├── rt.light.js                     ← SHARED (no changes)
-├── rt.material.js                  ← SHARED (no changes)
-├── rt.world.js                     ← SHARED (no changes)
-├── rt.shade.js                     ← SHARED (no changes)
-├── rt.p+e.js                       ← SHARED (no changes)
-├── rt.pattern.js                   ← SHARED (no changes)
+├── rtdt_math.js                      ← SHARED (no changes)
+├── rtdt_core.js                      ← SHARED (no changes)
+├── rtdt_matrix.js                    ← SHARED (no changes)
+├── rtdt_matrix-transform.js          ← SHARED (no changes)
+├── rtdt_ray.js                       ← SHARED (no changes)
+├── rtdt_light.js                     ← SHARED (no changes)
+├── rtdt_material.js                  ← SHARED (no changes)
+├── rtdt_world.js                     ← SHARED (no changes)
+├── rtdt_shade.js                     ← SHARED (no changes)
+├── rtdt_p+e.js                       ← SHARED (no changes)
+├── rtdt_pattern.js                   ← SHARED (no changes)
 │
-├── rt.graphics.js                  ← BROWSER-ONLY (canvas rendering)
+├── rtdt_graphics.js                  ← BROWSER-ONLY (canvas rendering)
 ├── raytracer-ui.js                 ← BROWSER-ONLY (new: extracted UI code)
 │
-├── rt.objfile.js                   ← BROWSER VERSION (FileReader)
-├── rt.objfile-node.js              ← NODE.JS VERSION (fs module)
+├── rtdt_objfile.js                   ← BROWSER VERSION (FileReader)
+├── rtdt_objfile-node.js              ← NODE.JS VERSION (fs module)
 │
 ├── raytracer-core.js               ← NEW: Shared scene/render logic
 ├── raytracer-output.js             ← NEW: Output handlers (PPM, etc)
@@ -92,7 +92,7 @@ RTDT/
 
 ### Each file contributes to global object
 
-**rt.math.js** (no changes needed):
+**rtdt_math.js** (no changes needed):
 ```javascript
 // Adds functions to global scope
 function equal(a, b) { /* ... */ }
@@ -101,10 +101,10 @@ function add(a, b) { /* ... */ }
 // In Browser: available as window.equal, window.add
 ```
 
-**rt.core.js** (no changes needed):
+**rtdt_core.js** (no changes needed):
 ```javascript
 function tuple(x, y, z, type) { /* ... */ }
-// Uses: equal(), add() from rt.math.js
+// Uses: equal(), add() from rtdt_math.js
 ```
 
 **Key rule**: Declare functions at file scope (not inside a function)
@@ -209,12 +209,12 @@ function populateCameraMenu() {
 
 ### Step 2: Create Node.js Version of OBJ Loader
 
-#### Current: `rt.objfile.js` (BROWSER - uses FileReader)
+#### Current: `rtdt_objfile.js` (BROWSER - uses FileReader)
 Keep this as-is for browser
 
-#### NEW: `rt.objfile-node.js` (NODE.JS - uses fs module)
+#### NEW: `rtdt_objfile-node.js` (NODE.JS - uses fs module)
 ```javascript
-// This file replaces rt.objfile.js in Node.js environment
+// This file replaces rtdt_objfile.js in Node.js environment
 
 function loadOBJFile(filePath, callback) {
     var fs = require('fs');
@@ -239,18 +239,18 @@ function loadOBJFile(filePath, callback) {
 #!/usr/bin/env node
 
 // Load all modules in order
-require('./rt.math.js');
-require('./rt.core.js');
-require('./rt.matrix.js');
-require('./rt.matrix-transform.js');
-require('./rt.ray.js');
-require('./rt.light.js');
-require('./rt.material.js');
-require('./rt.world.js');
-require('./rt.shade.js');
-require('./rt.p+e.js');
-require('./rt.pattern.js');
-require('./rt.objfile-node.js');      // Node.js version
+require('./rtdt_math.js');
+require('./rtdt_core.js');
+require('./rtdt_matrix.js');
+require('./rtdt_matrix-transform.js');
+require('./rtdt_ray.js');
+require('./rtdt_light.js');
+require('./rtdt_material.js');
+require('./rtdt_world.js');
+require('./rtdt_shade.js');
+require('./rtdt_p+e.js');
+require('./rtdt_pattern.js');
+require('./rtdt_objfile-node.js');      // Node.js version
 require('./raytracer-core.js');        // Shared rendering
 require('./raytracer-output.js');      // Output handlers
 require('./cli.js');                   // CLI interface
@@ -395,8 +395,8 @@ function writePPMFile(filePath, pixels, width, height) {
 ```html
 <!DOCTYPE html>
 <head>
-    <script src="rt.math.js"></script>
-    <!-- ... all other rt.*.js files ... -->
+    <script src="rtdt_math.js"></script>
+    <!-- ... all other rtdt_*.js files ... -->
     <script src="raytracer-core.js"></script>
     <script src="raytracer-ui.js"></script>
 </head>
@@ -488,28 +488,28 @@ if (typeof require !== 'undefined' && typeof module !== 'undefined') {
 ## Summary: What Changes, What Doesn't
 
 ### NO Changes Needed:
-- ✅ `rt.math.js` - Pure math
-- ✅ `rt.core.js` - Pure rendering logic
-- ✅ `rt.matrix.js` - Pure math
-- ✅ `rt.matrix-transform.js` - Pure math
-- ✅ `rt.ray.js` - Pure logic
-- ✅ `rt.light.js` - Pure definitions
-- ✅ `rt.material.js` - Pure definitions
-- ✅ `rt.world.js` - Pure logic
-- ✅ `rt.shade.js` - Pure math
-- ✅ `rt.p+e.js` - Pure geometry
-- ✅ `rt.pattern.js` - Pure logic
+- ✅ `rtdt_math.js` - Pure math
+- ✅ `rtdt_core.js` - Pure rendering logic
+- ✅ `rtdt_matrix.js` - Pure math
+- ✅ `rtdt_matrix-transform.js` - Pure math
+- ✅ `rtdt_ray.js` - Pure logic
+- ✅ `rtdt_light.js` - Pure definitions
+- ✅ `rtdt_material.js` - Pure definitions
+- ✅ `rtdt_world.js` - Pure logic
+- ✅ `rtdt_shade.js` - Pure math
+- ✅ `rtdt_p+e.js` - Pure geometry
+- ✅ `rtdt_pattern.js` - Pure logic
 - ✅ `raytracer.html` - Keep as-is
 
 ### MINOR Changes:
-- ⚠️ `rt.graphics.js` - Wrap canvas code in `if (typeof window !== 'undefined') { ... }`
-- ⚠️ `rt.objfile.js` - Wrap FileReader in conditional, add Node.js version
+- ⚠️ `rtdt_graphics.js` - Wrap canvas code in `if (typeof window !== 'undefined') { ... }`
+- ⚠️ `rtdt_objfile.js` - Wrap FileReader in conditional, add Node.js version
 
 ### SPLIT Files:
 - 📝 `raytracer.js` → Split into `raytracer-core.js` + `raytracer-ui.js`
 
 ### NEW Files:
-- 🆕 `rt.objfile-node.js` - Node.js OBJ loader
+- 🆕 `rtdt_objfile-node.js` - Node.js OBJ loader
 - 🆕 `cli-bootstrap.js` - Node.js entry point
 - 🆕 `cli.js` - CLI command handler
 - 🆕 `raytracer-output.js` - Output formatters
@@ -528,7 +528,7 @@ if (typeof require !== 'undefined' && typeof module !== 'undefined') {
 ### Week 2: Node.js Infrastructure
 1. Create `package.json`
 2. Create `cli-bootstrap.js` to load all files
-3. Create `rt.objfile-node.js`
+3. Create `rtdt_objfile-node.js`
 4. Create `cli.js` with basic rendering
 
 ### Week 3: Output & Polish

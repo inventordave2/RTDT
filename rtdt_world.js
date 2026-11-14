@@ -123,8 +123,10 @@ function camera(hsize, vsize, fov)	{
 	this.fov = fov;
 	
 	Object.defineProperty(this, "transform", {
+	
 		get: function() { return _transform; },
 		set: function(m) {
+		
 			_transform = m;
 			this.it_c = inverse(m);
 		},

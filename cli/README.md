@@ -7,12 +7,12 @@ This folder contains the Node.js command-line interface for the raytracer.
 - **package.json** - NPM package metadata and scripts
 - **cli-bootstrap.js** - Entry point (executable) that loads all modules in order
 - **cli.js** - Command-line argument parsing and rendering orchestration
-- **rt.objfile-node.js** - Node.js implementation of OBJ file loading (using fs module)
+- **rtdt_objfile-node.js** - Node.js implementation of OBJ file loading (using fs module)
 
 ## Installation
 
 ```bash
-cd phase2-cli
+cd cli
 # No installation needed - pure Node.js, no external dependencies
 ```
 
@@ -48,7 +48,7 @@ node cli-bootstrap.js --help
    - Rendering orchestration
    - PPM file output
 
-3. **rt.objfile-node.js** provides:
+3. **rtdt_objfile-node.js** provides:
    - fs-based OBJ file loading (instead of browser FileReader)
    - Vertex parsing
    - Triangle creation from faces
@@ -61,13 +61,13 @@ node cli-bootstrap.js --help
 ```
 cli-bootstrap.js
   ↓
-Load all rt.*.js modules (core raytracer)
+Load all rtdt_*.js modules (core raytracer)
   ↓
 Load raytracer-core.js (shared logic)
   ↓
-Load rt.examples.js (scene definitions)
+Load rtdt_examples.js (scene definitions)
   ↓
-Load rt.objfile-node.js (Node.js file I/O)
+Load rtdt_objfile-node.js (Node.js file I/O)
   ↓
 Load cli.js (CLI interface)
   ↓
@@ -81,7 +81,7 @@ Command line args
   ↓
 initRaytracer(width, height)  ← Initialize from raytracer-core.js
   ↓
-Scene function (e.g., scene1())  ← From rt.examples.js
+Scene function (e.g., scene1())  ← From rtdt_examples.js
   ↓
 Create world object
   ↓
@@ -121,7 +121,7 @@ convert render.ppm render.jpg
 
 ## Available Scenes
 
-All scenes from `rt.examples.js` are available:
+All scenes from `rtdt_examples.js` are available:
 - `scene1` - Default scene
 - `mySkyBox` - Sky box scene
 - `earth` - Earth scene
@@ -181,7 +181,7 @@ If rendering produces no output, check:
 Both browser and CLI use **identical rendering logic** from `raytracer-core.js`:
 - Same `renderSceneSync()` function
 - Same `color_at()` calculations
-- Same scene functions from `rt.examples.js`
+- Same scene functions from `rtdt_examples.js`
 
 The only difference is output:
 - **Browser**: Draws to HTML5 canvas in real-time
@@ -200,6 +200,6 @@ The only difference is output:
 **Ready to render?**
 
 ```bash
-cd /workspaces/RTDT/phase2-cli
+cd /workspaces/RTDT/cli
 node cli-bootstrap.js --scene scene1 --width 150 --height 84 --output test.ppm
 ```

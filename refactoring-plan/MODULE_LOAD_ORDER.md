@@ -9,48 +9,48 @@ BROWSER PATH:
 ==============
 raytracer.html loads:
 
-  1. rt.math.js
+  1. rtdt_math.js
      ↓ (depends on: nothing)
      
-  2. rt.core.js  
-     ↓ (depends on: rt.math)
+  2. rtdt_core.js  
+     ↓ (depends on: rtdt_math)
      
-  3. rt.matrix.js
-     ↓ (depends on: rt.math, rt.core)
+  3. rtdt_matrix.js
+     ↓ (depends on: rtdt_math, rtdt_core)
      
-  4. rt.matrix-transform.js
-     ↓ (depends on: rt.matrix)
+  4. rtdt_matrix-transform.js
+     ↓ (depends on: rtdt_matrix)
      
-  5. rt.ray.js
-     ↓ (depends on: rt.core)
+  5. rtdt_ray.js
+     ↓ (depends on: rtdt_core)
      
-  6. rt.light.js
-     ↓ (depends on: rt.core)
+  6. rtdt_light.js
+     ↓ (depends on: rtdt_core)
      
-  7. rt.material.js
-     ↓ (depends on: rt.core)
+  7. rtdt_material.js
+     ↓ (depends on: rtdt_core)
      
-  8. rt.world.js
-     ↓ (depends on: rt.core, rt.material)
+  8. rtdt_world.js
+     ↓ (depends on: rtdt_core, rtdt_material)
      
-  9. rt.shade.js
-     ↓ (depends on: rt.core, rt.material, rt.light)
+  9. rtdt_shade.js
+     ↓ (depends on: rtdt_core, rtdt_material, rtdt_light)
      
- 10. rt.p+e.js (Primitives + Effects)
-     ↓ (depends on: rt.core, rt.matrix, rt.ray, rt.shade)
+ 10. rtdt_p+e.js (Primitives + Effects)
+     ↓ (depends on: rtdt_core, rtdt_matrix, rtdt_ray, rtdt_shade)
      
- 11. rt.pattern.js
-     ↓ (depends on: rt.core)
+ 11. rtdt_pattern.js
+     ↓ (depends on: rtdt_core)
      
- 12. rt.graphics.js
-     ↓ (depends on: rt.core, HTML canvas)
+ 12. rtdt_graphics.js
+     ↓ (depends on: rtdt_core, HTML canvas)
      ↓ BROWSER ONLY!
      
- 13. rt.objfile.js
-     ↓ (depends on: rt.core, FileReader API)
+ 13. rtdt_objfile.js
+     ↓ (depends on: rtdt_core, FileReader API)
      ↓ BROWSER ONLY!
      
- 14. rt.examples.js
+ 14. rtdt_examples.js
      ↓ (depends on: All above, creates scenes)
      
  15. raytracer-core.js
@@ -66,14 +66,14 @@ NODE.JS PATH:
 ==============
 cli-bootstrap.js requires:
 
-  Same as above (steps 1-14) but SKIPS rt.graphics.js
+  Same as above (steps 1-14) but SKIPS rtdt_graphics.js
   
  15. raytracer-core.js
      ↓ SHARED - works in Node.js
      
- 16. rt.objfile-node.js
+ 16. rtdt_objfile-node.js
      ↓ NODE.JS VERSION using fs module
-     ↓ (depends on: rt.core, fs)
+     ↓ (depends on: rtdt_core, fs)
      
  17. cli.js
      ↓ (depends on: raytracer-core, fs, process)
@@ -86,80 +86,80 @@ cli-bootstrap.js requires:
 
 ### Level 0: No Dependencies (Load First)
 ```
-rt.math.js
+rtdt_math.js
   - equal(), add(), subtract(), multiply(), divide()
   - negate(), magnitude(), normalize()
   - Uses: Nothing else
   - Safe to load first
 ```
 
-### Level 1: Depends on rt.math
+### Level 1: Depends on rtdt_math
 ```
-rt.core.js
+rtdt_core.js
   - tuple(), point(), vector()
   - dot(), cross()
   - color()
-  - Uses: rt.math functions
+  - Uses: rtdt_math functions
   
-rt.light.js
+rtdt_light.js
   - point_light()
   - Uses: tuple, point, vector, colour
 ```
 
 ### Level 2: Depends on Level 0-1
 ```
-rt.matrix.js
+rtdt_matrix.js
   - Matrix operations
-  - Uses: rt.math, rt.core
+  - Uses: rtdt_math, rtdt_core
   
-rt.ray.js
+rtdt_ray.js
   - ray class
   - Uses: tuple, point, vector
   
-rt.material.js
+rtdt_material.js
   - material class
   - Uses: tuple, colour
 ```
 
 ### Level 3: Depends on Level 0-2
 ```
-rt.matrix-transform.js
+rtdt_matrix-transform.js
   - Transformation matrices
-  - Uses: rt.matrix, rt.core
+  - Uses: rtdt_matrix, rtdt_core
   
-rt.world.js
+rtdt_world.js
   - world class
   - Uses: ray, sphere, etc.
   
-rt.shade.js
+rtdt_shade.js
   - Phong shading
-  - Uses: rt.core, rt.light, rt.material
+  - Uses: rtdt_core, rtdt_light, rtdt_material
 ```
 
 ### Level 4: Depends on Level 0-3
 ```
-rt.p+e.js (Primitives + Effects)
+rtdt_p+e.js (Primitives + Effects)
   - Sphere, plane, cube, cylinder, triangle, group
   - Uses: Everything above
   
-rt.pattern.js
+rtdt_pattern.js
   - Stripe, checkerboard patterns
-  - Uses: rt.core
+  - Uses: rtdt_core
 ```
 
 ### Level 5: Platform-Specific
 ```
 BROWSER:
-  rt.graphics.js
+  rtdt_graphics.js
     - Canvas drawing
-    - Uses: ctx (canvas context), rt.core
+    - Uses: ctx (canvas context), rtdt_core
     
-  rt.objfile.js
+  rtdt_objfile.js
     - OBJ file loading via FileReader
     - Uses: FileReader API, parsing logic
 
 NODE.JS:
-  rt.objfile-node.js
+  rtdt_objfile-node.js
     - OBJ file loading via fs
     - Uses: fs module, parsing logic
 ```
@@ -172,7 +172,7 @@ raytracer-core.js
   - Pure rendering logic (no DOM, no fs)
   - Uses: Everything above EXCEPT platform-specific code
   
-rt.examples.js
+rtdt_examples.js
   - Scene definitions
   - Uses: All rendering modules
 ```
@@ -214,11 +214,11 @@ typeof myFunction;        // Should be "function" not "undefined"
 
 ### Method 3: Grep Check
 ```bash
-# Find all function calls in rt.ray.js
-grep -oE '[a-zA-Z_][a-zA-Z0-9_]*\(' rt.ray.js | sort -u
+# Find all function calls in rtdt_ray.js
+grep -oE '[a-zA-Z_][a-zA-Z0-9_]*\(' rtdt_ray.js | sort -u
 
 # Then verify each is defined in earlier files
-grep "function dot\|function cross\|function normalize" rt.math.js rt.core.js
+grep "function dot\|function cross\|function normalize" rtdt_math.js rtdt_core.js
 ```
 
 ---
@@ -228,37 +228,37 @@ grep "function dot\|function cross\|function normalize" rt.math.js rt.core.js
 ### ❌ Loading in Wrong Order
 ```javascript
 <!-- WRONG: ray.js before core.js -->
-<script src="rt.ray.js"></script>
-<script src="rt.core.js"></script>
+<script src="rtdt_ray.js"></script>
+<script src="rtdt_core.js"></script>
 <!-- Result: ReferenceError: vector is not defined -->
 ```
 
 ### ❌ Skipping a File
 ```javascript
-// WRONG: Skip rt.light.js
-require('./rt.material.js');
-require('./rt.shade.js');  // ERROR: point_light not defined
+// WRONG: Skip rtdt_light.js
+require('./rtdt_material.js');
+require('./rtdt_shade.js');  // ERROR: point_light not defined
 ```
 
 ### ✅ Correct Order
 ```javascript
 // RIGHT: Load in dependency order
-<script src="rt.math.js"></script>       // 1
-<script src="rt.core.js"></script>       // 2
-<script src="rt.light.js"></script>      // 3 (needs core)
-<script src="rt.material.js"></script>   // 4
-<script src="rt.shade.js"></script>      // 5 (needs light + material)
+<script src="rtdt_math.js"></script>       // 1
+<script src="rtdt_core.js"></script>       // 2
+<script src="rtdt_light.js"></script>      // 3 (needs core)
+<script src="rtdt_material.js"></script>   // 4
+<script src="rtdt_shade.js"></script>      // 5 (needs light + material)
 ```
 
 ---
 
 ## Adding New Files to the Pipeline
 
-### New core module (e.g., rt.animation.js)
+### New core module (e.g., rtdt_animation.js)
 1. Add after the modules it depends on
 2. Load in both browser and Node.js
 
-### New browser feature (e.g., raytracer-export.js)
+### New browser feature (e.g., raytracer-exportdt_js)
 1. Add after raytracer-core.js
 2. Load ONLY in raytracer.html
 3. Use guard: `if (typeof window === 'undefined') throw new Error(...)`
@@ -274,21 +274,21 @@ require('./rt.shade.js');  // ERROR: point_light not defined
 
 | File | Main Exports | Type |
 |------|--------------|------|
-| rt.math.js | equal(), add(), subtract(), multiply() | Pure Math |
-| rt.core.js | tuple(), point(), vector(), dot(), cross() | Core Types |
-| rt.matrix.js | m_multiply(), transpose(), identity_matrix() | Linear Algebra |
-| rt.matrix-transform.js | translation(), scaling(), rotation() | Transforms |
-| rt.ray.js | ray class | Ray Casting |
-| rt.light.js | point_light class | Lighting |
-| rt.material.js | material class | Materials |
-| rt.world.js | world class | Scene Management |
-| rt.shade.js | lighting() | Shading |
-| rt.p+e.js | sphere, plane, cube, cylinder, group | Primitives |
-| rt.pattern.js | stripe_pattern, checkerboard_pattern | Patterns |
-| rt.graphics.js | Canvas drawing functions | Browser Only |
-| rt.objfile.js | loadOBJFile() (FileReader) | Browser Only |
-| rt.objfile-node.js | loadOBJFile() (fs) | Node.js Only |
-| rt.examples.js | scene1(), scene2(), scene3() | Examples |
+| rtdt_math.js | equal(), add(), subtract(), multiply() | Pure Math |
+| rtdt_core.js | tuple(), point(), vector(), dot(), cross() | Core Types |
+| rtdt_matrix.js | m_multiply(), transpose(), identity_matrix() | Linear Algebra |
+| rtdt_matrix-transform.js | translation(), scaling(), rotation() | Transforms |
+| rtdt_ray.js | ray class | Ray Casting |
+| rtdt_light.js | point_light class | Lighting |
+| rtdt_material.js | material class | Materials |
+| rtdt_world.js | world class | Scene Management |
+| rtdt_shade.js | lighting() | Shading |
+| rtdt_p+e.js | sphere, plane, cube, cylinder, group | Primitives |
+| rtdt_pattern.js | stripe_pattern, checkerboard_pattern | Patterns |
+| rtdt_graphics.js | Canvas drawing functions | Browser Only |
+| rtdt_objfile.js | loadOBJFile() (FileReader) | Browser Only |
+| rtdt_objfile-node.js | loadOBJFile() (fs) | Node.js Only |
+| rtdt_examples.js | scene1(), scene2(), scene3() | Examples |
 | raytracer-core.js | initRaytracer(), renderSceneSync() | SHARED |
 | raytracer-ui.js | optionSelected(), renderImage() | Browser Only |
 | cli.js | main(), parseArguments() | Node.js Only |

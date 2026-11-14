@@ -136,9 +136,12 @@ function triangle(p1, p2, p3, id2, vn1, vn2, vn3)	{
 	t.normal = normalize(cross(t.e2, t.e1))
 	
 	t.local_normal_at = function(p, i)	{
+	
 		if (this.vn1 && this.vn2 && this.vn3 && i && Number.isFinite(i.u) && Number.isFinite(i.v)) {
+		
 			var n1_weight = 1 - i.u - i.v;
 			var interpolated = add(
+			
 				multiplyInt(this.vn1, n1_weight),
 				add(multiplyInt(this.vn2, i.u), multiplyInt(this.vn3, i.v))
 			);
@@ -217,6 +220,7 @@ function fan_triangulation(vertices, vertex_normals)	{
 	
 	var nx = 0, ny = 0, nz = 0;
 	for (var i = 0; i < vertices.length; i++) {
+	
 		var current = vertices[i];
 		var next = vertices[(i + 1) % vertices.length];
 		nx += (current.y - next.y) * (current.z + next.z);
@@ -230,6 +234,7 @@ function fan_triangulation(vertices, vertex_normals)	{
 	
 	var projected = [];
 	for (var i = 0; i < vertices.length; i++) {
+	
 		var p = vertices[i];
 		if (abs_nx >= abs_ny && abs_nx >= abs_nz)
 			projected.push({ x: p.y, y: p.z });
@@ -240,11 +245,13 @@ function fan_triangulation(vertices, vertex_normals)	{
 	}
 	
 	function cross2(a, b, c) {
+	
 		return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
 	}
 	
 	var signed_area = 0;
 	for (var i = 0; i < projected.length; i++) {
+	
 		var a = projected[i];
 		var b = projected[(i + 1) % projected.length];
 		signed_area += a.x * b.y - b.x * a.y;
@@ -258,6 +265,7 @@ function fan_triangulation(vertices, vertex_normals)	{
 		indices.push(i);
 	
 	function contains_point(a, b, c, p) {
+	
 		var ab = winding * cross2(a, b, p);
 		var bc = winding * cross2(b, c, p);
 		var ca = winding * cross2(c, a, p);
@@ -265,6 +273,7 @@ function fan_triangulation(vertices, vertex_normals)	{
 	}
 	
 	function make_triangle(a, b, c) {
+	
 		var normals = vertex_normals || [];
 		return triangle(vertices[a], vertices[b], vertices[c], undefined,
 			normals[a], normals[b], normals[c]);
@@ -272,8 +281,10 @@ function fan_triangulation(vertices, vertex_normals)	{
 	
 	var triangles = [];
 	while (indices.length > 3) {
+	
 		var ear_found = false;
 		for (var i = 0; i < indices.length; i++) {
+		
 			var previous = indices[(i + indices.length - 1) % indices.length];
 			var current = indices[i];
 			var following = indices[(i + 1) % indices.length];
@@ -286,10 +297,12 @@ function fan_triangulation(vertices, vertex_normals)	{
 			
 			var contains_vertex = false;
 			for (var j = 0; j < indices.length; j++) {
+			
 				var candidate = indices[j];
 				if (candidate === previous || candidate === current || candidate === following)
 					continue;
 				if (contains_point(a, b, c, projected[candidate])) {
+				
 					contains_vertex = true;
 					break;
 				}
@@ -509,6 +522,7 @@ function check_axis2(origin, direction, p)	{
 }
 
 function cube(id2)	{
+
 	var c = new Shape("cube", id2)
 	
 	c.bbMin = point(-1,-1,-1)
@@ -526,7 +540,9 @@ function cube(id2)	{
 		
 		
 		if (xtmin > xtmax)	{
+		
 		//if (xt.min > xt.max)	{
+		
 			temp = xtmax;
 			xtmax = xtmin;
 			xtmin = temp;
@@ -537,6 +553,7 @@ function cube(id2)	{
 		// yt = check_axis2(r.origin.y, r.direction.y)
 		
 		if (ytmin > ytmax)	{
+		
 		// if (yt.min > yt.max)	{
 		
 			temp = ytmax;
@@ -549,7 +566,9 @@ function cube(id2)	{
 		// zt = check_axis2(r.origin.z, r.direction.z)
 		
 		if (ztmin > ztmax)	{
+		
 		// if (zt.min > zt.max)	{
+		
 			temp = ztmax;
 			ztmax = ztmin;
 			ztmin = temp;
@@ -631,10 +650,12 @@ function group(id2)	{
 			return { left: [], right: [] }
 		
 		for (var i = 0; i < this.s.length; i++) {
+		
 			var child = this.s[i]
 			var bounds = child.parent_space_bounds_of()
 			var center = {}
 			for (var axis_index = 0; axis_index < axes.length; axis_index++) {
+			
 				var axis = axes[axis_index]
 				var min = bounds.min[axis]
 				var max = bounds.max[axis]
@@ -655,15 +676,18 @@ function group(id2)	{
 		var split_axis = "x"
 		var widest_spread = -1
 		for (var axis_index = 0; axis_index < axes.length; axis_index++) {
+		
 			var axis = axes[axis_index]
 			var spread = center_max[axis] - center_min[axis]
 			if (spread > widest_spread) {
+			
 				widest_spread = spread
 				split_axis = axis
 			}
 		}
 		
 		children.sort(function(a, b) {
+		
 			return (a.center[split_axis] - b.center[split_axis]) || (a.shape.id - b.shape.id)
 		})
 		
@@ -726,6 +750,7 @@ function group(id2)	{
 		
 		var parent = this;
 		while (parent) {
+		
 			parent.hasGenBB = false;
 			parent = parent.parent;
 		}
@@ -734,9 +759,11 @@ function group(id2)	{
 	g.bounds_of = function()	{
 		
 		if(!this.hasGenBB)	{
+		
 			var box = new BB()
 			var l = this.s.length
 			for(var i=0;i<l;i++) {
+			
 				var cbox = this.s[i].parent_space_bounds_of()
 				box.addBB(cbox)
 			}
@@ -747,9 +774,12 @@ function group(id2)	{
 	};
 	
 	g.local_intersect = function(r)	{
+	
 		if(this.bounds_of().intersects(r)) {
+		
 			var res = []
 			for (var i = 0; i<this.s.length;i++) {
+			
 				var xs = intersect(this.s[i], r)
 				for (var j=0;j<xs.length;j++)
 					res.push(xs[j])
@@ -760,6 +790,7 @@ function group(id2)	{
 	};
 	
 	g.local_normal_at = function(p)	{
+	
 		console.log("Error! Attempt to call local_normal_at() on group " + this.id + ", " + this.id2 + "\n")
 	};
 	
@@ -802,10 +833,12 @@ function BB(min,max)	{
 	};
 	
 	this.containsPoint = function(p)	{
+	
 			return (p.x>=this.min.x&&p.x<=this.max.x)&&(p.y>=this.min.y&&p.y<=this.max.y)&&(p.z>=this.min.z&&p.z<=this.max.z);
 	};
 	
 	this.containsBox = function(b2)	{
+	
 			/*
 			A box lies within another box if both its min and max points lie within that box.
 			*/
@@ -823,22 +856,27 @@ function BB(min,max)	{
 			var source_min = [this.min.x, this.min.y, this.min.z]
 			var source_max = [this.max.x, this.max.y, this.max.z]
 			var has_infinite_bounds = source_min.concat(source_max).some(function(value) {
+			
 				return !Number.isFinite(value)
 			})
 			
 			if (has_infinite_bounds) {
+			
 				var transformed_min = []
 				var transformed_max = []
 				for (var row = 0; row < 3; row++) {
+				
 					var min = m[row][3]
 					var max = m[row][3]
 					for (var column = 0; column < 3; column++) {
+					
 						var coefficient = m[row][column]
 						if (coefficient === 0)
 							continue
 						var low = coefficient * source_min[column]
 						var high = coefficient * source_max[column]
 						if (coefficient < 0) {
+						
 							var temp = low
 							low = high
 							high = temp
@@ -850,6 +888,7 @@ function BB(min,max)	{
 					transformed_max[row] = Number.isNaN(max) ? Infinity : max
 				}
 				return new BB(
+				
 					point(transformed_min[0], transformed_min[1], transformed_min[2]),
 					point(transformed_max[0], transformed_max[1], transformed_max[2])
 				)
@@ -975,13 +1014,16 @@ function Shape(type, id2)	{
 	this.material = new material()
 	
 	Object.defineProperty(this, "transform", {
+	
 		get: function() { return _transform; },
 		set: function(m) {
+		
 			_transform = m;
 			invalidate_shape_transform_cache(this);
 			invalidate_world_transform_cache(this);
 			var parent = this.parent;
 			while (parent) {
+			
 				parent.hasGenBB = false;
 				parent = parent.parent;
 			}

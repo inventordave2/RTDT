@@ -27,8 +27,8 @@ Successfully split `raytracer.js` (569 lines) into two focused files:
 1. **raytracer.html**
    - Updated `<script>` tag loading order
    - Removed reference to `raytracer.js`
-   - Added `raytracer-core.js` (after core rt.* modules)
-   - Added `raytracer-ui.js` (last, after rt.graphics.js)
+   - Added `raytracer-core.js` (after core rtdt_* modules)
+   - Added `raytracer-ui.js` (last, after rtdt_graphics.js)
    - Removed manual `init()` call (now auto-called by raytracer-ui.js)
 
 ### Original Files (Preserved)
@@ -39,22 +39,22 @@ Successfully split `raytracer.js` (569 lines) into two focused files:
 The complete script loading order in raytracer.html:
 
 ```
-rt.p+e.js
-rt.pattern.js
-rt.math.js
-rt.matrix-transform.js
-rt.matrix.js
-rt.tests.js
-rt.world.js
-rt.shade.js
-rt.core.js
-rt.light.js
+rtdt_p+e.js
+rtdt_pattern.js
+rtdt_math.js
+rtdt_matrix-transform.js
+rtdt_matrix.js
+rtdt_tests.js
+rtdt_world.js
+rtdt_shade.js
+rtdt_core.js
+rtdt_light.js
 raytracer-core.js    ← NEW: Core rendering logic
-rt.examples.js
-rt.objfile.js
-rt.material.js
-rt.ray.js
-rt.graphics.js
+rtdt_examples.js
+rtdt_objfile.js
+rtdt_material.js
+rtdt_ray.js
+rtdt_graphics.js
 raytracer-ui.js      ← NEW: Browser UI layer
 ```
 
@@ -114,7 +114,7 @@ PPM file written to disk
 4. **Rendering Logic is Identical**
    - `render()` - Async rendering (browser)
    - `renderSceneSync()` - Sync rendering (CLI)
-   - Same `color_at()` function from rt.shade.js
+   - Same `color_at()` function from rtdt_shade.js
    - Same pixel-to-world-ray conversion
 
 ## Verification
@@ -133,7 +133,7 @@ See [IMPLEMENTATION_ROADMAP.md](refactoring-plan/IMPLEMENTATION_ROADMAP.md) Phas
 1. Create `package.json`
 2. Create `cli-bootstrap.js` (Node.js entry point)
 3. Create `cli.js` (CLI implementation)
-4. Create `rt.objfile-node.js` (fs-based file loading)
+4. Create `rtdt_objfile-node.js` (fs-based file loading)
 5. Test CLI: `node cli-bootstrap.js --scene scene1 --output test.ppm`
 
 ## Browser Testing
