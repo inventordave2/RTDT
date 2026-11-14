@@ -4,6 +4,7 @@
 
 // Check we're in a browser
 if (typeof window === 'undefined') {
+
 	throw new Error("raytracer-ui.js should only be loaded in browsers!");
 }
 
@@ -12,6 +13,7 @@ var loop;
 
 /** Initialize UI when DOM is ready */
 function initUI() {
+
 	let c = document.getElementById("canvas");
 	ctx = c.getContext("2d");
 	
@@ -26,14 +28,17 @@ function initUI() {
 
 // Run init when DOM is loaded
 if (document.readyState === 'loading') {
+
 	document.addEventListener('DOMContentLoaded', initUI);
 } else {
 	initUI();
 }
 
 function optionSelected() {
+
 	var ct;
 	switch(document.getElementById("os").selectedIndex) {
+	
 		case 0:
 			WIDTH = 150;
 			HEIGHT = Math.round(150*(9/16));
@@ -63,6 +68,7 @@ function optionSelected() {
 }
 
 function camPresetSelected() {
+
 	var v = document.getElementById("campresets");
 	Data.c.setCTransform(Data.presets.camera[v.selectedIndex]);
 	populateCameraMenu();
@@ -70,6 +76,7 @@ function camPresetSelected() {
 }
 
 function sceneCameraBounds() {
+
 	if (!Data.o || typeof Data.o.parent_space_bounds_of !== "function")
 		return undefined;
 
@@ -80,6 +87,7 @@ function sceneCameraBounds() {
 }
 
 function boundsCenter(min, max) {
+
 	if (isFinite(min) && isFinite(max))
 		return min + (max - min) / 2;
 	if (isFinite(min))
@@ -90,6 +98,7 @@ function boundsCenter(min, max) {
 }
 
 function formatCameraValue(value) {
+
 	if (value === Infinity)
 		return "Infinity";
 	if (value === -Infinity)
@@ -100,12 +109,14 @@ function formatCameraValue(value) {
 }
 
 function setCameraVectorFields(prefix, value) {
+
 	document.getElementById(prefix + "-x").value = formatCameraValue(value.x);
 	document.getElementById(prefix + "-y").value = formatCameraValue(value.y);
 	document.getElementById(prefix + "-z").value = formatCameraValue(value.z);
 }
 
 function populateCameraMenu() {
+
 	var cameraPosition = multiply_matrix_by_tuple(inverse(Data.c.transform), point(0, 0, 0));
 	setCameraVectorFields("cam-from", cameraPosition);
 	
@@ -113,7 +124,9 @@ function populateCameraMenu() {
 	var center = point(0, 0, 0);
 	var info = "No scene loaded.";
 	if (bounds) {
+	
 		center = point(
+		
 			boundsCenter(bounds.min.x, bounds.max.x),
 			boundsCenter(bounds.min.y, bounds.max.y),
 			boundsCenter(bounds.min.z, bounds.max.z)
@@ -129,6 +142,7 @@ function populateCameraMenu() {
 }
 
 function cameraFieldValue(id) {
+
 	var value = parseFloat(document.getElementById(id).value);
 	if (!isFinite(value))
 		throw new Error("Enter a valid number for " + id + ".");
@@ -136,6 +150,7 @@ function cameraFieldValue(id) {
 }
 
 function applyCameraSettings() {
+
 	try {
 		var from = point(cameraFieldValue("cam-from-x"), cameraFieldValue("cam-from-y"), cameraFieldValue("cam-from-z"));
 		var to = point(cameraFieldValue("cam-to-x"), cameraFieldValue("cam-to-y"), cameraFieldValue("cam-to-z"));
@@ -155,6 +170,7 @@ function applyCameraSettings() {
 		return true;
 	}
 	catch (error) {
+	
 		showDialog(error.message);
 		return false;
 	}
@@ -163,6 +179,7 @@ function applyCameraSettings() {
 /** RENDERING TO CANVAS */
 
 function renderImage() {
+
 	console.log("Starting render to canvas...");
 	console.time("render");
 	
@@ -183,8 +200,10 @@ function renderImage() {
 }
 
 function renderCanvasLine() {
+
 	g_x = 0;
 	while(g_x != WIDTH) {
+	
 		let r = g_c.ray_for_pixel(g_x, g_y);
 		let c = color_at(g_w, r, g_r);
 		
@@ -206,6 +225,7 @@ function renderCanvasLine() {
 	g_y++;
 			
 	if (g_y === HEIGHT) {
+	
 		console.log("COMPLETED RENDER.");
 		console.timeEnd("render");
 		return;
@@ -220,6 +240,7 @@ var OBJFILECONTENTS = "";
 var FILECONTENTS = "";
 
 function showDialog(message) {
+
 	var dialog = document.getElementById("app-dialog");
 	document.getElementById("app-dialog-message").textContent = message;
 	dialog.style.display = "block";
@@ -227,18 +248,22 @@ function showDialog(message) {
 }
 
 function closeDialog() {
+
 	document.getElementById("app-dialog").style.display = "none";
 }
 
 function readObjectFile(e) {
+
 	var file = e.target.files[0];
 	
 	if (!file) {
+	
 		return;
 	}
 	
 	var reader = new FileReader();
 	reader.onload = function(e) {
+	
 		OBJFILECONTENTS = e.target.result;
 		parse_obj_file();
 		populateCameraMenu();
@@ -248,9 +273,11 @@ function readObjectFile(e) {
 }
 
 function readFile(e) {
+
 	var file = e.target.files[0];
 	
 	if (!file) {
+	
 		showDialog("No file identified.");
 		return;
 	}
@@ -258,6 +285,7 @@ function readFile(e) {
 	var reader = new FileReader();
 	
 	reader.onload = function(e) {
+	
 		FILECONTENTS = e.target.result;
 		parseFileContents(file.name);
 	};
@@ -265,48 +293,60 @@ function readFile(e) {
 	reader.readAsText(file);
 }
 
-async function loadAppFile() {
+function loadAppFile() {
+
 	var filename = document.getElementById("app-file-select").value;
 	if (!filename)
 		return;
 	
-	try {
-		var response = await fetch("./" + encodeURIComponent(filename));
-		if (!response.ok)
-			throw new Error("HTTP " + response.status);
-		
-		var contents = await response.text();
-		if (filename.toLowerCase().endsWith(".obj")) {
-			OBJFILECONTENTS = contents;
-			parse_obj_file();
-			populateCameraMenu();
-		}
-		else if (filename.toLowerCase().endsWith(".ppm")) {
-			FILECONTENTS = contents;
-			parseFileContents(filename);
-		}
-		else
-			throw new Error("Unsupported app file type.");
-	}
-	catch (error) {
-		showDialog("Could not load " + filename + ": " + error.message);
-	}
+	fetch("./" + encodeURIComponent(filename))
+		.then(function (response) {
+
+			if (!response.ok)
+				throw new Error("HTTP " + response.status);
+			
+			return response.text();
+		})
+		.then(function (contents) {
+
+			if (filename.toLowerCase().endsWith(".obj")) {
+			
+				OBJFILECONTENTS = contents;
+				parse_obj_file();
+				populateCameraMenu();
+			}
+			else if (filename.toLowerCase().endsWith(".ppm")) {
+			
+				FILECONTENTS = contents;
+				parseFileContents(filename);
+			}
+			else
+				throw new Error("Unsupported app file type.");
+		})
+		.catch(function (error) {
+
+			showDialog("Could not load " + filename + ": " + error.message);
+		});
 }
 
 var I = {};
 function parseFileContents(fn) {
+
 	try {
 		if(!parsePPM(FILECONTENTS, fn)) 
 			throw new Error("parseFileContents() FAILED!");
 	} catch(e) {
+	
 		showDialog("Could not load " + fn + ". Check that it is a valid P3 PPM file.");
 	}
 }
 
 function parsePPM(contents, fn) {
+
 	var arr = contents.split("\n");
 	
 	if(arr[0]!="P3") {
+	
 		return false;
 	}
 
@@ -319,6 +359,7 @@ function parsePPM(contents, fn) {
 	
 	var pix = [];
 	for (var i = 3; i < arr.length; i = i + 3) {
+	
 		var r = Number(arr[i]);
 		var g = Number(arr[i+1]);
 		var b = Number(arr[i+2]);
@@ -335,5 +376,6 @@ function parsePPM(contents, fn) {
 }
 
 function ppmObj(fn) {
+
 	return { data: Data.PPM[fn].data, width: Data.PPM[fn].width, height: Data.PPM[fn].height };
 }

@@ -7,6 +7,7 @@ var RENDER_BG_COLOR = convHexClr("d6b96f") //colour(0,0,0)
 /** GLOBAL OBJECTS */
 
 var Data = {
+
 				PPM: [],
 				f: [],
 				v: [],
@@ -22,6 +23,7 @@ var Data = {
 };
 
 var DataR = {
+
 				x_min: Infinity,
 				x_max: -Infinity,
 				y_min: Infinity,
@@ -40,11 +42,13 @@ var DataR = {
 var selectedLightColour;
 
 function applySelectedLightColour() {
+
 	if (selectedLightColour && Data.l)
 		Data.l.intensity = selectedLightColour;
 }
 
 function selectLightColour(r, g, b) {
+
 	selectedLightColour = colour(r, g, b);
 	applySelectedLightColour();
 	
@@ -65,6 +69,7 @@ Data.presets.camera.push(view_transform(point(25,0, 25), // from
 
 
 function optionSelected()	{
+
 	var ct;
 	switch(document.getElementById("os").selectedIndex)	{
 		
@@ -106,6 +111,7 @@ function camPresetSelected()	{
 }
 
 function sceneCameraBounds() {
+
 	if (!Data.o || typeof Data.o.parent_space_bounds_of !== "function")
 		return undefined;
 
@@ -116,6 +122,7 @@ function sceneCameraBounds() {
 }
 
 function boundsCenter(min, max) {
+
 	if (isFinite(min) && isFinite(max))
 		return min + (max - min) / 2;
 	if (isFinite(min))
@@ -126,6 +133,7 @@ function boundsCenter(min, max) {
 }
 
 function formatCameraValue(value) {
+
 	if (value === Infinity)
 		return "Infinity";
 	if (value === -Infinity)
@@ -136,12 +144,14 @@ function formatCameraValue(value) {
 }
 
 function setCameraVectorFields(prefix, value) {
+
 	document.getElementById(prefix + "-x").value = formatCameraValue(value.x);
 	document.getElementById(prefix + "-y").value = formatCameraValue(value.y);
 	document.getElementById(prefix + "-z").value = formatCameraValue(value.z);
 }
 
 function populateCameraMenu() {
+
 	var cameraPosition = multiply_matrix_by_tuple(inverse(Data.c.transform), point(0, 0, 0));
 	setCameraVectorFields("cam-from", cameraPosition);
 	
@@ -149,7 +159,9 @@ function populateCameraMenu() {
 	var center = point(0, 0, 0);
 	var info = "No scene loaded.";
 	if (bounds) {
+	
 		center = point(
+		
 			boundsCenter(bounds.min.x, bounds.max.x),
 			boundsCenter(bounds.min.y, bounds.max.y),
 			boundsCenter(bounds.min.z, bounds.max.z)
@@ -165,6 +177,7 @@ function populateCameraMenu() {
 }
 
 function cameraFieldValue(id) {
+
 	var value = parseFloat(document.getElementById(id).value);
 	if (!isFinite(value))
 		throw new Error("Enter a valid number for " + id + ".");
@@ -172,7 +185,9 @@ function cameraFieldValue(id) {
 }
 
 function applyCameraSettings() {
+
 	try {
+	
 		var from = point(cameraFieldValue("cam-from-x"), cameraFieldValue("cam-from-y"), cameraFieldValue("cam-from-z"));
 		var to = point(cameraFieldValue("cam-to-x"), cameraFieldValue("cam-to-y"), cameraFieldValue("cam-to-z"));
 		var fov = cameraFieldValue("cam-fov");
@@ -191,6 +206,7 @@ function applyCameraSettings() {
 		return true;
 	}
 	catch (error) {
+	
 		showDialog(error.message);
 		return false;
 	}
@@ -255,6 +271,7 @@ function render2()	{
 
 	g_x =0;
 	while(g_x != WIDTH) {
+	
 		let r = g_c.ray_for_pixel(g_x, g_y);
 				
 		let c = color_at(g_w, r, g_r)
@@ -363,6 +380,7 @@ function convert(c)	{
 }
 
 function rgbToHex(rgb) { 
+
   var hex = rgb.toString(16)
   if (hex.length < 2)
        hex = "0" + hex;
@@ -413,6 +431,7 @@ var OBJFILECONTENTS = "";
 var FILECONTENTS = "";
 
 function showDialog(message) {
+
 	var dialog = document.getElementById("app-dialog");
 	document.getElementById("app-dialog-message").textContent = message;
 	dialog.style.display = "block";
@@ -420,18 +439,22 @@ function showDialog(message) {
 }
 
 function closeDialog() {
+
 	document.getElementById("app-dialog").style.display = "none";
 }
 
 function readObjectFile(e) {
+
   var file = e.target.files[0];
   
   if (!file) {
+  
     return;
   }
   
   var reader = new FileReader();
   reader.onload = function(e) {
+  
     OBJFILECONTENTS = e.target.result;
     //displayContents(OBJFILECONTENTS);
 	parse_obj_file()
@@ -446,6 +469,7 @@ function readFile(e)	{
 	var file = e.target.files[0];
 	
 	if (!file)	{
+	
 		showDialog("No file identified.");
 		return
 	}
@@ -462,37 +486,46 @@ function readFile(e)	{
 	reader.readAsText(file)
 }
 
-async function loadAppFile() {
+function loadAppFile() {
+
 	var filename = document.getElementById("app-file-select").value;
 	if (!filename)
 		return;
 	
-	try {
-		var response = await fetch("./" + encodeURIComponent(filename));
-		if (!response.ok)
-			throw new Error("HTTP " + response.status);
-		
-		var contents = await response.text();
-		if (filename.toLowerCase().endsWith(".obj")) {
-			OBJFILECONTENTS = contents;
-			parse_obj_file();
-		}
-		else if (filename.toLowerCase().endsWith(".ppm")) {
-			FILECONTENTS = contents;
-			parseFileContents(filename);
-		}
-		else
-			throw new Error("Unsupported app file type.");
-	}
-	catch (error) {
-		showDialog("Could not load " + filename + ": " + error.message);
-	}
+	fetch("./" + encodeURIComponent(filename))
+		.then(function (response) {
+
+			if (!response.ok)
+				throw new Error("HTTP " + response.status);
+			
+			return response.text();
+		})
+		.then(function (contents) {
+
+			if (filename.toLowerCase().endsWith(".obj")) {
+			
+				OBJFILECONTENTS = contents;
+				parse_obj_file();
+			}
+			else if (filename.toLowerCase().endsWith(".ppm")) {
+			
+				FILECONTENTS = contents;
+				parseFileContents(filename);
+			}
+			else
+				throw new Error("Unsupported app file type.");
+		})
+		.catch(function (error) {
+
+			showDialog("Could not load " + filename + ": " + error.message);
+		});
 }
 
 var I = {}
 function parseFileContents(fn)	{
 	
 	try	{
+	
 		// if file ext == ".rdt" then
 		//eval("I = " + FILECONTENTS + ";")
 		// else if file ext == ".ppm"
@@ -500,6 +533,7 @@ function parseFileContents(fn)	{
 		if(!parsePPM(FILECONTENTS, fn)) 
 			throw new Error("parseFileContents() FAILED!")
 	} catch(e)	{
+	
 		showDialog("Could not load " + fn + ". Check that it is a valid P3 PPM file.");
 	}
 	
@@ -508,11 +542,13 @@ function parseFileContents(fn)	{
 }
 
 function parsePPM(contents, fn)	{
+
 	// Data.PPM.push(new PPM{width, height, colour_depth, pixels[height*width], filename})
 	
 	var arr = contents.split("\n");
 	
 	if(arr[0]!="P3")	{
+	
 		return false;
 	}
 
