@@ -9,6 +9,8 @@ var rtdt_ui_browser = (function () {
     var scene_loaded = false;
     var images = {};
     var render_index = 0;
+    var phy_model = null;
+    var phy_animator = null;
 
     function element(id) {
 
@@ -71,6 +73,7 @@ var rtdt_ui_browser = (function () {
                 throw new Error('Scene did not create a group of shapes.');
 
             scene_loaded = true;
+            phy_animator = null;
             pixels = null;
             status('mainStatus', 'Scene loaded: ' + name + '. Ready to render.', 'success');
             refresh_objects();
@@ -78,6 +81,90 @@ var rtdt_ui_browser = (function () {
 
             status('mainStatus', error.message, 'error');
         }
+    }
+
+    function phy_bindings() {
+
+        var bindings = {};
+        var objects = Data.o && Data.o.s ? Data.o.s : [];
+        for (var i = 0; i < objects.length; i++) {
+
+            bindings[String(i)] = objects[i];
+            var alias = objects[i].id2;
+            if (alias && !Object.prototype.hasOwnProperty.call(bindings, String(alias)))
+                bindings[String(alias)] = objects[i];
+        }
+        return bindings;
+    }
+
+    function apply_phy() {
+
+        if (running) {
+
+            status('phyStatus', 'Stop the current render before changing the pose.', 'error');
+            return;
+        }
+        if (!scene_loaded || !phy_model) {
+
+            status('phyStatus', 'Load a scene and a .phy file first.', 'error');
+            return;
+        }
+        try {
+
+            var t = Number(element('phyTime').value);
+            if (!isFinite(t) || t < 0)
+                throw new Error('Time must be a nonnegative number.');
+            if (!phy_animator)
+                phy_animator = rtdt_aetherore.create_animator(phy_model, phy_bindings());
+            phy_animator.at(t);
+            pixels = null;
+            status('phyStatus', 'Applied .phy pose at t=' + t + 's. Render to view.', 'success');
+        } catch (error) {
+
+            status('phyStatus', error.message, 'error');
+        }
+    }
+
+    function load_phy() {
+
+        var file = element('phyFile').files[0];
+        if (!file) {
+
+            status('phyStatus', 'Select a .phy file.', 'error');
+            return;
+        }
+        if (!/\\.phy$/i.test(file.name)) {
+
+            status('phyStatus', 'Expected a .phy file.', 'error');
+            return;
+        }
+        var reader = new FileReader();
+        reader.onload = function () {
+
+            try {
+
+                var model = rtdt_aetherore.parse_phy(reader.result);
+                if (!scene_loaded)
+                    throw new Error('Load the target scene first.');
+                /* Check every referenced object before accepting the document. */
+                var animator = rtdt_aetherore.create_animator(model, phy_bindings());
+                if (running)
+                    throw new Error('Stop rendering before loading a .phy file.');
+                phy_model = model;
+                phy_animator = animator;
+                element('phyTime').value = '0';
+                apply_phy();
+                status('phyStatus', 'Loaded .phy file: ' + file.name + '. Pose t=0 applied.', 'success');
+            } catch (error) {
+
+                status('phyStatus', error.message, 'error');
+            }
+        };
+        reader.onerror = function () {
+
+            status('phyStatus', 'Could not read .phy file.', 'error');
+        };
+        reader.readAsText(file);
     }
 
     function change_camera() {
@@ -422,6 +509,8 @@ var rtdt_ui_browser = (function () {
         cancel_render();
         pixels = null;
         scene_loaded = false;
+        phy_model = null;
+        phy_animator = null;
         Data.o = {};
         refresh_objects();
         status('mainStatus', 'Project cleared. Load a new scene.', 'info');
@@ -514,6 +603,8 @@ var rtdt_ui_browser = (function () {
 
         bind_menubar();
         bind('btnLoadScene', 'click', load_scene);
+        bind('btnLoadPhy', 'click', load_phy);
+        bind('btnApplyPhy', 'click', apply_phy);
         bind('btnRender', 'click', start_render);
         bind('btnAbort', 'click', cancel_render);
         bind('btnUpdateCamera', 'click', change_camera);
@@ -569,7 +660,8 @@ var rtdt_ui_browser = (function () {
     else
         initialise();
 
-    return {load_scene: load_scene, start_render: start_render,
+    return {load_scene: load_scene, load_phy: load_phy, apply_phy: apply_phy,
+        start_render: start_render,
         cancel_render: cancel_render, import_image: import_image,
         apply_image: apply_image, apply_light: apply_light,
         divide_scene: divide_scene};
