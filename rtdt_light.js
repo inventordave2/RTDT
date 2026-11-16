@@ -8,7 +8,7 @@ function point_light(position, intensity)	{
 
 function colour(r, g, b)	{
 	
-	return new tuple(r, g, b, 2);
+	return {r:r, g:g, b:b};
 }
 
 function lighting(_material, _light, obj, _point, eyev, normalv, in_shadow, f)	{
@@ -19,12 +19,12 @@ function lighting(_material, _light, obj, _point, eyev, normalv, in_shadow, f)	{
 		
 		clr = _material.pattern.color_at_object(obj, _point)
 		
-		//console.log("LIGHTING: r: " + clr.x + ", g: " + clr.y + ", b: " + clr.z)
+		//console.log("LIGHTING: r: " + clr.r + ", g: " + clr.g + ", b: " + clr.b)
 	}
 	else
 		clr = _material.color
 	
-	//console.log("light.js::lighting(...):clr = r:"+clr.x+", g:"+clr.y+", b:"+clr.z+"\n")
+	//console.log("light.js::lighting(...):clr = r:"+clr.r+", g:"+clr.g+", b:"+clr.b+"\n")
 	
 	// combine the surface color with the light's color/intensity
 	var effective_color = multiply(clr, _light.intensity);
