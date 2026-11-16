@@ -107,7 +107,7 @@ function render2() {
 		let r = g_c.ray_for_pixel(g_x, g_y);
 		let c = color_at(g_w, r, g_r);
 		
-		if ((c.x==0) && (c.y==0) && (c.z==0))
+		if ((c.r==0) && (c.g==0) && (c.b==0))
 			c = RENDER_BG_COLOR;
 		
 		// Store pixel for later display or export
@@ -145,7 +145,7 @@ function renderSceneSync(world, camera, renderQuality) {
 			var r = camera.ray_for_pixel(x, y);
 			var c = color_at(world, r, renderQuality || 1);
 			
-			if ((c.x === 0) && (c.y === 0) && (c.z === 0))
+			if ((c.r === 0) && (c.g === 0) && (c.b === 0))
 				c = RENDER_BG_COLOR;
 			
 			pixels.push(c);
@@ -160,9 +160,9 @@ function renderSceneSync(world, camera, renderQuality) {
 
 /** Helper: Convert color to 0-255 range */
 function convert(c) {
-	var red = c.x;
-	var green = c.y;
-	var blue = c.z;
+	var red = c.r;
+	var green = c.g;
+	var blue = c.b;
 	
 	if (red>1)
 		red = 1;
@@ -203,9 +203,9 @@ function rgbToHex(rgb) {
 /** Helper: Get pixel data for export (e.g., PPM) */
 function colorTo255(c) {
 	return {
-		r: Math.floor(Math.max(0, Math.min(1, c.x)) * 255),
-		g: Math.floor(Math.max(0, Math.min(1, c.y)) * 255),
-		b: Math.floor(Math.max(0, Math.min(1, c.z)) * 255)
+		r: Math.floor(Math.max(0, Math.min(1, c.r)) * 255),
+		g: Math.floor(Math.max(0, Math.min(1, c.g)) * 255),
+		b: Math.floor(Math.max(0, Math.min(1, c.b)) * 255)
 	};
 }
 
