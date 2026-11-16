@@ -460,9 +460,9 @@ function test86b()	{ // PASSED
 	var eyev = vector(0, Math.SQRT2/2, Math.SQRT2/2);
 	var normalv = vector(0,0,-1);
 	var _color = colour(1, 1, 1);
-	_color.x = 1;
-	_color.y = 1;
-	_color.z = 1;
+	_color.r = 1;
+	_color.g = 1;
+	_color.b = 1;
 	
 	var light = new point_light(point(0,0,-10), _color);
 	
