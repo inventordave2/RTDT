@@ -53,7 +53,7 @@ canvas.height = 600;
   ctx.putImageData(img, 0, 0);
 */
 
-function my_pattern(TextureMap)	{
+function texture_pattern(TextureMap)	{
 	
 	var tp = new Pattern()
 	tp.type = "TextureMap"
@@ -73,8 +73,8 @@ function my_pattern(TextureMap)	{
 }
 
 // USAGE:
-// var tm = TextureMap(checkers_pattern(2, 2, {x: 1, y: 1, z: 1}, {x: 0.4, y: 0.4, z: 0.4}), spherical_map)
-// s.material.pattern = my_pattern(tm)
+// var tm = texture_map(checkers_pattern(2, 2, {x: 1, y: 1, z: 1}, {x: 0.4, y: 0.4, z: 0.4}), spherical_map)
+// s.material.pattern = texture_pattern(tm)
 
 function cube_uv_front(p)	{
 	
@@ -225,7 +225,7 @@ function SkyBox(left, right, front, back, top, bottom)	{
 	return sb
 }
 /*
-//The below function has been inlined into the Pattern.algorithm() method, see Pattern Factory "my_pattern(...)", above.
+//The below function has been inlined into the Pattern.algorithm() method, see Pattern Factory "texture_pattern(...)", above.
 function pattern_at(TextureMap, p)	{
 	
 	var uv = TextureMap.uv_map(p)
@@ -236,9 +236,9 @@ function pattern_at(TextureMap, p)	{
 */
 
 /*
-function TextureMap(uv_pattern, uv_map), which returns a new TextureMap pattern instance that encapsulates the given uv_pattern (like uv_checkers()) and uv_map (like spherical_map()).
+function texture_map(uv_pattern, uv_map), which returns a new TextureMap pattern instance that encapsulates the given uv_pattern (like uv_checkers()) and uv_map (like spherical_map()).
 */
-function TextureMap(uv_pattern, uv_map)	{
+function texture_map(uv_pattern, uv_map)	{
 	
 	return { uv_pattern: uv_pattern, uv_map: uv_map }
 	// eg uv_pattern = checkers_pattern(...) || align_check_pattern(...)
@@ -547,3 +547,6 @@ function stripe_pattern(c1, c2, scale)	{
 	
 	return pt;
 }
+/* Backwards-compatible aliases for existing user scenes. */
+var TextureMap = texture_map;
+var my_pattern = texture_pattern;
