@@ -1,4 +1,4 @@
-/* RtDt Aetherore: .phy evaluator and keyframe world animator.
+/* RtDt AetherOre: .phy evaluator and keyframe world animator.
  * Version 1 documents are JSON, not executable JavaScript.
  * Requires RtDt matrix modules for compose/apply; optional rtdt_ap_math for
  * quoted decimal expressions. Node.js 10 and browser compatible.
