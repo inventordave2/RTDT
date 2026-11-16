@@ -10,18 +10,21 @@
 		* { margin: 0; padding: 0; box-sizing: border-box; }
 		
 		body {
+
 			font-family: Arial, sans-serif;
 			background-color: #f0f0f0;
 			color: #333;
 		}
 		
 		.container {
+
 			max-width: 1200px;
 			margin: 0 auto;
 			padding: 10px;
 		}
 		
 		header {
+
 			background-color: #333;
 			color: white;
 			padding: 15px;
@@ -30,22 +33,26 @@
 		}
 		
 		header h1 {
+
 			font-size: 28px;
 			margin-bottom: 5px;
 		}
 		
 		header p {
+
 			font-size: 12px;
 			opacity: 0.8;
 		}
 		
 		.layout {
+
 			display: flex;
 			gap: 10px;
 			margin-top: 10px;
 		}
 		
 		.sidebar {
+
 			width: 300px;
 			background-color: white;
 			border: 1px solid #ddd;
@@ -56,6 +63,7 @@
 		}
 		
 		.main {
+
 			flex: 1;
 			background-color: white;
 			border: 1px solid #ddd;
@@ -64,6 +72,7 @@
 		}
 		
 		canvas {
+
 			border: 1px solid #999;
 			background-color: #000;
 			display: block;
@@ -72,10 +81,12 @@
 		}
 		
 		.section {
+
 			margin-bottom: 20px;
 		}
 		
 		.section h3 {
+
 			font-size: 16px;
 			border-bottom: 2px solid #0066cc;
 			padding-bottom: 8px;
@@ -83,10 +94,12 @@
 		}
 		
 		.control-group {
+
 			margin-bottom: 12px;
 		}
 		
 		label {
+
 			display: block;
 			font-size: 12px;
 			font-weight: bold;
@@ -98,6 +111,7 @@
 		input[type="number"],
 		input[type="file"],
 		select {
+
 			width: 100%;
 			padding: 6px;
 			border: 1px solid #ccc;
@@ -110,12 +124,14 @@
 		input[type="text"]:focus,
 		input[type="number"]:focus,
 		select:focus {
+
 			outline: none;
 			border-color: #0066cc;
 			box-shadow: 0 0 3px #0066cc;
 		}
 		
 		button {
+
 			display: block;
 			width: 100%;
 			padding: 8px 12px;
@@ -131,35 +147,43 @@
 		}
 		
 		button:hover {
+
 			background-color: #0052a3;
 		}
 		
 		button:active {
+
 			background-color: #003d7a;
 		}
 		
 		button:disabled {
+
 			background-color: #ccc;
 			cursor: not-allowed;
 		}
 		
 		.btn-secondary {
+
 			background-color: #666;
 		}
 		
 		.btn-secondary:hover {
+
 			background-color: #555;
 		}
 		
 		.btn-danger {
+
 			background-color: #d32f2f;
 		}
 		
 		.btn-danger:hover {
+
 			background-color: #b71c1c;
 		}
 		
 		.status {
+
 			padding: 10px;
 			margin-top: 10px;
 			background-color: #f5f5f5;
@@ -173,24 +197,28 @@
 		}
 		
 		.status.success {
+
 			background-color: #e8f5e9;
 			border-left-color: #4caf50;
 			color: #2e7d32;
 		}
 		
 		.status.error {
+
 			background-color: #ffebee;
 			border-left-color: #d32f2f;
 			color: #c62828;
 		}
 		
 		.status.info {
+
 			background-color: #e3f2fd;
 			border-left-color: #0066cc;
 			color: #1565c0;
 		}
 		
 		.modal {
+
 			display: none;
 			position: fixed;
 			z-index: 1000;
@@ -202,12 +230,14 @@
 		}
 		
 		.modal.show {
+
 			display: flex;
 			align-items: center;
 			justify-content: center;
 		}
 		
 		.modal-content {
+
 			background-color: white;
 			padding: 20px;
 			border: 1px solid #888;
@@ -219,6 +249,7 @@
 		}
 		
 		.modal-header {
+
 			font-size: 18px;
 			font-weight: bold;
 			margin-bottom: 10px;
@@ -227,6 +258,7 @@
 		}
 		
 		.modal-close {
+
 			float: right;
 			font-size: 20px;
 			cursor: pointer;
@@ -239,10 +271,12 @@
 		}
 		
 		.modal-close:hover {
+
 			color: #000;
 		}
 		
 		.info-box {
+
 			background-color: #e3f2fd;
 			border: 1px solid #90caf9;
 			border-radius: 3px;
@@ -253,6 +287,7 @@
 		}
 		
 		.keyboard-shortcuts {
+
 			font-size: 11px;
 			background-color: #f5f5f5;
 			padding: 10px;
@@ -261,21 +296,26 @@
 		}
 		
 		.keyboard-shortcuts dt {
+
 			font-weight: bold;
 			margin-top: 5px;
 		}
 		
 		.keyboard-shortcuts dd {
+
 			margin-left: 20px;
 			margin-bottom: 5px;
 		}
 		
 		@media (max-width: 768px) {
+
 			.layout {
+
 				flex-direction: column;
 			}
 			
 			.sidebar {
+
 				width: 100%;
 				max-height: none;
 			}
@@ -444,15 +484,19 @@ let modulesLoaded = 0;
 let loadingError = null;
 
 async function loadAllModules() {
+
 	const status = document.getElementById('mainStatus');
 	status.textContent = 'Loading raytracer modules...';
 	status.style.display = 'block';
 	status.className = 'status info';
 	
 	try {
+
 		for (const modulePath of MODULE_PATHS) {
+
 			const response = await fetch(modulePath);
 			if (!response.ok) {
+
 				throw new Error(`Failed to load ${modulePath}: ${response.status}`);
 			}
 			const code = await response.text();
@@ -472,6 +516,7 @@ async function loadAllModules() {
 		setTimeout(() => { status.style.display = 'none'; }, 3000);
 		
 	} catch (e) {
+
 		status.textContent = '✗ Error loading modules:\n' + e.message;
 		status.className = 'status error';
 		loadingError = e;
@@ -487,7 +532,9 @@ async function loadAllModules() {
 // (in case scripts are loaded via <script> tags at bottom of HTML)
 
 function ensureModulesReady() {
+
 	if (typeof vector === 'undefined') {
+
 		const status = document.getElementById('mainStatus');
 		status.textContent = 'Waiting for modules... Make sure all .js files are in same directory as webapp.html';
 		status.style.display = 'block';
@@ -505,6 +552,7 @@ let isRendering = false;
 let currentPixels = null;
 
 function updateStatus(elementId, message, type = 'info') {
+
 	const element = document.getElementById(elementId);
 	element.textContent = message;
 	element.className = 'status ' + type;
@@ -512,12 +560,15 @@ function updateStatus(elementId, message, type = 'info') {
 }
 
 document.getElementById('btnLoadScene')?.addEventListener('click', function() {
+
 	if (!ensureModulesReady()) return;
 	
 	const sceneName = document.getElementById('sceneSelect').value;
 	
 	try {
+
 		if (typeof scenes === 'undefined' || typeof scenes[sceneName] !== 'function') {
+
 			throw new Error('Scene not available: ' + sceneName);
 		}
 		
@@ -528,6 +579,7 @@ document.getElementById('btnLoadScene')?.addEventListener('click', function() {
 		
 		// Initialize and run scene
 		if (typeof initRaytracer === 'function') {
+
 			initRaytracer(WIDTH, HEIGHT);
 		}
 		
@@ -537,20 +589,25 @@ document.getElementById('btnLoadScene')?.addEventListener('click', function() {
 		updateStatus('mainStatus', 'Scene ready. Adjust camera and render settings, then click Start Render.', 'info');
 		
 		setTimeout(() => { 
+
 			document.getElementById('sceneStatus').style.display = 'none';
 		}, 3000);
 		
 	} catch (e) {
+
 		updateStatus('sceneStatus', '✗ Error: ' + e.message, 'error');
 		console.error('Scene load error:', e);
 	}
 });
 
 document.getElementById('btnUpdateCamera')?.addEventListener('click', function() {
+
 	if (!ensureModulesReady()) return;
 	
 	try {
+
 		if (typeof Data === 'undefined' || !Data.c) {
+
 			updateStatus('mainStatus', 'Load a scene first', 'error');
 			return;
 		}
@@ -564,20 +621,25 @@ document.getElementById('btnUpdateCamera')?.addEventListener('click', function()
 		
 		updateStatus('mainStatus', '✓ Camera updated', 'success');
 		setTimeout(() => { 
+
 			document.getElementById('mainStatus').style.display = 'none';
 		}, 2000);
 		
 	} catch (e) {
+
 		updateStatus('mainStatus', '✗ Camera error: ' + e.message, 'error');
 	}
 });
 
 document.getElementById('btnRender')?.addEventListener('click', function() {
+
 	if (!ensureModulesReady()) return;
 	if (isRendering) return;
 	
 	try {
+
 		if (typeof Data === 'undefined' || !Data.o) {
+
 			updateStatus('mainStatus', 'Load a scene first', 'error');
 			return;
 		}
@@ -591,6 +653,7 @@ document.getElementById('btnRender')?.addEventListener('click', function() {
 		const quality = parseInt(document.getElementById('renderQuality').value);
 		
 		if (width < 1 || height < 1 || quality < 1) {
+
 			throw new Error('Invalid render settings');
 		}
 		
@@ -607,8 +670,11 @@ document.getElementById('btnRender')?.addEventListener('click', function() {
 		
 		// Use requestAnimationFrame to keep UI responsive
 		requestAnimationFrame(() => {
+
 			try {
+
 				if (typeof renderSceneSync !== 'function') {
+
 					throw new Error('Renderer not ready');
 				}
 				
@@ -630,9 +696,11 @@ document.getElementById('btnRender')?.addEventListener('click', function() {
 				displayPixelsOnCanvas(currentPixels, width, height);
 				
 			} catch (e) {
+
 				updateStatus('renderStatus', '✗ Render error: ' + e.message, 'error');
 				console.error('Render error:', e);
 			} finally {
+
 				isRendering = false;
 				document.getElementById('btnRender').disabled = false;
 				document.getElementById('btnAbort').style.display = 'none';
@@ -640,6 +708,7 @@ document.getElementById('btnRender')?.addEventListener('click', function() {
 		});
 		
 	} catch (e) {
+
 		updateStatus('renderStatus', '✗ Error: ' + e.message, 'error');
 		isRendering = false;
 		document.getElementById('btnRender').disabled = false;
@@ -648,6 +717,7 @@ document.getElementById('btnRender')?.addEventListener('click', function() {
 });
 
 document.getElementById('btnAbort')?.addEventListener('click', function() {
+
 	isRendering = false;
 	updateStatus('renderStatus', 'Render cancelled', 'info');
 	document.getElementById('btnRender').disabled = false;
@@ -655,12 +725,15 @@ document.getElementById('btnAbort')?.addEventListener('click', function() {
 });
 
 document.getElementById('btnDownloadPPM')?.addEventListener('click', function() {
+
 	if (!currentPixels) {
+
 		updateStatus('mainStatus', 'Render an image first', 'error');
 		return;
 	}
 	
 	try {
+
 		const width = document.getElementById('canvas').width;
 		const height = document.getElementById('canvas').height;
 		
@@ -668,8 +741,10 @@ document.getElementById('btnDownloadPPM')?.addEventListener('click', function() 
 		
 		let pixelIndex = 0;
 		for (let y = 0; y < height; y++) {
+
 			let line = '';
 			for (let x = 0; x < width; x++) {
+
 				const c = currentPixels[pixelIndex++];
 				const rgb = colorTo255(c);
 				line += rgb.r + ' ' + rgb.g + ' ' + rgb.b + '  ';
@@ -689,17 +764,21 @@ document.getElementById('btnDownloadPPM')?.addEventListener('click', function() 
 		
 		updateStatus('mainStatus', '✓ PPM file downloaded', 'success');
 	} catch (e) {
+
 		updateStatus('mainStatus', '✗ Download error: ' + e.message, 'error');
 	}
 });
 
 document.getElementById('btnDownloadPNG')?.addEventListener('click', function() {
+
 	if (!currentPixels) {
+
 		updateStatus('mainStatus', 'Render an image first', 'error');
 		return;
 	}
 	
 	try {
+
 		const canvas = document.getElementById('canvas');
 		const url = canvas.toDataURL('image/png');
 		const a = document.createElement('a');
@@ -711,25 +790,33 @@ document.getElementById('btnDownloadPNG')?.addEventListener('click', function() 
 		
 		updateStatus('mainStatus', '✓ PNG file downloaded', 'success');
 	} catch (e) {
+
 		updateStatus('mainStatus', '✗ Download error: ' + e.message, 'error');
 	}
 });
 
 document.getElementById('btnShowKeyboard')?.addEventListener('click', function() {
+
 	document.getElementById('keyboardModal').classList.add('show');
 });
 
 // Keyboard shortcuts
 document.addEventListener('keydown', function(e) {
+
 	if (e.key === 'r' || e.key === 'R') {
+
 		if (!isRendering) document.getElementById('btnRender')?.click();
 	} else if (e.key === 's' || e.key === 'S') {
+
 		if (isRendering) document.getElementById('btnAbort')?.click();
 	} else if (e.key === '?') {
+
 		document.getElementById('keyboardModal').classList.add('show');
 	} else if (e.key === 'd' || e.key === 'D') {
+
 		document.getElementById('btnDownloadPPM')?.click();
 	} else if (e.key === ' ') {
+
 		e.preventDefault();
 		document.getElementById('camX').value = -6;
 		document.getElementById('camY').value = 1.5;
@@ -740,14 +827,17 @@ document.addEventListener('keydown', function(e) {
 
 // Close modal on outside click
 window.addEventListener('click', function(e) {
+
 	const modal = document.getElementById('keyboardModal');
 	if (e.target === modal) {
+
 		modal.classList.remove('show');
 	}
 });
 
 // Fallback display function if raytracer-graphics doesn't load
 function displayPixelsOnCanvas(pixels, width, height) {
+
 	const canvas = document.getElementById('canvas');
 	const ctx = canvas.getContext('2d');
 	
@@ -758,6 +848,7 @@ function displayPixelsOnCanvas(pixels, width, height) {
 	const data = imageData.data;
 	
 	for (let i = 0; i < pixels.length; i++) {
+
 		const color = pixels[i];
 		const rgb = colorTo255(color);
 		
@@ -773,8 +864,11 @@ function displayPixelsOnCanvas(pixels, width, height) {
 
 // Helper if colorTo255 not loaded
 function colorTo255(c) {
+
 	if (typeof c.r !== 'undefined') {
+
 		return {
+
 			r: Math.min(255, Math.max(0, Math.floor(c.r * 255))),
 			g: Math.min(255, Math.max(0, Math.floor(c.g * 255))),
 			b: Math.min(255, Math.max(0, Math.floor(c.b * 255)))
@@ -789,10 +883,13 @@ function colorTo255(c) {
 
 // Try to load modules on startup
 window.addEventListener('load', function() {
+
 	loadAllModules().catch(e => {
+
 		console.warn('Async module loading failed, will try inline:', e);
 		// Modules might already be loaded if <script> tags are at bottom
 		if (ensureModulesReady()) {
+
 			document.getElementById('mainStatus').textContent = '✓ Raytracer ready!';
 			document.getElementById('mainStatus').className = 'status success';
 		}
@@ -801,6 +898,7 @@ window.addEventListener('load', function() {
 
 // Initial help message
 window.addEventListener('DOMContentLoaded', function() {
+
 	const status = document.getElementById('mainStatus');
 	status.textContent = 'Loading raytracer... Place this file in the root RTDT directory.';
 	status.className = 'status info';
