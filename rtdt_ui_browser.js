@@ -417,6 +417,87 @@ var rtdt_ui_browser = (function () {
             node.addEventListener(event_name, action, false);
     }
 
+    function close_project() {
+
+        cancel_render();
+        pixels = null;
+        scene_loaded = false;
+        Data.o = {};
+        refresh_objects();
+        status('mainStatus', 'Project cleared. Load a new scene.', 'info');
+    }
+
+    function bind_menubar() {
+
+        var menus = document.querySelectorAll('.rtdt-menu');
+
+        function close_menus() {
+
+            for (var i = 0; i < menus.length; i++) {
+
+                menus[i].className = menus[i].className.replace(/\s*open\b/g, '');
+                menus[i].querySelector('.rtdt-menu-toggle').setAttribute('aria-expanded', 'false');
+            }
+        }
+
+        for (var i = 0; i < menus.length; i++) {
+
+            (function (menu) {
+
+                var toggle = menu.querySelector('.rtdt-menu-toggle');
+                toggle.addEventListener('click', function (event) {
+
+                    var was_open = /\bopen\b/.test(menu.className);
+                    close_menus();
+                    if (!was_open) {
+
+                        menu.className += ' open';
+                        toggle.setAttribute('aria-expanded', 'true');
+                    }
+                    event.stopPropagation();
+                });
+            }(menus[i]));
+        }
+
+        document.addEventListener('click', function (event) {
+
+            var action = event.target.getAttribute && event.target.getAttribute('data-menu-action');
+            if (!action) {
+
+                if (!event.target.closest || !event.target.closest('.rtdt-menu'))
+                    close_menus();
+                return;
+            }
+
+            close_menus();
+            var actions = {
+                'open-obj': function () { element('objFile').click(); },
+                'open-image': function () { refresh_objects(); open_dialog('imageModal'); },
+                'export': download_image,
+                'close-project': close_project,
+                'render': start_render,
+                'stop': cancel_render,
+                'bvh': divide_scene,
+                'bvh-threshold': function () { element('bvhThreshold').focus(); },
+                'camera': function () { open_dialog('cameraModal'); },
+                'lights': function () { open_dialog('lightsModal'); },
+                'keyboard': function () { open_dialog('keyboardModal'); },
+                'contents': function () { open_dialog('keyboardModal'); },
+                'select-shape': function () { refresh_objects(); open_dialog('imageModal'); },
+                'bug': function () { window.open('https://github.com/inventordave2/RTDT/issues/new', '_blank'); },
+                'about': function () { window.alert('RtDt — JavaScript ray tracer. File / Render / Help controls migrated from the legacy interface.'); }
+            };
+            if (actions[action])
+                actions[action]();
+        }, false);
+
+        document.addEventListener('keydown', function (event) {
+
+            if (event.key === 'Escape')
+                close_menus();
+        }, false);
+    }
+
     function initialise() {
 
         if (typeof rtdt_colour === 'undefined' || typeof initRaytracer !== 'function') {
@@ -431,6 +512,7 @@ var rtdt_ui_browser = (function () {
         element('mainStatus').style.display = 'block';
         status('mainStatus', 'RtDt ready. Load a scene to begin.', 'success');
 
+        bind_menubar();
         bind('btnLoadScene', 'click', load_scene);
         bind('btnRender', 'click', start_render);
         bind('btnAbort', 'click', cancel_render);
