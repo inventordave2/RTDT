@@ -320,6 +320,150 @@
 				max-height: none;
 			}
 		}
+
+		/* RtDt rainbow-spectrum theme: inline CSS, no external assets. */
+		body {
+
+			background-color: #e9eef6;
+			color: #26334a;
+		}
+
+		header {
+
+			background-color: #243248;
+			border-bottom: 0;
+			text-shadow: 0 1px 1px #101927;
+		}
+
+		.spectrum-bar {
+
+			height: 7px;
+			overflow: hidden;
+			background-color: #597fb4;
+		}
+
+		.spectrum-bar span {
+
+			display: block;
+			float: left;
+			width: 16.666%;
+			height: 7px;
+		}
+
+		.spectrum-red { background-color: #e85c69; }
+		.spectrum-orange { background-color: #edaa52; }
+		.spectrum-yellow { background-color: #ead44f; }
+		.spectrum-green { background-color: #4db58b; }
+		.spectrum-blue { background-color: #4d96d2; }
+		.spectrum-violet { background-color: #9072ce; }
+
+		.sidebar, .main {
+
+			background-color: #f8faff;
+			border-color: #bfcee0;
+			border-radius: 6px;
+			box-shadow: 0 2px 9px #b7c5d6;
+		}
+
+		.main {
+
+			background-color: #f4f7fc;
+		}
+
+		canvas {
+
+			border: 3px solid #26364e;
+			box-shadow: 0 2px 7px #bac8d8;
+		}
+
+		.section {
+
+			background-color: #ffffff;
+			border: 1px solid #d5deeb;
+			border-left: 5px solid #899bb3;
+			border-radius: 5px;
+			padding: 12px;
+		}
+
+		.section h3 {
+
+			color: #26334a;
+			border-bottom-color: #a4b3c7;
+		}
+
+		.section-scene { border-left-color: #e85c69; }
+		.section-camera { border-left-color: #edaa52; }
+		.section-render { border-left-color: #4db58b; }
+		.section-files { border-left-color: #4d96d2; }
+		.section-help { border-left-color: #9072ce; }
+
+		.section-scene h3 { border-bottom-color: #e85c69; }
+		.section-camera h3 { border-bottom-color: #edaa52; }
+		.section-render h3 { border-bottom-color: #4db58b; }
+		.section-files h3 { border-bottom-color: #4d96d2; }
+		.section-help h3 { border-bottom-color: #9072ce; }
+
+		button {
+
+			background-color: #5977b4;
+			border: 1px solid #334e81;
+			border-top-color: #9db3dc;
+			border-left-color: #9db3dc;
+			border-radius: 4px;
+			box-shadow: inset 0 1px 0 #c0ceeb, 0 2px 2px #a8b7ca;
+			text-shadow: 0 1px 0 #354d79;
+		}
+
+		button:hover {
+
+			background-color: #4b69a4;
+		}
+
+		button:active {
+
+			border-top-color: #334e81;
+			border-left-color: #334e81;
+			box-shadow: inset 0 2px 3px #344c77;
+		}
+
+		button:disabled {
+
+			background-color: #a5afbc;
+			border-color: #929eaf;
+			box-shadow: none;
+			text-shadow: none;
+		}
+
+		.section-scene button { background-color: #c54e64; border-color: #933949; }
+		.section-camera button { background-color: #ba792e; border-color: #87531b; }
+		.section-render button { background-color: #27875e; border-color: #1e6849; }
+		.section-files button { background-color: #347bb8; border-color: #245b88; }
+		.section-help button { background-color: #795caf; border-color: #563f86; }
+
+		.section button:hover { opacity: 0.94; }
+
+		.btn-secondary {
+
+			color: #ffffff;
+		}
+
+		.btn-danger, #btnAbort {
+
+			background-color: #c13e48;
+			border-color: #8e2632;
+		}
+
+		.modal-content {
+
+			border-top: 5px solid #9072ce;
+			box-shadow: 0 6px 20px #74849b;
+		}
+
+		.status.info {
+
+			background-color: #e9f0ff;
+			border-left-color: #4d96d2;
+		}
 	</style>
 </head>
 <body>
@@ -328,13 +472,14 @@
 	<h1>RTDT - Ray Tracer</h1>
 	<p>Interactive web-based raytracer with real-time rendering</p>
 </header>
+<div class="spectrum-bar" aria-hidden="true"><span class="spectrum-red"></span><span class="spectrum-orange"></span><span class="spectrum-yellow"></span><span class="spectrum-green"></span><span class="spectrum-blue"></span><span class="spectrum-violet"></span></div>
 
 <div class="container">
 	<div class="layout">
 		<!-- Sidebar Controls -->
 		<div class="sidebar">
 			<!-- Scene Selection -->
-			<div class="section">
+			<div class="section section-scene">
 				<h3>Scene</h3>
 				<div class="control-group">
 					<label for="sceneSelect">Select Scene:</label>
@@ -351,7 +496,7 @@
 			</div>
 			
 			<!-- Camera Controls -->
-			<div class="section">
+			<div class="section section-camera">
 				<h3>Camera</h3>
 				<div class="control-group">
 					<label for="camX">Position X:</label>
@@ -369,7 +514,7 @@
 			</div>
 			
 			<!-- Render Settings -->
-			<div class="section">
+			<div class="section section-render">
 				<h3>Render</h3>
 				<div class="control-group">
 					<label for="renderWidth">Width (px):</label>
@@ -389,7 +534,7 @@
 			</div>
 			
 			<!-- File I/O -->
-			<div class="section">
+			<div class="section section-files">
 				<h3>Files</h3>
 				<div class="control-group">
 					<label for="objFile">Load OBJ File:</label>
@@ -400,7 +545,7 @@
 			</div>
 			
 			<!-- Help -->
-			<div class="section">
+			<div class="section section-help">
 				<h3>Quick Help</h3>
 				<div class="info-box">
 					Select a scene, adjust camera/render settings, then click "Start Render" to begin.
