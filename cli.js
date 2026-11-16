@@ -335,7 +335,7 @@ function renderScene() {
 			throw new Error('Scene did not populate scene data');
 		}
 		
-		// Optional Aetherore animation: numeric string indices ("0", "1", ...)
+		// Optional AetherOre animation: numeric string indices ("0", "1", ...)
 		// refer to the top-level objects in Data.o.s.
 		if (cliConfig.phyFile) {
 		
@@ -355,7 +355,7 @@ function renderScene() {
 			var t = cliConfig.phyTime !== null ? cliConfig.phyTime :
 				(cliConfig.phyFrame !== null ? cliConfig.phyFrame / fps : 0);
 			rtdt_aetherore.create_animator(phy, bindings).at(t);
-			log('Aetherore: ' + cliConfig.phyFile + ' at t=' + t + 's');
+			log('AetherOre: ' + cliConfig.phyFile + ' at t=' + t + 's');
 		}
 		else if (cliConfig.phyTime !== null || cliConfig.phyFrame !== null)
 			throw new Error('--time/--frame requires --phy');
