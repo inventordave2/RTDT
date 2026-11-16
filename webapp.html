@@ -493,6 +493,111 @@
 			width: 95%;
 			max-width: 540px;
 		}
+
+        /* Traditional CSS dropdown menubar. No external JavaScript or framework. */
+        .rtdt-menubar {
+
+            background-color: #344762;
+            border-bottom: 2px solid #192a40;
+            padding: 3px 10px;
+            min-height: 37px;
+        }
+
+        .rtdt-menu {
+
+            display: inline-block;
+            position: relative;
+            vertical-align: top;
+        }
+
+        .rtdt-menu-toggle {
+
+            display: inline-block;
+            width: auto;
+            margin: 0 3px 0 0;
+            padding: 7px 16px;
+            background-color: #596f91;
+            border: 1px solid #1d304f;
+            border-top-color: #b8c8db;
+            border-left-color: #b8c8db;
+        }
+
+        .rtdt-menu-content {
+
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 3000;
+            width: 255px;
+            background-color: #f8faff;
+            border: 1px solid #7d91ad;
+            box-shadow: 2px 4px 8px #74839a;
+            padding: 5px;
+        }
+
+        .rtdt-menu.open .rtdt-menu-content {
+
+            display: block;
+        }
+
+        .rtdt-menu-content button, .rtdt-menu-content a {
+
+            display: block;
+            box-sizing: border-box;
+            width: 100%;
+            text-align: left;
+            margin: 1px 0;
+            padding: 8px;
+            font-size: 12px;
+            color: #243248;
+            text-shadow: none;
+            text-decoration: none;
+            background-color: #eef3fa;
+            border: 1px solid #dae3ee;
+            box-shadow: none;
+        }
+
+        .rtdt-menu-content button:hover, .rtdt-menu-content a:hover {
+
+            background-color: #dce9f8;
+        }
+
+        .rtdt-menu-content button:disabled {
+
+            color: #79899d;
+            background-color: #f2f3f5;
+            cursor: not-allowed;
+        }
+
+        .rtdt-menubar-links {
+
+            float: right;
+            padding-top: 7px;
+        }
+
+        .rtdt-menubar-links a {
+
+            display: inline-block;
+            color: #eff6ff;
+            font-size: 12px;
+            margin-left: 12px;
+            text-decoration: none;
+        }
+
+        .rtdt-menubar-links a:hover {
+
+            text-decoration: underline;
+        }
+
+        @media (max-width: 700px) {
+
+            .rtdt-menubar-links {
+
+                float: none;
+                padding: 7px 0;
+            }
+        }
 	</style>
 </head>
 <body>
@@ -503,6 +608,44 @@
 </header>
 <div class="spectrum-bar" aria-hidden="true"><span class="spectrum-red"></span><span class="spectrum-orange"></span><span class="spectrum-yellow"></span><span class="spectrum-green"></span><span class="spectrum-blue"></span><span class="spectrum-violet"></span></div>
 
+<nav class="rtdt-menubar" aria-label="RtDt main menu">
+    <div class="rtdt-menu"><button type="button" class="rtdt-menu-toggle" aria-expanded="false" aria-controls="rtdt-menu-file">File ▾</button>
+        <div id="rtdt-menu-file" class="rtdt-menu-content">
+            <button type="button" data-menu-action="open-obj">Import OBJ mesh</button>
+            <button type="button" data-menu-action="open-image">Import material / normal / height image</button>
+            <button type="button" data-menu-action="export">Export image</button>
+            <button type="button" disabled title="Project persistence has not yet been implemented">Open Project (planned)</button>
+            <button type="button" disabled title="Project persistence has not yet been implemented">Save Project (planned)</button>
+            <button type="button" data-menu-action="close-project">Close Project / Clear Scene</button>
+        </div>
+    </div>
+    <div class="rtdt-menu"><button type="button" class="rtdt-menu-toggle" aria-expanded="false" aria-controls="rtdt-menu-render">Render ▾</button>
+        <div id="rtdt-menu-render" class="rtdt-menu-content">
+            <button type="button" data-menu-action="render">Render</button>
+            <button type="button" data-menu-action="stop">Stop Rendering</button>
+            <button type="button" data-menu-action="bvh">Generate BVH</button>
+            <button type="button" data-menu-action="bvh-threshold">Set BVH divide threshold</button>
+            <button type="button" data-menu-action="camera">Camera settings</button>
+            <button type="button" data-menu-action="lights">Light settings</button>
+        </div>
+    </div>
+    <div class="rtdt-menu"><button type="button" class="rtdt-menu-toggle" aria-expanded="false" aria-controls="rtdt-menu-help">Help ▾</button>
+        <div id="rtdt-menu-help" class="rtdt-menu-content">
+            <button type="button" data-menu-action="keyboard">Keyboard shortcuts</button>
+            <button type="button" data-menu-action="contents">Table of Contents / Controls</button>
+            <button type="button" data-menu-action="select-shape">Select Element</button>
+            <button type="button" data-menu-action="bug">Report a Bug</button>
+            <button type="button" data-menu-action="about">About RtDt</button>
+            <a href="https://pragprog.com/titles/jbtracer/the-ray-tracer-challenge/" target="_blank" rel="noopener noreferrer">Jamis Buck's ray tracer book</a>
+        </div>
+    </div>
+    <div class="rtdt-menubar-links">
+        <a href="https://github.com/inventordave2/RTDT" target="_blank" rel="noopener noreferrer">Source</a>
+        <a href="mailto:leedavidodea@hotmail.co.uk">Email</a>
+        <a href="https://open.spotify.com/album/1ost8iDohzxcLEQcT7OpdG" target="_blank" rel="noopener noreferrer">Music</a>
+        <a href="https://www.youtube.com/channel/UCF7KG1BdQfnL73JYrl2vDDw/playlists" target="_blank" rel="noopener noreferrer">YouTube</a>
+    </div>
+</nav>
 <div class="container">
 	<div class="layout">
 		<!-- Sidebar Controls -->
