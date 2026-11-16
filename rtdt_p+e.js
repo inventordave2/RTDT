@@ -16,7 +16,7 @@ function cone(id2)	{
 	
 	c.bounds_of = function()	{ // See comments in cylinder() implementation
 		
-					var l = max(Math.abs(this.min),Math.abs(this.max))
+					var l = Math.max(Math.abs(this.min), Math.abs(this.max))
 					return new BB(point(-l, this.min, -l), point(l,this.max,l))
 	};
 	
@@ -918,52 +918,47 @@ function BB(min,max)	{
 	
 	this.intersects = function(r)	{
 	
-		var xtmin = 0, xtmax = 0, ytmin = 0, ytmax = 0, ztmin = 0, ztmax = 0;
-		var temp, a = this.min, b = this.max;
+		/* Handle unbounded cone and zero-thickness plane slabs without NaN. */
+		var tmin = -Infinity;
+		var tmax = Infinity;
+		var axes = ["x", "y", "z"];
 		
-		/*
-		 Bonus Chapter at (http://www.raytracerchallenge.com/bonus/bounding-boxes.html) Args a and b are bounding box min and max.
-		*/
-		xtmin = check_axis(r.origin.x, r.direction.x, "min", a.x)
-		xtmax = check_axis(r.origin.x, r.direction.x, "max", b.x)
+		for (var i = 0; i < axes.length; i++) {
 		
-		if (xtmin > xtmax)	{
-		
-			temp = xtmax;
-			xtmax = xtmin;
-			xtmin = temp;
+			var axis = axes[i];
+			var low = this.min[axis];
+			var high = this.max[axis];
+			var origin = r.origin[axis];
+			var direction = r.direction[axis];
+			
+			if (low > high)
+				return false;
+			
+			if (Math.abs(direction) < EPSILON) {
+			
+				if (origin < low || origin > high)
+					return false;
+				continue;
+			}
+			
+			var entry = (low - origin) / direction;
+			var exit = (high - origin) / direction;
+			if (entry > exit) {
+			
+				var swap = entry;
+				entry = exit;
+				exit = swap;
+			}
+			
+			tmin = Math.max(tmin, entry);
+			tmax = Math.min(tmax, exit);
+			if (tmin > tmax)
+				return false;
 		}
 		
-		ytmin = check_axis(r.origin.y, r.direction.y, "min", a.y)
-		ytmax = check_axis(r.origin.y, r.direction.y, "max", b.y)
-		
-		if (ytmin > ytmax)	{
-		
-			temp = ytmax;
-			ytmax = ytmin;
-			ytmin = temp;
-		}
-		
-		ztmin = check_axis(r.origin.z, r.direction.z, "min", a.z)
-		ztmax = check_axis(r.origin.z, r.direction.z, "max", b.z)
-		
-		if (ztmin > ztmax)	{
-		
-			temp = ztmax;
-			ztmax = ztmin;
-			ztmin = temp;
-		}
-		
-		var tmin = Math.max(xtmin, ytmin, ztmin)
-		var tmax = Math.min(xtmax, ytmax, ztmax)
-		
-		if (tmin > tmax)
-			return false;
-		
-		//return intersections(new intersection(this, tmin), new intersection(this, tmax))
-		return [{object:this,t:tmin},{object:this,t:tmax}]
+		return [{object: this, t: tmin}, {object: this, t: tmax}];
 	};
-
+	
 	this.split_bounds = function()	{
 
 		var dx = this.max.x - this.min.x
