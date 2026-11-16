@@ -133,7 +133,7 @@ var rtdt_ui_browser = (function () {
             status('phyStatus', 'Select a .phy file.', 'error');
             return;
         }
-        if (!/\\.phy$/i.test(file.name)) {
+        if (!/\.phy$/i.test(file.name)) {
 
             status('phyStatus', 'Expected a .phy file.', 'error');
             return;
