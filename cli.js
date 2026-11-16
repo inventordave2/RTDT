@@ -61,6 +61,8 @@ try {
 	loadScript(path.join(repoRoot, 'rtdt_examples.js'));
 	loadScript(path.join(repoRoot, 'raytracer-core.js'));
 	loadScript(path.join(repoRoot, 'rtdt_objfile-node.js'));
+	loadScript(path.join(repoRoot, 'rtdt_ap_math.js'));
+	loadScript(path.join(repoRoot, 'rtdt_aetherore.js'));
 	
 	// Create scenes object from loaded functions
 	if (typeof global.scenes === 'undefined') {
@@ -105,6 +107,9 @@ const cliConfig = {
 	height: 281,
 	outputFile: 'render.ppm',
 	quality: 1,
+	phyFile: null,
+	phyTime: null,
+	phyFrame: null,
 	verbose: true
 };
 
@@ -119,6 +124,9 @@ USAGE:
 
 OPTIONS:
   --scene NAME        Scene to render (default: scene1)
+  --phy FILE          Load .phy animation file (JSON version 1)
+  --time SECONDS      Evaluate .phy at time t
+  --frame INDEX       Evaluate .phy at frame INDEX (using timeline fps)
   --width NUM         Image width in pixels (default: 500)
   --height NUM        Image height in pixels (default: 281)
   --output FILE       PPM output file (default: render.ppm)
@@ -135,6 +143,9 @@ EXAMPLES:
 
   # Small preview render
   rtdt --scene scene1 --width 150 --height 84 --output preview.ppm
+
+  # Animate the first scene object at t = 1.5 seconds
+  rtdt --scene scene1 --phy motion.phy --time 1.5
 
   # High quality render (more samples)
   rtdt --scene scene1 --quality 3 --output hires.ppm
@@ -203,6 +214,23 @@ function parseArguments(argv) {
 				process.exit(1);
 			}
 			cliConfig.sceneName = argv[++i];
+		}
+		else if (arg === '--phy' || arg === '--time' || arg === '--frame') {
+		
+			if (i + 1 >= argv.length)
+				throw new Error(arg + ' requires a value');
+			var raw = argv[++i];
+			if (arg === '--phy')
+				cliConfig.phyFile = raw;
+			else {
+				var value = Number(raw);
+				if (!isFinite(value) || value < 0 ||
+					(arg === '--frame' && Math.floor(value) !== value))
+					throw new Error(arg + ' requires a nonnegative ' +
+						(arg === '--frame' ? 'integer' : 'number'));
+				if (arg === '--time') cliConfig.phyTime = value;
+				else cliConfig.phyFrame = value;
+			}
 		}
 		else if (arg === '--width' || arg === '-w') {
 		
@@ -306,6 +334,31 @@ function renderScene() {
 		
 			throw new Error('Scene did not populate scene data');
 		}
+		
+		// Optional Aetherore animation: numeric string indices ("0", "1", ...)
+		// refer to the top-level objects in Data.o.s.
+		if (cliConfig.phyFile) {
+		
+			if (!/\.phy$/i.test(cliConfig.phyFile))
+				throw new Error('Expected a .phy animation file');
+			var phy = rtdt_aetherore.parse_phy(fs.readFileSync(cliConfig.phyFile, 'utf8'));
+			var bindings = {};
+			Data.o.s.forEach(function (shape, index) {
+			
+				bindings[String(index)] = shape;
+				if (shape.id2 && !Object.prototype.hasOwnProperty.call(bindings,String(shape.id2)))
+					bindings[String(shape.id2)] = shape;
+			});
+			if (cliConfig.phyFrame !== null && cliConfig.phyTime !== null)
+				throw new Error('Choose either --time or --frame, not both');
+			var fps = phy.timeline && phy.timeline.fps || 30;
+			var t = cliConfig.phyTime !== null ? cliConfig.phyTime :
+				(cliConfig.phyFrame !== null ? cliConfig.phyFrame / fps : 0);
+			rtdt_aetherore.create_animator(phy, bindings).at(t);
+			log('Aetherore: ' + cliConfig.phyFile + ' at t=' + t + 's');
+		}
+		else if (cliConfig.phyTime !== null || cliConfig.phyFrame !== null)
+			throw new Error('--time/--frame requires --phy');
 		
 		// Create world for rendering
 		const renderWorld = new world();
