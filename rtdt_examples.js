@@ -257,34 +257,33 @@ function cm_cube()	{
 	
 }
 
-function earth()	{
+function earth() {
 	
-	prepCanvas()
+	prepCanvas();
 	
-	var l = new point_light(point(-10, 10, -50), colour(1,1,1)) 
+	var l = new point_light(point(-10, 10, -50), colour(1,1,1));
 	Data.c.setCTransform(view_transform(point(0,0,-20), point(0,0,0), vector(0,1,0)));
 	
-	var c = Data.PPM["earth.ppm"];
-	if(!c)	{
-		
-		showDialog("Load earth.ppm from File > Load File before starting the earth scene.");
-		return
-	}
-	var tm = TextureMap(image_pattern(c), spherical_map)
-	//var tm = TextureMap(checkers_pattern(8, 4, colour(0,1,0),colour(0,0,1)), spherical_map)
-	var s = sphere()
-	s.transform = m().scaling(2,2,2).rotation_y(Math.PI).rotation_x((Math.PI/2) * 0.7)
-	s.material.pattern = my_pattern( tm )
+	/* Import an earth.ppm image for the original texture. Without an
+	 * image, retain a renderable procedural UV checker as a fallback,
+	 * rather than calling the removed legacy showDialog() API. */
+	var image = Data.PPM["earth.ppm"];
+	var uv = image ? image_pattern(image) :
+		checkers_pattern(16, 8, colour(0.1, 0.3, 0.8), colour(0.2, 0.65, 0.25));
+	var s = sphere();
+	s.transform = m().scaling(2,2,2).rotation_y(Math.PI).rotation_x((Math.PI/2) * 0.7);
+	s.material.pattern = texture_pattern(texture_map(uv, spherical_map));
+	s.material.diffuse = 0.9;
+	s.material.specular = 0.1;
+	s.material.shininess = 10;
+	s.material.ambient = 0.9;
 	
-	s.material.diffuse = 0.9
-	s.material.specular = 0.1
-	s.material.shininess = 10
-	s.material.ambient = 0.9
- 
-	var o = group()
-	o.addChild(s)
+	var o = group();
+	o.addChild(s);
+	Data.o = o;
+	Data.l = l;
 	
-	renderImage(l, o)	
+	renderImage(l, o);
 }
 
 function exampleSkyboxPattern() {
