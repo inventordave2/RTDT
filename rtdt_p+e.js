@@ -628,6 +628,40 @@ function plane(id2)	{
 }
 
 
+/* Finite X/Z plane, centred at local origin; local Y thickness is zero. */
+function clipped_plane(width, depth, id2)	{
+
+	if (!isFinite(width) || !isFinite(depth) || width <= 0 || depth <= 0)
+		throw new Error("clipped_plane requires positive finite width and depth");
+
+	var pl = plane(id2);
+	var half_width = width / 2;
+	var half_depth = depth / 2;
+
+	pl.type = "clipped_plane";
+	pl.width = width;
+	pl.depth = depth;
+	pl.bbMin = point(-half_width, 0, -half_depth);
+	pl.bbMax = point(half_width, 0, half_depth);
+
+	pl.local_intersect = function(r)	{
+
+		if (Math.abs(r.direction.y) < EPSILON)
+			return [];
+
+		var t = -r.origin.y / r.direction.y;
+		var x = r.origin.x + t * r.direction.x;
+		var z = r.origin.z + t * r.direction.z;
+
+		if (Math.abs(x) > half_width || Math.abs(z) > half_depth)
+			return [];
+
+		return [new intersection(this, t)];
+	};
+
+	return pl;
+}
+
 function group(id2)	{
 	
 	var g = new Shape("group", id2)
