@@ -59,9 +59,9 @@ function default_world()	{
 	var light = new point_light(point(-10,10,-10), colour(1,1,1));
 	
 	var s1 = new sphere();
-	s1.material.color.x = 0.8;
-	s1.material.color.y = 1.0;
-	s1.material.color.z = 0.6;
+	s1.material.color.r = 0.8;
+	s1.material.color.g = 1.0;
+	s1.material.color.b = 0.6;
 	s1.material.diffuse = 0.7;
 	s1.material.specular = 0.2;
 	
