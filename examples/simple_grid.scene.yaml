@@ -1,0 +1,71 @@
+# Simple Grid - Basic Scene Example
+# 
+# This scene demonstrates:
+#   - Basic material definitions
+#   - Simple repeat loops
+#   - Grid patterns
+#   - Material variation with expressions
+
+metadata:
+  name: "Simple Grid"
+  author: "RTDT User"
+  description: "A simple 5x5 grid of spheres with color variation"
+  version: 1.0
+
+materials:
+  red:
+    color: [1, 0, 0]
+    ambient: 0.1
+    diffuse: 0.7
+    specular: 0.5
+    shininess: 100
+    reflective: 0.2
+    
+  blue:
+    color: [0, 0, 1]
+    ambient: 0.1
+    diffuse: 0.7
+    specular: 0.5
+    shininess: 100
+    reflective: 0.2
+    
+  white:
+    color: [1, 1, 1]
+    ambient: 0.2
+    diffuse: 0.8
+    specular: 0.5
+    shininess: 80
+    reflective: 0.1
+
+cameras:
+  - position: [5, 5, 12]
+    target: [5, 2.5, 0]
+    up: [0, 1, 0]
+    fov: 45
+
+lights:
+  - position: [10, 10, 10]
+    intensity: [1, 1, 1]
+  - position: [0, 5, 5]
+    intensity: [0.5, 0.5, 0.5]
+
+objects:
+  # Floor
+  - type: plane
+    position: [0, -1, 0]
+    material: white
+
+  # 5x5 Grid of spheres
+  - type: group
+    name: grid
+    repeat:
+      count: 5
+    children:
+      - type: group
+        repeat:
+          count: 5
+        children:
+          - type: sphere
+            radius: 0.4
+            position: "i*2, 1, j*2"
+            material: "if((i+j)%2==0, red, blue)"

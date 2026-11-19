@@ -1,0 +1,156 @@
+{
+  "version": 1,
+  "name": "Reflection Studio",
+  "camera": {
+    "from": [
+      4,
+      3.4,
+      -12
+    ],
+    "to": [
+      0,
+      0,
+      0
+    ],
+    "up": [
+      0,
+      1,
+      0
+    ],
+    "fov": 48
+  },
+  "light": {
+    "position": [
+      -7,
+      9,
+      -8
+    ],
+    "intensity": [
+      1,
+      0.96,
+      1
+    ]
+  },
+  "objects": [
+    {
+      "type": "plane",
+      "name": "Glossy stage",
+      "position": [
+        0,
+        -1.7,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "color": [
+        0.1,
+        0.12,
+        0.2
+      ],
+      "material": {
+        "ambient": 0.1,
+        "reflective": 0.48
+      }
+    },
+    {
+      "type": "sphere",
+      "name": "Polished chrome",
+      "position": [
+        -2,
+        -0.45,
+        0
+      ],
+      "scale": [
+        1.25,
+        1.25,
+        1.25
+      ],
+      "color": [
+        0.76,
+        0.88,
+        1
+      ],
+      "material": {
+        "ambient": 0.13,
+        "reflective": 0.58,
+        "specular": 1,
+        "shininess": 200
+      }
+    },
+    {
+      "type": "sphere",
+      "name": "Emerald glass",
+      "position": [
+        0.5,
+        -0.4,
+        0.8
+      ],
+      "scale": [
+        1.3,
+        1.3,
+        1.3
+      ],
+      "color": [
+        0.05,
+        0.88,
+        0.62
+      ],
+      "material": {
+        "ambient": 0.14,
+        "reflective": 0.38,
+        "specular": 1,
+        "shininess": 170
+      }
+    },
+    {
+      "type": "cube",
+      "name": "Coral monolith",
+      "position": [
+        2.8,
+        -0.45,
+        1.1
+      ],
+      "scale": [
+        1.2,
+        2.5,
+        1.2
+      ],
+      "color": [
+        1,
+        0.27,
+        0.28
+      ],
+      "material": {
+        "ambient": 0.15,
+        "reflective": 0.18,
+        "specular": 0.8
+      }
+    },
+    {
+      "type": "sphere",
+      "name": "Topaz drop",
+      "position": [
+        0.2,
+        1.9,
+        2
+      ],
+      "scale": [
+        0.48,
+        0.48,
+        0.48
+      ],
+      "color": [
+        1,
+        0.8,
+        0.18
+      ],
+      "material": {
+        "ambient": 0.35,
+        "reflective": 0.2
+      }
+    }
+  ]
+}

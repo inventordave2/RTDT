@@ -1,0 +1,30 @@
+// package.json example for Node.js version
+
+{
+  "name": "rtdt-raytracer",
+  "version": "1.0.0",
+  "description": "JavaScript Raytracer Challenge - Works in Browser and Node.js",
+  "main": "cli.js",
+  "bin": {
+    "rtdt": "./cli-bootstrap.js"
+  },
+  "scripts": {
+    "start": "node cli-bootstrap.js --help",
+    "render": "node cli-bootstrap.js --scene scene1 --output render.ppm",
+    "render-large": "node cli-bootstrap.js --scene scene1 --width 1024 --height 768 --output large.ppm",
+    "test": "node test.js"
+  },
+  "keywords": [
+    "raytracer",
+    "3d",
+    "rendering",
+    "graphics",
+    "javascript"
+  ],
+  "author": "Dave",
+  "license": "MIT",
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "devDependencies": {}
+}

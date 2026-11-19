@@ -1,0 +1,32 @@
+{
+  "name": "RtDt, the raytracer.",
+  "version": "1.0.0",
+  "description": "Ray tracer for Node.js CLI and WebApp.",
+  "main": "cli-bootstrap.js",
+
+  "scripts": {
+
+    "start": "node cli-bootstrap.js",
+    "render": "node cli-bootstrap.js --scene scene1 --output render.ppm",
+    "render:preview": "node cli-bootstrap.js --scene scene1 --width 150 --height 84 --output preview.ppm",
+    "test": "node cli-bootstrap.js --help"
+  },
+
+  "keywords": [
+
+    "raytracer",
+    "graphics",
+    "rendering",
+    "image",
+    "cli",
+    "physics",
+    "math"
+  ],
+
+  "author": "InventorDave",
+  "license": "MIT",
+  "engines": {
+
+    "node": ">=5.0.0"
+  }
+}

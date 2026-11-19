@@ -1,0 +1,304 @@
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                  RTDT RAYTRACER - DUAL-PLATFORM ARCHITECTURE                  ║
+║              Works in Browser AND Node.js (NO imports/exports)                 ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+SHARED CORE (Works EVERYWHERE)
+═════════════════════════════════════════════════════════════════════════════════
+
+                          ┌─────────────────────────┐
+                          │   rtdt_math.js            │
+                          │  (Pure Math Functions)  │
+                          └──────────────┬──────────┘
+                                         │
+                          ┌──────────────▼──────────┐
+                          │   rtdt_core.js            │
+                          │   (Ray Tracer Core)     │
+                          └──────────────┬──────────┘
+                                         │
+                  ┌──────────────────────┼──────────────────────┐
+                  │                      │                      │
+         ┌────────▼─────────┐  ┌────────▼─────────┐  ┌────────▼──────────┐
+         │  rtdt_matrix.js    │  │   rtdt_ray.js      │  │  rtdt_light.js      │
+         │ (Linear Algebra) │  │  (Ray Casting)   │  │  (Lighting Defs)  │
+         └────────┬─────────┘  └────────┬─────────┘  └────────┬──────────┘
+                  │                     │                     │
+         ┌────────▼──────────────────────▼─────────────────────▼──────────┐
+         │                                                                  │
+         │  rtdt_matrix-transform.js  rtdt_material.js  rtdt_world.js           │
+         │  (Transformations)       (Materials)     (Scene Mgmt)          │
+         │                                                                  │
+         └────────┬───────────────────────────────────────────────────────┘
+                  │
+         ┌────────▼──────────────────────────────────────────────────────┐
+         │                                                                │
+         │  rtdt_shade.js  rtdt_p+e.js  rtdt_pattern.js                        │
+         │  (Shading)    (Prims)    (Patterns)                           │
+         │                                                                │
+         └────────┬───────────────────────────────────────────────────────┘
+                  │
+         ┌────────▼──────────────────────────────────────────────────────┐
+         │                                                                │
+         │  rtdt_examples.js (Scene Definitions)                           │
+         │  ✓ Available to both browser and CLI                          │
+         │                                                                │
+         └────────┬───────────────────────────────────────────────────────┘
+                  │
+         ┌────────▼──────────────────────────────────────────────────────┐
+         │                                                                │
+         │  raytracer-core.js ◄─────── SHARED LOGIC                      │
+         │  ✓ initRaytracer()                                            │
+         │  ✓ renderSceneSync() ◄─── Works in BOTH                       │
+         │  ✓ renderSceneToPixels()  environments!                       │
+         │  ✓ colorTo255()                                               │
+         │  ✓ No DOM, No fs, Pure logic                                  │
+         │                                                                │
+         └──────────────────────────┬──────────────────────────────────────┘
+                                    │
+                    ┌───────────────┴───────────────┐
+                    │                               │
+                    ▼                               ▼
+         ┌─────────────────────────┐   ┌──────────────────────────┐
+         │   BROWSER ENVIRONMENT   │   │   NODE.JS ENVIRONMENT    │
+         └─────────────────────────┘   └──────────────────────────┘
+
+
+BROWSER PATH (HTML-based UI)
+═════════════════════════════════════════════════════════════════════════════════
+
+  raytracer.html
+  ├─ Loads all rtdt_*.js in order
+  ├─ Loads raytracer-core.js (shared logic)
+  ├─ Loads rtdt_graphics.js ◄────────── BROWSER ONLY
+  │  (Canvas drawing, no Node.js)
+  │
+  ├─ Loads rtdt_objfile.js ◄─────────── BROWSER ONLY
+  │  (FileReader API, no Node.js)
+  │
+  └─ Loads raytracer-ui.js ◄────────── BROWSER ONLY
+     │
+     ├─ optionSelected()  ◄─────── UI handlers
+     ├─ camPresetSelected()
+     ├─ populateCameraMenu()
+     ├─ renderImage()  ◄─────────── Calls renderSceneToPixels()
+     └─ displayPixelsOnCanvas()  ◄─ Renders to <canvas> element
+
+  USER INTERACTION:
+  1. User clicks "RENDER!" button
+  2. renderImage() called
+  3. renderSceneToPixels() executed (SHARED CODE)
+  4. displayPixelsOnCanvas() draws pixels
+  5. Beautiful render appears on canvas ✨
+
+
+NODE.JS PATH (CLI-based)
+═════════════════════════════════════════════════════════════════════════════════
+
+  cli-bootstrap.js ◄────── Entry point: node cli-bootstrap.js --scene scene1
+  │
+  ├─ require('./rtdt_math.js')
+  ├─ require('./rtdt_core.js')
+  ├─ ... all other rtdt_*.js files ...
+  ├─ require('./raytracer-core.js')  ◄─ SHARED LOGIC
+  │
+  ├─ require('./rtdt_objfile-node.js') ◄─ NODE.JS ONLY
+  │  (fs-based file reading, no FileReader)
+  │
+  └─ require('./cli.js')  ◄─────────── NODE.JS ONLY
+     │
+     ├─ parseArguments()  ◄────────── Parse CLI args
+     ├─ main()
+     │  ├─ initRaytracer(width, height)  ◄─ SHARED
+     │  ├─ getScene(sceneName)           ◄─ SHARED
+     │  ├─ renderSceneSync() ◄───────── SHARED RENDERING
+     │  └─ writePPMFile()  ◄──────────── Node.js specific
+     │     (Write to disk using fs)
+     │
+     └─ package.json  ◄────────────── Node.js metadata
+
+  COMMAND-LINE INTERACTION:
+  1. User runs: node cli-bootstrap.js --scene scene1 -o render.ppm
+  2. parseArguments() parses CLI args
+  3. main() orchestrates:
+     - initRaytracer() (SHARED)
+     - getScene() (SHARED)
+     - renderSceneSync() (SHARED)
+     - writePPMFile() (Node.js specific)
+  4. render.ppm created on disk
+  5. User opens in image viewer 🖼️
+
+
+LOAD ORDER DEPENDENCY CHAIN
+═════════════════════════════════════════════════════════════════════════════════
+
+Level 0 (No dependencies):
+  rtdt_math.js ◄── START HERE
+
+Level 1 (Depends on Level 0):
+  rtdt_core.js ◄── Needs: tuple, point, vector
+  rtdt_light.js
+
+Level 2 (Depends on Level 0-1):
+  rtdt_matrix.js
+  rtdt_ray.js
+  rtdt_material.js
+
+Level 3 (Depends on Level 0-2):
+  rtdt_matrix-transform.js
+  rtdt_world.js
+  rtdt_shade.js
+
+Level 4 (Depends on Level 0-3):
+  rtdt_p+e.js
+  rtdt_pattern.js
+
+Level 5 (Platform-specific):
+  BROWSER:
+    rtdt_graphics.js ◄── Canvas API
+    rtdt_objfile.js ◄──── FileReader API
+  
+  NODE.JS:
+    rtdt_objfile-node.js ◄ fs module
+
+Level 6 (Shared logic):
+  rtdt_examples.js
+  raytracer-core.js ◄── Works in BOTH
+
+Level 7 (Platform UI):
+  BROWSER:
+    raytracer-ui.js ◄── DOM manipulation
+  
+  NODE.JS:
+    cli.js ◄────────── Command-line handler
+
+
+FILE DEPENDENCIES VISUAL
+═════════════════════════════════════════════════════════════════════════════════
+
+                        raytracer-core.js
+                    (SHARED - Both Platforms)
+                              │
+                  ┌───────────┴───────────┐
+                  │                       │
+            ┌─────▼──────┐        ┌──────▼────────┐
+            │rtdt_graphics.js       │  rtdt_shade.js  │
+            │(Browser Only)       │  rtdt_world.js  │
+            │Canvas API           │  rtdt_p+e.js    │
+            └─────┬──────┘        └──────┬────────┘
+                  │                       │
+            ┌─────▼────────────────────────────┐
+            │   raytracer-ui.js              │  Browser
+            │   (UI Handlers, DOM)            │  Only
+            ├─ optionSelected()               │
+            ├─ camPresetSelected()            │
+            ├─ populateCameraMenu()           │
+            └─────────────────────────────────┘
+
+
+                        raytracer-core.js
+                    (SHARED - Both Platforms)
+                              │
+                  ┌───────────┴───────────┐
+                  │                       │
+            ┌─────▼──────┐        ┌──────▼────────┐
+            │rtdt_objfile-node.js  │  rtdt_examples  │
+            │(Node.js Only)       │  (Scenes)     │
+            │fs module            └──────┬────────┘
+            └─────┬──────┘              │
+                  │          ┌──────────┘
+                  │          │
+            ┌─────▼──────────▼──────────┐
+            │    cli.js                 │  Node.js
+            │ (CLI Handler)             │  Only
+            ├─ parseArguments()         │
+            ├─ main()                   │
+            ├─ writePPMFile()           │
+            └───────────────────────────┘
+
+
+KEY INSIGHT: UNIVERSAL FUNCTIONS
+═════════════════════════════════════════════════════════════════════════════════
+
+Functions used by BOTH browser and CLI (in raytracer-core.js):
+
+    function renderSceneSync(world, camera, quality) {
+        // Pure rendering logic
+        // ✓ No DOM (no document.getElementById)
+        // ✓ No fs (no require('fs'))
+        // ✓ No Window APIs
+        // ✓ No Process APIs
+        // Just pure math and logic
+        
+        var pixels = [];
+        for (var y = 0; y < HEIGHT; y++) {
+            for (var x = 0; x < WIDTH; x++) {
+                var ray = camera.ray_for_pixel(x, y);
+                var color = color_at(world, ray, quality);
+                pixels.push(color);
+            }
+        }
+        return pixels;
+    }
+
+Browser calls it:
+    renderImage() → renderSceneToPixels() → renderSceneSync()
+                                            ▲
+                                    Shared logic!
+                                            
+CLI calls it:
+    main() → renderSceneSync()
+             ▲
+    Shared logic!
+
+
+ARCHITECTURE PATTERN
+═════════════════════════════════════════════════════════════════════════════════
+
+┌──────────────────────────┐
+│    PURE LOGIC LAYER      │  All rtdt_*.js + raytracer-core.js
+│  (Math, Rendering, etc)  │  • No dependencies on platform
+│  "Model" in MVC          │  • Reusable everywhere
+└──────────────────────────┘
+            ▲
+            │ depends on
+            │
+┌───────────┴────────────────────────┐
+│    PLATFORM ADAPTER LAYER          │
+│  • Browser: raytracer-ui.js        │
+│  • Node.js: cli.js                 │
+│  "Controller" in MVC               │
+└────────────────────────────────────┘
+
+Browser renders the SAME pixels as CLI, just displays them differently:
+  - Browser: Draws to <canvas> with ctx.fillStyle and ctx.fillRect
+  - CLI: Writes to .ppm file with fs.writeFileSync
+
+Same algorithm, different output 📊
+
+
+WHAT HAPPENS DURING EXECUTION
+═════════════════════════════════════════════════════════════════════════════════
+
+BROWSER:                           NODE.JS CLI:
+
+1. Load raytracer.html             1. Run: node cli-bootstrap.js
+                                   
+2. Parse all <script> tags         2. cli-bootstrap.js requires all .js
+                                   
+3. For each script:                3. For each require():
+   a) Evaluate .js file               a) Load .js file
+   b) Add functions to window         b) Add functions to global
+                                   
+4. raytracer-ui.js runs:           4. cli.js runs:
+   a) Add click handlers               a) Parse args
+   b) Wait for user clicks            b) Execute main()
+                                   
+5. User clicks "Render!":          5. main() executes:
+   a) Call renderImage()              a) Call initRaytracer()
+   b) Call renderSceneToPixels()      b) Call getScene()
+   c) SAME renderSceneSync() ◄────    c) Call renderSceneSync() ◄── SAME!
+   d) displayPixelsOnCanvas()         d) Call writePPMFile()
+                                   
+6. Pixels appear on canvas         6. File written to disk
+
+Result: EXACT SAME PIXELS, different display method ✨

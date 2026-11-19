@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "name": "Orbit studio",
+  "camera": {
+    "from": [
+      0,
+      3,
+      -12
+    ],
+    "to": [
+      0,
+      0,
+      0
+    ],
+    "up": [
+      0,
+      1,
+      0
+    ],
+    "fov": 45
+  },
+  "light": {
+    "position": [
+      -8,
+      12,
+      -8
+    ],
+    "intensity": [
+      1,
+      1,
+      1
+    ]
+  },
+  "objects": [
+    {
+      "type": "sphere",
+      "name": "animated-sphere",
+      "position": [
+        -1.7,
+        0,
+        0
+      ],
+      "scale": [
+        1.2,
+        1.2,
+        1.2
+      ],
+      "color": [
+        0.18,
+        0.55,
+        0.95
+      ]
+    },
+    {
+      "type": "cube",
+      "name": "animated-cube",
+      "position": [
+        1.7,
+        -0.2,
+        0
+      ],
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "color": [
+        0.95,
+        0.42,
+        0.27
+      ]
+    },
+    {
+      "type": "plane",
+      "name": "floor",
+      "position": [
+        0,
+        -1.5,
+        0
+      ],
+      "color": [
+        0.55,
+        0.6,
+        0.67
+      ]
+    }
+  ],
+  "assets": {
+    "animation": [
+      {
+        "path": "orbit/orbit.phy",
+        "required": false
+      }
+    ]
+  }
+}

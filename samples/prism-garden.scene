@@ -1,0 +1,155 @@
+{
+  "version": 1,
+  "name": "Prism Garden",
+  "camera": {
+    "from": [
+      5,
+      4,
+      -14
+    ],
+    "to": [
+      0,
+      0,
+      0
+    ],
+    "up": [
+      0,
+      1,
+      0
+    ],
+    "fov": 44
+  },
+  "light": {
+    "position": [
+      -8,
+      12,
+      -9
+    ],
+    "intensity": [
+      1,
+      0.96,
+      1
+    ]
+  },
+  "objects": [
+    {
+      "type": "plane",
+      "name": "Midnight mirror",
+      "position": [
+        0,
+        -2,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "color": [
+        0.05,
+        0.08,
+        0.18
+      ],
+      "material": {
+        "ambient": 0.12,
+        "reflective": 0.24
+      }
+    },
+    {
+      "type": "sphere",
+      "name": "Ruby crystal",
+      "position": [
+        -2.4,
+        -0.9,
+        0.3
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "color": [
+        1,
+        0.1,
+        0.25
+      ],
+      "material": {
+        "ambient": 0.14,
+        "reflective": 0.18,
+        "specular": 0.9,
+        "shininess": 120
+      }
+    },
+    {
+      "type": "cube",
+      "name": "Golden prism",
+      "position": [
+        0,
+        -0.8,
+        0.6
+      ],
+      "scale": [
+        1.5,
+        1.6,
+        1.5
+      ],
+      "color": [
+        1,
+        0.72,
+        0.14
+      ],
+      "material": {
+        "ambient": 0.17,
+        "reflective": 0.18,
+        "specular": 0.9,
+        "shininess": 90
+      }
+    },
+    {
+      "type": "sphere",
+      "name": "Cyan moon",
+      "position": [
+        2.5,
+        -0.65,
+        0.5
+      ],
+      "scale": [
+        1.25,
+        1.25,
+        1.25
+      ],
+      "color": [
+        0.06,
+        0.94,
+        1
+      ],
+      "material": {
+        "ambient": 0.18,
+        "reflective": 0.25
+      }
+    },
+    {
+      "type": "sphere",
+      "name": "Violet orb",
+      "position": [
+        0,
+        1.7,
+        2.4
+      ],
+      "scale": [
+        0.45,
+        0.45,
+        0.45
+      ],
+      "color": [
+        0.74,
+        0.24,
+        1
+      ],
+      "material": {
+        "ambient": 0.35,
+        "reflective": 0.15
+      }
+    }
+  ]
+}

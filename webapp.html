@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>RtDt | Raytracer for Node.js and Web</title>
+	<style>
+		/* Minimal CSS1/CSS2 - No external dependencies */
+		
+		* { margin: 0; padding: 0; box-sizing: border-box; }
+		
+		body {
+
+			font-family: Arial, sans-serif;
+			background-color: #f0f0f0;
+			color: #333;
+		}
+		
+		.container {
+
+			max-width: 1200px;
+			margin: 0 auto;
+			padding: 10px;
+		}
+		
+		header {
+
+			background-color: #333;
+			color: white;
+			padding: 15px;
+			text-align: center;
+			border-bottom: 3px solid #0066cc;
+		}
+		
+		header h1 {
+
+			font-size: 28px;
+			margin-bottom: 5px;
+		}
+		
+		header p {
+
+			font-size: 12px;
+			opacity: 0.8;
+		}
+		
+		.layout {
+
+			display: flex;
+			gap: 10px;
+			margin-top: 10px;
+		}
+		
+		.sidebar {
+
+			width: 300px;
+			background-color: white;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			padding: 15px;
+			max-height: 90vh;
+			overflow-y: auto;
+		}
+		
+		.main {
+
+			flex: 1;
+			background-color: white;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			padding: 15px;
+		}
+		
+		canvas {
+
+			border: 1px solid #999;
+			background-color: #000;
+			display: block;
+			max-width: 100%;
+			height: auto;
+		}
+		
+		.section {
+
+			margin-bottom: 20px;
+		}
+		
+		.section h3 {
+
+			font-size: 16px;
+			border-bottom: 2px solid #0066cc;
+			padding-bottom: 8px;
+			margin-bottom: 10px;
+		}
+		
+		.control-group {
+
+			margin-bottom: 12px;
+		}
+		
+		label {
+
+			display: block;
+			font-size: 12px;
+			font-weight: bold;
+			margin-bottom: 4px;
+			color: #555;
+		}
+		
+		input[type="text"],
+		input[type="number"],
+		input[type="file"],
+		select {
+
+			width: 100%;
+			padding: 6px;
+			border: 1px solid #ccc;
+			border-radius: 3px;
+			font-size: 12px;
+			background-color: #fff;
+			color: #333;
+		}
+		
+		input[type="text"]:focus,
+		input[type="number"]:focus,
+		select:focus {
+
+			outline: none;
+			border-color: #0066cc;
+			box-shadow: 0 0 3px #0066cc;
+		}
+		
+		button {
+
+			display: block;
+			width: 100%;
+			padding: 8px 12px;
+			margin-top: 8px;
+			background-color: #0066cc;
+			color: white;
+			border: none;
+			border-radius: 3px;
+			font-size: 12px;
+			font-weight: bold;
+			cursor: pointer;
+			transition: background-color 0.2s;
+		}
+		
+		button:hover {
+
+			background-color: #0052a3;
+		}
+		
+		button:active {
+
+			background-color: #003d7a;
+		}
+		
+		button:disabled {
+
+			background-color: #ccc;
+			cursor: not-allowed;
+		}
+		
+		.btn-secondary {
+
+			background-color: #666;
+		}
+		
+		.btn-secondary:hover {
+
+			background-color: #555;
+		}
+		
+		.btn-danger {
+
+			background-color: #d32f2f;
+		}
+		
+		.btn-danger:hover {
+
+			background-color: #b71c1c;
+		}
+		
+		.status {
+
+			padding: 10px;
+			margin-top: 10px;
+			background-color: #f5f5f5;
+			border-left: 3px solid #0066cc;
+			border-radius: 2px;
+			font-size: 12px;
+			white-space: pre-wrap;
+			word-wrap: break-word;
+			max-height: 200px;
+			overflow-y: auto;
+		}
+		
+		.status.success {
+
+			background-color: #e8f5e9;
+			border-left-color: #4caf50;
+			color: #2e7d32;
+		}
+		
+		.status.error {
+
+			background-color: #ffebee;
+			border-left-color: #d32f2f;
+			color: #c62828;
+		}
+		
+		.status.info {
+
+			background-color: #e3f2fd;
+			border-left-color: #0066cc;
+			color: #1565c0;
+		}
+		
+		.modal {
+
+			display: none;
+			position: fixed;
+			z-index: 1000;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.4);
+		}
+		
+		.modal.show {
+
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		
+		.modal-content {
+
+			background-color: white;
+			padding: 20px;
+			border: 1px solid #888;
+			border-radius: 4px;
+			max-width: 500px;
+			max-height: 80vh;
+			overflow-y: auto;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		}
+		
+		.modal-header {
+
+			font-size: 18px;
+			font-weight: bold;
+			margin-bottom: 10px;
+			border-bottom: 1px solid #ddd;
+			padding-bottom: 10px;
+		}
+		
+		.modal-close {
+
+			float: right;
+			font-size: 20px;
+			cursor: pointer;
+			color: #aaa;
+			background: none;
+			border: none;
+			width: auto;
+			padding: 0;
+			margin: 0;
+		}
+		
+		.modal-close:hover {
+
+			color: #000;
+		}
+		
+		.info-box {
+
+			background-color: #e3f2fd;
+			border: 1px solid #90caf9;
+			border-radius: 3px;
+			padding: 10px;
+			margin-bottom: 10px;
+			font-size: 12px;
+			line-height: 1.5;
+		}
+		
+		.keyboard-shortcuts {
+
+			font-size: 11px;
+			background-color: #f5f5f5;
+			padding: 10px;
+			border-radius: 3px;
+			margin-top: 10px;
+		}
+		
+		.keyboard-shortcuts dt {
+
+			font-weight: bold;
+			margin-top: 5px;
+		}
+		
+		.keyboard-shortcuts dd {
+
+			margin-left: 20px;
+			margin-bottom: 5px;
+		}
+		
+		@media (max-width: 768px) {
+
+			.layout {
+
+				flex-direction: column;
+			}
+			
+			.sidebar {
+
+				width: 100%;
+				max-height: none;
+			}
+		}
+
+		/* RtDt rainbow-spectrum theme: inline CSS, no external assets. */
+		body {
+
+			background-color: #e9eef6;
+			color: #26334a;
+		}
+
+		header {
+
+			background-color: #243248;
+			border-bottom: 0;
+			text-shadow: 0 1px 1px #101927;
+		}
+
+		.spectrum-bar {
+
+			height: 7px;
+			overflow: hidden;
+			background-color: #597fb4;
+		}
+
+		.spectrum-bar span {
+
+			display: block;
+			float: left;
+			width: 16.666%;
+			height: 7px;
+		}
+
+		.spectrum-red { background-color: #e85c69; }
+		.spectrum-orange { background-color: #edaa52; }
+		.spectrum-yellow { background-color: #ead44f; }
+		.spectrum-green { background-color: #4db58b; }
+		.spectrum-blue { background-color: #4d96d2; }
+		.spectrum-violet { background-color: #9072ce; }
+
+		.sidebar, .main {
+
+			background-color: #f8faff;
+			border-color: #bfcee0;
+			border-radius: 6px;
+			box-shadow: 0 2px 9px #b7c5d6;
+		}
+
+		.main {
+
+			background-color: #f4f7fc;
+		}
+
+		canvas {
+
+			border: 3px solid #26364e;
+			box-shadow: 0 2px 7px #bac8d8;
+		}
+
+		.section {
+
+			background-color: #ffffff;
+			border: 1px solid #d5deeb;
+			border-left: 5px solid #899bb3;
+			border-radius: 5px;
+			padding: 12px;
+		}
+
+		.section h3 {
+
+			color: #26334a;
+			border-bottom-color: #a4b3c7;
+		}
+
+		.section-scene { border-left-color: #e85c69; }
+		.section-camera { border-left-color: #edaa52; }
+		.section-render { border-left-color: #4db58b; }
+		.section-files { border-left-color: #4d96d2; }
+		.section-help { border-left-color: #9072ce; }
+
+		.section-scene h3 { border-bottom-color: #e85c69; }
+		.section-camera h3 { border-bottom-color: #edaa52; }
+		.section-render h3 { border-bottom-color: #4db58b; }
+		.section-files h3 { border-bottom-color: #4d96d2; }
+		.section-help h3 { border-bottom-color: #9072ce; }
+
+		button {
+
+			background-color: #5977b4;
+			border: 1px solid #334e81;
+			border-top-color: #9db3dc;
+			border-left-color: #9db3dc;
+			border-radius: 4px;
+			box-shadow: inset 0 1px 0 #c0ceeb, 0 2px 2px #a8b7ca;
+			text-shadow: 0 1px 0 #354d79;
+		}
+
+		button:hover {
+
+			background-color: #4b69a4;
+		}
+
+		button:active {
+
+			border-top-color: #334e81;
+			border-left-color: #334e81;
+			box-shadow: inset 0 2px 3px #344c77;
+		}
+
+		button:disabled {
+
+			background-color: #a5afbc;
+			border-color: #929eaf;
+			box-shadow: none;
+			text-shadow: none;
+		}
+
+		.section-scene button { background-color: #c54e64; border-color: #933949; }
+		.section-camera button { background-color: #ba792e; border-color: #87531b; }
+		.section-render button { background-color: #27875e; border-color: #1e6849; }
+		.section-files button { background-color: #347bb8; border-color: #245b88; }
+		.section-help button { background-color: #795caf; border-color: #563f86; }
+
+		.section button:hover { opacity: 0.94; }
+
+		.btn-secondary {
+
+			color: #ffffff;
+		}
+
+		.btn-danger, #btnAbort {
+
+			background-color: #c13e48;
+			border-color: #8e2632;
+		}
+
+		.modal-content {
+
+			border-top: 5px solid #9072ce;
+			box-shadow: 0 6px 20px #74849b;
+		}
+
+		.status.info {
+
+			background-color: #e9f0ff;
+			border-left-color: #4d96d2;
+		}
+
+		.coordinate-row input {
+
+			display: inline-block;
+			width: 30%;
+			margin-right: 2%;
+		}
+
+		.preset-row button {
+
+			display: inline-block;
+			width: 17%;
+			padding: 7px 2px;
+			font-size: 11px;
+			margin: 2px 1%;
+		}
+
+		.import-note {
+
+			margin-top: 12px;
+			color: #48546c;
+			font-size: 12px;
+		}
+
+		.modal-content {
+
+			width: 95%;
+			max-width: 540px;
+		}
+
+        /* Traditional CSS dropdown menubar. No external JavaScript or framework. */
+        .rtdt-menubar {
+
+            background-color: #344762;
+            border-bottom: 2px solid #192a40;
+            padding: 3px 10px;
+            min-height: 37px;
+        }
+
+        .rtdt-menu {
+
+            display: inline-block;
+            position: relative;
+            vertical-align: top;
+        }
+
+        .rtdt-menu-toggle {
+
+            display: inline-block;
+            width: auto;
+            margin: 0 3px 0 0;
+            padding: 7px 16px;
+            background-color: #596f91;
+            border: 1px solid #1d304f;
+            border-top-color: #b8c8db;
+            border-left-color: #b8c8db;
+        }
+
+        .rtdt-menu-content {
+
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 3000;
+            width: 255px;
+            background-color: #f8faff;
+            border: 1px solid #7d91ad;
+            box-shadow: 2px 4px 8px #74839a;
+            padding: 5px;
+        }
+
+        .rtdt-menu.open .rtdt-menu-content {
+
+            display: block;
+        }
+
+        .rtdt-menu-content button, .rtdt-menu-content a {
+
+            display: block;
+            box-sizing: border-box;
+            width: 100%;
+            text-align: left;
+            margin: 1px 0;
+            padding: 8px;
+            font-size: 12px;
+            color: #243248;
+            text-shadow: none;
+            text-decoration: none;
+            background-color: #eef3fa;
+            border: 1px solid #dae3ee;
+            box-shadow: none;
+        }
+
+        .rtdt-menu-content button:hover, .rtdt-menu-content a:hover {
+
+            background-color: #dce9f8;
+        }
+
+        .rtdt-menu-content button:disabled {
+
+            color: #79899d;
+            background-color: #f2f3f5;
+            cursor: not-allowed;
+        }
+
+        .rtdt-menubar-links {
+
+            float: right;
+            padding-top: 7px;
+        }
+
+        .rtdt-menubar-links a {
+
+            display: inline-block;
+            color: #eff6ff;
+            font-size: 12px;
+            margin-left: 12px;
+            text-decoration: none;
+        }
+
+        .rtdt-menubar-links a:hover {
+
+            text-decoration: underline;
+        }
+
+        @media (max-width: 700px) {
+
+            .rtdt-menubar-links {
+
+                float: none;
+                padding: 7px 0;
+            }
+        }
+
+        /* RtDt workbench refinement: responsive layout, legible inputs, render HUD. */
+        :root { --rtdt-ink:#19263a; --rtdt-border:#d3ddeb; --rtdt-focus:#1976d2; }
+        .container { max-width: 1600px; padding: 16px; }
+        .layout { gap: 16px; align-items: flex-start; }
+        .sidebar { flex: 0 0 344px; width: 344px; padding: 14px; max-height: calc(100vh - 150px); position: sticky; top: 12px; }
+        .main { min-width: 0; padding: 20px; }
+        .section { margin-bottom: 12px; }
+        .section h3 { font-size: 15px; letter-spacing: .01em; }
+        label { font-size: 13px; }
+        input[type="text"], input[type="number"], input[type="file"], select { font-size: 14px; min-height: 38px; padding: 8px 10px; }
+        button { min-height: 38px; font-size: 13px; }
+        button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+            outline: 3px solid var(--rtdt-focus); outline-offset: 2px;
+        }
+        .rtdt-caption { font-size: 12px; color: #53647b; line-height: 1.5; margin: 6px 0; }
+        .rtdt-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 8px 0; }
+        .rtdt-actions button { margin-top: 0; }
+        .rtdt-action-primary { font-weight: 700; }
+        .rtdt-preset-row { display:flex; flex-wrap:wrap; gap: 6px; margin-bottom: 12px; }
+        .rtdt-preset-row button { width: auto; flex: 1; margin:0; min-width: 76px; }
+        .rtdt-preview-title { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+        .rtdt-preview-title h2 { font-size: 18px; color:var(--rtdt-ink); }
+        .rtdt-preview-meta { color:#52627a; font-size:12px; }
+        .rtdt-preview { background:#162032; padding: 16px; border-radius: 8px; min-height: 280px;
+            display:flex; align-items:center; justify-content:center; }
+        .rtdt-preview canvas { margin: 0 auto; border: 1px solid #526786; max-height: calc(100vh - 265px); object-fit: contain; }
+        .rtdt-progress { width: 100%; height: 12px; margin: 12px 0 4px; accent-color: #27875e; }
+        .rtdt-workflow { display:flex; flex-wrap:wrap; gap:8px; color:#4b6078; font-size:12px; margin-bottom:12px; }
+        .rtdt-workflow span { border:1px solid #cbd6e5; padding: 5px 9px; border-radius: 16px; background:#fff; }
+        .rtdt-workflow .is-active { background:#dbeafe; border-color:#6b9bcf; color:#164e87; }
+        .rtdt-workflow .is-done { background:#e5f6ed; border-color:#8bc9a3; color:#17603a; }
+        .rtdt-field-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+        .rtdt-field-row .control-group { min-width:0; }
+        .rtdt-shortcuts-note { margin-top:12px; }
+        .modal-content { width:min(92vw, 520px); }
+        @media (max-width: 1000px) {
+            .layout { flex-direction:column; }
+            .sidebar { position:static; width:100%; max-height:none; flex:1; }
+            .main { width:100%; }
+            .rtdt-preview canvas { max-height:none; }
+        }
+        @media (max-width: 540px) {
+            .container { padding:8px; }
+            .sidebar, .main { padding:12px; }
+            .rtdt-field-row { grid-template-columns: 1fr; gap:0; }
+            .rtdt-preview { padding:6px; min-height:180px; }
+            .rtdt-menubar-links { display:none; }
+        }
+
+
+        /* RtDt console redesign: legible native font stack, no external font download. */
+        header { padding: 20px 16px 18px; background: linear-gradient(115deg,#101b31 0%,#223654 58%,#1c3155 100%); }
+        header .rtdt-wordmark { font-family: "Arial Black", "Segoe UI Black", "Arial Bold", Arial, sans-serif;
+            font-weight: 900; font-style: italic; font-size: clamp(38px,5vw,58px);
+            line-height: 1.06; letter-spacing: -.075em; margin: 0 0 7px;
+            text-shadow: 0 3px 18px rgba(71,164,245,.22); }
+        .rtdt-wordmark-dot { color: #59d6ea; }
+        header .rtdt-tagline { font: 500 14px/1.45 "Segoe UI", Arial, sans-serif;
+            letter-spacing: .015em; color: #e2edf9; opacity: 1; }
+        .sidebar { flex-basis: 368px; width: 368px; }
+        .sidebar .section { padding: 15px; border-radius: 9px; }
+        .sidebar .section h3 { font-size: 16px; margin-bottom: 14px; }
+        .rtdt-workflow-intro { display:flex; align-items:center; justify-content:space-between; gap:8px;
+            font-size: 10px; letter-spacing: .13em; font-weight: 800; color:#63748d;
+            margin-bottom: 14px; }
+        .rtdt-workflow-intro span { font-size: 11px; letter-spacing:0; color:#235b84; font-weight:600; }
+        .rtdt-dependencies { padding: 12px; border: 1px solid #bfcfe0; border-radius: 8px;
+            background:#f5f8fc; margin: 13px 0; }
+        .rtdt-dependencies strong { display:block; font-size: 13px; color:#172c4a; margin-bottom: 5px; }
+        .rtdt-dependencies p { font-size: 12px; color:#4b6079; line-height:1.5; margin:5px 0; }
+        .rtdt-dep-item { border-top: 1px solid #dbe3ee; padding: 9px 0 3px; }
+        .rtdt-dep-item b { font-size: 12px; color:#203651; }
+        .rtdt-dep-item small { display:block; color:#61728a; font-size: 11px; margin:4px 0 6px; line-height:1.4; }
+        .rtdt-dep-item button { font-size: 12px; min-height:31px; margin-top:4px; }
+        .rtdt-asset-controls { margin-top: 15px; padding-top: 12px; border-top: 1px solid #e4eaf2; }
+        .rtdt-asset-heading { color: #556d89; font-size: 11px; font-weight:800; letter-spacing:.08em; }
+        .rtdt-asset-grid { display: grid; grid-template-columns:1fr 1fr; gap:8px; margin:11px 0 0; }
+        .rtdt-asset-grid button { min-width:0; margin:0; min-height:58px; text-align:left;
+            padding:8px 10px; background:#f4f8ff; color:#183957;
+            box-shadow:none; text-shadow:none; border:1px solid #b9cbe0; }
+        .rtdt-asset-grid button:hover { background:#e4f0fd; opacity:1; }
+        .rtdt-asset-grid button small { display:block; color:#5b7390; font-size:10px; font-weight:500; margin:4px 0 0 2px; }
+        .rtdt-animation-tools { border-top: 1px solid #e4eaf2; padding: 12px 0 2px; margin-top: 14px; }
+        .rtdt-animation-tools summary { cursor:pointer; font-size: 13px; font-weight:700;
+            color:#264d78; padding:4px 0 9px; }
+        .rtdt-animation-tools[open] summary { margin-bottom:9px; }
+        .rtdt-asset-grid button:focus-visible, summary:focus-visible { outline: 3px solid #1976d2; outline-offset: 2px; }
+        @media(max-width:1000px) { .sidebar { width:100%; flex-basis:auto; } }
+        @media(max-width:400px) { .rtdt-asset-grid { grid-template-columns:1fr; } }
+
+
+        .sidebar { max-height: calc(100vh - 164px); overflow-y:auto; scrollbar-width:thin; }
+        .rtdt-collapsible { padding: 0 !important; overflow:hidden; }
+        .rtdt-collapsible > summary { cursor:pointer; list-style: none; font-size:14px; font-weight:750; padding:13px 15px;
+            color:#243d5c; background:#f6f9ff; }
+        .rtdt-collapsible > summary::-webkit-details-marker { display:none; }
+        .rtdt-collapsible > summary:after { content:"+"; float:right; color:#6581a0; font-weight:700; }
+        .rtdt-collapsible[open] > summary:after { content:"−"; }
+        .rtdt-collapsible[open] { padding: 0 14px 14px !important; }
+        .rtdt-collapsible[open] > summary { margin:0 -14px 14px; }
+        .rtdt-asset-controls > summary { cursor:pointer; color:#294970; font-size:12px; font-weight:750; padding:4px 0 8px; }
+        .rtdt-asset-controls > summary span { font-size:10px; }
+        .rtdt-asset-controls { margin-top:10px; padding-top:8px; }
+        header { padding: 12px 16px 11px; }
+        header .rtdt-wordmark { font-size: clamp(34px,4.5vw,48px); margin-bottom:3px; }
+        header .rtdt-tagline { font-size:13px; }
+        .sidebar .section { margin-bottom:8px; }
+        .section-scene .rtdt-asset-grid button { min-height:48px; }
+        .section-scene .control-group { margin-bottom:9px; }
+        .section-scene .rtdt-dependencies { margin:8px 0; padding:9px; }
+        .section-scene .rtdt-animation-tools { margin-top:8px; padding-top:8px; }
+        @media(max-width:1000px) { .sidebar { max-height:none; } }
+
+
+        .section-light { border-left-color:#c38b48 !important; }
+        .sidebar { flex:0 0 356px; width:356px; }
+        .rtdt-render-toolbar { border:1px solid #cad6e6; background:#fff; padding:12px; border-radius:8px; margin-bottom:14px; }
+        .rtdt-render-main { display:flex; align-items:center; flex-wrap:wrap; gap:9px; }
+        .rtdt-render-main button { width:auto; margin:0; padding:9px 19px; background:#27875e; color:white; }
+        .rtdt-render-hint { color:#536a83; font-size:12px; margin-left:auto; }
+        .rtdt-render-settings { margin-top:8px; border-top:1px solid #e4eaf2; padding-top:9px; }
+        .rtdt-render-settings summary { font-size:12px; font-weight:700; color:#355679; cursor:pointer; }
+        .rtdt-render-settings-inner { padding-top:12px; }
+        .rtdt-render-settings-inner .rtdt-preset-row button { color:#fff; }
+        #sceneDependencies { max-height:220px; overflow-y:auto; }
+        .section-scene .rtdt-dependencies { margin:8px 0; }
+        @media(max-width:1000px) { .sidebar { width:100%; flex-basis:auto; } }
+.rtdt-bvh-settings { border-top:1px solid #e2eaf3; padding-top:12px; margin-top:12px; }
+.rtdt-bvh-status { font-size:12px; border:1px solid #cdd9e7; padding:8px; border-radius:6px; background:#f7fafd; color:#3d5673; }
+.rtdt-bvh-status.success { background:#e8f6ed; border-color:#a9d3b4; color:#195b3b; }
+.rtdt-bvh-status.error { background:#fff0ed; border-color:#efb2a7; color:#9b3226; }
+
+        /* Workspace: sidebar and canvas are independent desktop columns. */
+        @media (min-width: 901px) {
+            .layout { display: grid; grid-template-columns: minmax(290px, 356px) minmax(0, 1fr);
+                align-items: start; gap: 16px; }
+            .layout > .sidebar { position: sticky; top: 8px; grid-column: 1; width: auto;
+                min-width: 0; max-height: calc(100vh - 116px); overflow-y: auto; }
+            .layout > .main { grid-column: 2; width: auto; min-width: 0; min-height: 420px; }
+        }
+        @media (max-width: 900px) {
+            .layout { display: flex; flex-direction: column; }
+            .layout > .sidebar, .layout > .main { width:100%; flex: none; position:static; max-height: none; }
+            .layout > .main { min-height: 300px; }
+        }
+        .rtdt-preview { min-width: 0; }
+        .rtdt-preview canvas { display:block; width:auto; max-width:100%; height:auto; }
+
+
+        .rtdt-about-content { padding: 0; overflow: hidden; border: 1px solid #314863;
+            border-radius: 12px; width: min(92vw, 520px); background: #f9fbff; }
+        .rtdt-about-header { margin: 0; padding: 22px 24px; border-bottom: 0;
+            color: #f5faff; background: linear-gradient(115deg,#11243e,#294f75); }
+        .rtdt-about-header h2 { font: 900 26px/1.2 "Arial Black","Segoe UI",Arial,sans-serif;
+            letter-spacing:-.045em; }
+        .rtdt-about-dot { color:#68e0e8; }
+        .rtdt-about-header .modal-close { color:#e4edf7; margin-top:-5px; }
+        .rtdt-about-description { padding: 23px 24px 18px; font: 15px/1.75 "Segoe UI",Arial,sans-serif;
+            color:#24374d; }
+        .rtdt-about-footer { display:flex; align-items:center; justify-content:space-between;
+            gap:14px; padding:14px 24px 19px; border-top:1px solid #dce6f1; }
+        .rtdt-about-footer span { font-size:11px; color:#65788f; }
+        .rtdt-about-done { width:auto; min-width:88px; margin:0; background:#254e79; }
+
+        /* Compact desktop header: preserve brand while maximising viewport height. */
+        header { display:flex; align-items:center; justify-content:center; gap:18px;
+            min-height:48px; padding:5px 16px; border-bottom-width:2px; }
+        header .rtdt-wordmark { flex:0 0 auto; font-size:30px; line-height:1; margin:0; }
+        header .rtdt-tagline { font-size:12px; line-height:1.25; text-align:left; }
+        .spectrum-bar { height:3px; }
+        .container { padding-top:8px; padding-bottom:8px; }
+        .layout { margin-top:0; }
+        @media(min-width:901px) {
+            .layout > .sidebar { max-height:calc(100vh - 103px); }
+            .rtdt-preview { min-height:200px; }
+            .rtdt-preview canvas { max-height:calc(100vh - 230px); }
+        }
+        @media(max-width:600px) {
+            header { display:block; text-align:center; padding:6px 9px; }
+            header .rtdt-wordmark { font-size:27px; }
+            header .rtdt-tagline { margin-top:3px; text-align:center; font-size:11px; }
+        }
+
+
+        /* Compact app-menu chrome: override generic form button rules. */
+        .rtdt-menubar { min-height:32px; padding:2px 9px; gap:2px; align-items:center;
+            background:#15253c; border-bottom:1px solid #35506d; }
+        .rtdt-menubar .rtdt-menu-toggle {
+            display:inline-flex; align-items:center; justify-content:center; width:auto;
+            min-width:0; min-height:27px; height:27px; margin:0; padding:3px 12px;
+            border:1px solid transparent; border-radius:5px; background:transparent;
+            box-shadow:none; text-shadow:none; color:#ddeaf9; font:600 12px/1.2 "Segoe UI",Arial,sans-serif;
+            letter-spacing:.01em; cursor:pointer; transition:background .12s,border-color .12s;
+        }
+        .rtdt-menubar .rtdt-menu-toggle:hover,
+        .rtdt-menubar .rtdt-menu.open .rtdt-menu-toggle {
+            background:#2c4565; border-color:#59718c; color:#fff; opacity:1; transform:none;
+        }
+        .rtdt-menubar .rtdt-menu-toggle:focus-visible {
+            outline:2px solid #8cd3ff; outline-offset:1px;
+        }
+        .rtdt-menubar .rtdt-menu-content { min-width:236px; padding:5px;
+            border-radius:7px; background:#f9fbff; border:1px solid #b5c7dc;
+            box-shadow:0 12px 28px rgba(7,26,52,.22); z-index:50; }
+        .rtdt-menubar .rtdt-menu-content button,
+        .rtdt-menubar .rtdt-menu-content a {
+            width:100%; min-height:31px; margin:0; padding:7px 10px;
+            border:0; border-radius:4px; background:transparent; box-shadow:none;
+            text-shadow:none; font:500 12px/1.35 "Segoe UI",Arial,sans-serif;
+            text-align:left; color:#203c5d; text-decoration:none; transform:none;
+        }
+        .rtdt-menubar .rtdt-menu-content button:hover,
+        .rtdt-menubar .rtdt-menu-content a:hover { background:#e8f1fc; color:#143a69; opacity:1; }
+        .rtdt-menubar .rtdt-menu-content button:disabled { opacity:.5; cursor:not-allowed; }
+        .rtdt-menubar .rtdt-menubar-links a { font-size:11px; padding:4px 7px; }
+
+
+/* Bootstrap-inspired shared dialog trims and buttons. */
+.rtdt-help-dialog { width:min(92vw,530px); padding:0; border:1px solid #cbd5e1; border-radius:12px; overflow:hidden; background:#fff; box-shadow:0 18px 48px rgba(15,23,42,.27); }
+.rtdt-dialog-header { background:#f8fafc; border-bottom:1px solid #dce3ec; padding:13px 17px; display:flex; align-items:center; justify-content:space-between; }
+.rtdt-dialog-header h2 { font:700 17px/1.3 "Segoe UI",Arial,sans-serif; color:#1e293b; }
+.rtdt-dialog-close { width:28px; height:28px; min-height:28px; margin:0; padding:0; background:transparent; border:0; color:#64748b; box-shadow:none; font-size:22px; }
+.rtdt-dialog-close:hover { background:#e2e8f0; color:#0f172a; }
+.rtdt-dialog-body { padding:18px; color:#475569; font-size:13px; line-height:1.5; }
+.rtdt-dialog-body > p { margin-bottom:12px; }
+.rtdt-shortcut-row { display:flex; align-items:center; gap:20px; padding:9px 3px; border-bottom:1px solid #edf1f6; }
+.rtdt-shortcut-row kbd { min-width:54px; display:inline-block; border:1px solid #cbd5e1; border-bottom-width:2px; border-radius:5px; background:#f1f5f9; color:#334155; text-align:center; font:700 12px/1.25 Consolas,monospace; padding:5px 8px; }
+.rtdt-dialog-note { margin-top:12px; border-radius:6px; background:#f1f5f9; color:#334155; padding:10px; font-size:12px; }
+.rtdt-dialog-footer { display:flex; gap:8px; justify-content:flex-end; padding:12px 17px; border-top:1px solid #e2e8f0; }
+.rtdt-dialog-footer .rtdt-btn { display:inline-flex; justify-content:center; width:auto; min-height:34px; padding:6px 15px; margin:0; border-radius:6px; font-size:13px; font-weight:600; box-shadow:none; }
+.rtdt-dialog-footer .rtdt-btn-primary { background:#2563eb; color:white; border:1px solid #2563eb; }
+.rtdt-dialog-footer .rtdt-btn-outline { background:white; color:#334155; border:1px solid #cbd5e1; }
+
+        /* About window close control follows the shared dialog chrome. */
+        .rtdt-about-header { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+        .rtdt-about-header h2 { order:0; margin:0; }
+        .rtdt-about-header .rtdt-about-close {
+            order:1; float:none; flex:0 0 30px; display:inline-grid; place-items:center;
+            width:30px; height:30px; min-height:30px; padding:0; margin:0;
+            border:1px solid rgba(215,231,248,.26); border-radius:7px;
+            background:rgba(255,255,255,.09); color:#e8f2ff;
+            box-shadow:none; text-shadow:none; font:400 21px/1 Arial,sans-serif;
+            transition:background .15s,border-color .15s,color .15s;
+        }
+        .rtdt-about-header .rtdt-about-close:hover {
+            color:#fff; background:rgba(255,255,255,.2); border-color:rgba(255,255,255,.5);
+            opacity:1; transform:none;
+        }
+        .rtdt-about-header .rtdt-about-close:focus-visible {
+            outline:2px solid #76d9ef; outline-offset:2px;
+        }
+
+        .rtdt-light-colour-row { display:grid; grid-template-columns:70px minmax(0,1fr) 52px; align-items:end; gap:12px; margin:14px 0; }
+        .rtdt-light-colour-row input[type="color"] { width:70px; height:48px; padding:4px; min-height:48px; border:1px solid #cbd5e1; border-radius:7px; background:#f8fafc; cursor:pointer; }
+        .rtdt-light-colour-row label { display:block; margin-bottom:5px; }
+        .rtdt-light-colour-row input[type="text"] { width:100%; font:600 14px Consolas,monospace; text-transform:uppercase; }
+        .rtdt-light-preview { width:52px; height:48px; border:1px solid #94a3b8; border-radius:7px; background:#ffffff; box-shadow:inset 0 0 0 3px rgba(255,255,255,.35); }
+        .rtdt-light-channels { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:10px 0 15px; }
+        .rtdt-light-channels input { width:100%; margin-top:5px; }
+        .rtdt-light-presets { display:flex; flex-wrap:wrap; gap:7px; margin:8px 0 10px; }
+        .rtdt-light-presets button { width:auto; min-width:60px; min-height:32px; padding:6px 10px; margin:0; background:#f8fafc; color:#334155; border:1px solid #cbd5e1; border-radius:6px; box-shadow:none; text-shadow:none; font-size:12px; }
+        .rtdt-light-presets button:hover { background:#eaf2ff; color:#1d4ed8; opacity:1; transform:none; }
+        @media(max-width:440px) { .rtdt-light-colour-row { grid-template-columns:60px minmax(0,1fr); } .rtdt-light-preview { display:none; } }
+	</style>
+</head>
+<body>
+
+<header>
+	<h1 class="rtdt-wordmark">RtDt<span class="rtdt-wordmark-dot">.</span></h1>
+	<p class="rtdt-tagline">Raytracer, for Node.js and Web UI. Animation &amp; Physics support included.</p>
+</header>
+<div class="spectrum-bar" aria-hidden="true"><span class="spectrum-red"></span><span class="spectrum-orange"></span><span class="spectrum-yellow"></span><span class="spectrum-green"></span><span class="spectrum-blue"></span><span class="spectrum-violet"></span></div>
+
+<nav class="rtdt-menubar" aria-label="RtDt main menu">
+    <div class="rtdt-menu"><button type="button" class="rtdt-menu-toggle" aria-expanded="false" aria-controls="rtdt-menu-file">File ▾</button>
+        <div id="rtdt-menu-file" class="rtdt-menu-content">
+            <button type="button" data-menu-action="open-obj">Import OBJ mesh</button>
+            <button type="button" data-menu-action="open-image">Import image (PNG / JPEG / BMP)</button>
+             <button type="button" data-menu-action="repo-samples">Import file from repository or computer</button>
+            <button type="button" data-menu-action="export">Export image</button>
+            <button type="button" disabled title="Project persistence has not yet been implemented">Open Project (planned)</button>
+            <button type="button" disabled title="Project persistence has not yet been implemented">Save Project (planned)</button>
+            <button type="button" data-menu-action="close-project">Close Project / Clear Scene</button>
+        </div>
+    </div>
+    <div class="rtdt-menu"><button type="button" class="rtdt-menu-toggle" aria-expanded="false" aria-controls="rtdt-menu-render">Render ▾</button>
+        <div id="rtdt-menu-render" class="rtdt-menu-content">
+            <button type="button" data-menu-action="render">Render</button>
+            <button type="button" data-menu-action="stop">Stop Rendering</button>
+            <button type="button" data-menu-action="bvh">Generate BVH</button>
+            <button type="button" data-menu-action="bvh-threshold">Set BVH divide threshold</button>
+            <button type="button" data-menu-action="camera">Camera settings</button>
+            <button type="button" data-menu-action="lights">Light settings</button>
+        </div>
+    </div>
+    <div class="rtdt-menu"><button type="button" class="rtdt-menu-toggle" aria-expanded="false" aria-controls="rtdt-menu-help">Help ▾</button>
+        <div id="rtdt-menu-help" class="rtdt-menu-content">
+            <button type="button" data-menu-action="keyboard">Keyboard shortcuts</button>
+            <button type="button" data-menu-action="contents">Table of Contents / Controls</button>
+            <button type="button" data-menu-action="select-shape">Select Element</button>
+            <button type="button" data-menu-action="bug">Report a Bug</button>
+            <button type="button" data-menu-action="about">About RtDt</button>
+            <a href="https://pragprog.com/titles/jbtracer/the-ray-tracer-challenge/" target="_blank" rel="noopener noreferrer">Jamis Buck's ray tracer book</a>
+        </div>
+    </div>
+    <div class="rtdt-menubar-links">
+        <a href="https://github.com/inventordave2/RTDT" target="_blank" rel="noopener noreferrer">Source</a>
+        <a href="mailto:digital.artist@hotmail.co.uk">Email</a>
+        <a href="https://open.spotify.com/album/1ost8iDohzxcLEQcT7OpdG" target="_blank" rel="noopener noreferrer">Music</a>
+        <a href="https://www.youtube.com/@Computerphile" target="_blank" rel="noopener noreferrer">YouTube</a>
+    </div>
+</nav>
+<div class="container">
+	<div class="layout">
+		<!-- Sidebar Controls -->
+		<div class="sidebar">
+			<!-- Scene Selection -->
+			<div class="section section-scene">
+				<h3>1 · Choose your scene</h3>
+                <div class="rtdt-workflow-intro">START HERE <span>Scene → Assets → Render</span></div>
+                <div class="control-group">
+                    <label for="sceneSource">Scene collection</label>
+                    <select id="sceneSource">
+                        <option value="repo" selected>RtDt repository · featured scenes</option>
+                        <option value="built-in">Built-in primitives</option>
+                        <option value="local">My computer</option>
+                    </select>
+                </div>
+                <div id="sceneBuiltInGroup" class="control-group" style="display:none">
+                    <label for="sceneSelect">Scene</label>
+                    <select id="sceneSelect">
+                        <option value="scene1">Primitives</option>
+                        <option value="mySkyBox">Sky Box</option>
+                        <option value="earth">Earth</option>
+                        <option value="cm_cube">Cube</option>
+                        <option value="endGame">End Game</option>
+                    </select>
+                </div>
+                <div id="sceneRepoGroup" class="control-group">
+                    <label for="sceneRepoSelect">Featured scenes</label>
+                    <select id="sceneRepoSelect">
+                        <option value="lee-perry-smith-head" data-scene-path="samples/lee-perry-smith-head.scene">Lee Perry-Smith · real scanned head (mesh preview)</option>
+                        <option value="aurora-orrery" data-scene-path="samples/aurora-orrery.scene">★ Aurora Orrery · detailed OBJ showcase</option>
+                        <option value="rocket" data-scene-path="samples/rocket-to-rainbow-planet.scene">Rocket to Rainbow Planet · rocket-to-rainbow-planet.scene</option>
+                        <option value="scene" data-scene-path="samples/orbit.scene">Orbit Studio · orbit.scene</option>
+                        <option value="prism-garden" data-scene-path="samples/prism-garden.scene">Prism Garden · prism-garden.scene</option>
+                        <option value="cosmic-orbs" data-scene-path="samples/cosmic-orbs.scene">Cosmic Orbs · cosmic-orbs.scene</option>
+                        <option value="neon-city" data-scene-path="samples/neon-city.scene">Neon City · neon-city.scene</option>
+                        <option value="reflection-studio" data-scene-path="samples/reflection-studio.scene">Reflection Studio · reflection-studio.scene</option>
+                    </select>
+                </div>
+                <div id="sceneLocalGroup" class="control-group" style="display:none">
+                    <label for="sceneLocalFile">Your .scene file (JSON)</label>
+                    <input type="file" id="sceneLocalFile" accept=".scene">
+                    <label for="sceneLocalAssets">Associated files (OBJ, texture, .phy)</label>
+                    <input type="file" id="sceneLocalAssets" multiple accept=".obj,.phy,.png,.jpg,.jpeg,.bmp,.ppm">
+                    <p class="rtdt-caption">Choose any files listed in the scene configuration. Browsers cannot automatically read neighbouring local files without permission.</p>
+                </div>
+                <button id="btnLoadScene" class="rtdt-action-primary" type="button">Load scene</button>
+                <div id="sceneDependencies" class="rtdt-dependencies" aria-live="polite">
+                    <strong>Scene assets</strong>
+                    <p id="sceneDependencyText">Choose and load a scene to see any required OBJ meshes, textures or AetherOre files.</p>
+                    <div id="sceneDependencyList"></div>
+                </div>
+                <details class="rtdt-asset-controls"><summary class="rtdt-asset-heading">Alternative assets &amp; manual imports</summary>
+                    
+                    <p class="rtdt-caption">Choose source for alternative assets.</p><label for="assetDefaultSource">Asset source</label><select id="assetDefaultSource"><option value="repo">RtDt hosted assets</option><option value="local">Local file</option></select>
+                    <div class="rtdt-asset-grid">
+                        <button id="btnAssetMesh" type="button">▧ Mesh <small>.obj</small></button>
+                        <button id="btnAssetTexture" type="button">◧ Texture <small>PNG · JPG · BMP</small></button>
+                        <button id="btnOpenPhyFile" type="button">◇ Animation <small>.phy</small></button>
+                        <button id="btnOpenSceneFile" type="button">▤ Other scene <small>.scene</small></button>
+                    </div>
+                <button id="btnOpenImport" type="button" class="btn-secondary">Browse all files…</button><button id="btnOpenImage" type="button" class="btn-secondary">Material settings…</button></details>
+                <input type="file" id="phyFile" accept=".phy,application/json" style="display:none" aria-label="Legacy local physics file">
+                <details class="rtdt-animation-tools">
+                    <summary>Animation timeline</summary>
+                    <div class="control-group">
+                        <label for="phyTime">Time (seconds)</label>
+                        <input type="number" id="phyTime" value="0" min="0" step="0.0333333333">
+                    </div>
+                    <div class="rtdt-actions"><button id="btnTimeBack" type="button">◀ Previous</button><button id="btnTimeForward" type="button">Next ▶</button></div>
+                    <button id="btnApplyPhy" type="button">Apply pose at time</button><div class="rtdt-actions"><button id="btnPlayPhy" type="button">▶ Play animation</button><button id="btnStopPhy" type="button" disabled>■ Stop playback</button></div><div class="control-group"><label for="phyEndTime">Playback end (seconds)</label><input type="number" id="phyEndTime" value="4" min="0.05" step="0.5"></div><p class="rtdt-caption">Playback applies each .phy pose and raytraces successive frames. Use Preview resolution (160×90) for faster playback; larger renders take longer.</p><div id="phyPlaybackStatus" class="status" role="status" aria-live="polite" style="display:none;"></div>
+                    <div id="phyStatus" class="status" role="status" aria-live="polite" style="display:none;"></div>
+                </details>
+                <div id="sceneStatus" class="status" role="status" aria-live="polite" style="display:none;"></div>
+
+			</div>
+			
+			<!-- Camera Controls -->
+			<details class="section section-camera rtdt-collapsible"><summary>2 · Camera</summary>
+				
+				<div class="control-group">
+					<label for="camX">Position X:</label>
+					<input type="number" id="camX" value="-6" step="0.1">
+				</div>
+				<div class="control-group">
+					<label for="camY">Position Y:</label>
+					<input type="number" id="camY" value="1.5" step="0.1">
+				</div>
+				<div class="control-group">
+					<label for="camZ">Position Z:</label>
+					<input type="number" id="camZ" value="6" step="0.1">
+				</div>
+				<button id="btnUpdateCamera">Apply camera</button><button id="btnOpenCamera">Advanced camera…</button>
+			</details>
+			
+			<details class="section section-light rtdt-collapsible"><summary>3 · Lighting</summary><p class="rtdt-caption">Configure the current scene light.</p><button id="btnOpenLights" type="button">Light colour settings…</button></details>
+			<details class="section section-files rtdt-collapsible"><summary>4 · Export</summary><label for="exportFormat">Image format</label><select id="exportFormat"><option value="png">PNG (default)</option><option value="jpeg">JPEG</option><option value="bmp">BMP — RGB 24-bit (true colour)</option><option value="c64">BMP — C64 indexed</option><option value="ansi256">BMP — ANSI256 indexed</option><option value="gray8">BMP — grayscale</option><option value="ppm">PPM (P3 — legacy)</option></select><button id="btnDownload" type="button">Export rendered image</button><p class="rtdt-caption">PNG, JPEG and 24-bit RGB BMP are the primary formats. Indexed BMP and PPM remain available.</p></details><input type="file" id="objFile" accept=".obj" style="display:none" aria-label="Legacy local OBJ file"><button id="btnShowKeyboard" type="button" style="display:none">Keyboard shortcuts</button>
+		</div><!-- End sidebar -->
+		<!-- Main Canvas Area -->
+		<div class="main">
+            <div class="rtdt-preview-title"><h2>Render viewport</h2><span id="viewportMeta" class="rtdt-preview-meta">800 × 600 · no scene loaded</span></div>
+            <div class="rtdt-render-toolbar"><div class="rtdt-render-main"><button id="btnRender" class="rtdt-action-primary" type="button">Start render</button><button id="btnAbort" class="btn-secondary" type="button" style="display:none;">Stop render</button><span class="rtdt-render-hint">Runs locally in your browser</span></div><details class="rtdt-render-settings"><summary>Resolution and quality</summary><div class="rtdt-render-settings-inner"><p class="rtdt-caption">Quick resolution presets</p>
+                <div class="rtdt-preset-row"><button type="button" data-render-size="160x90">Preview</button><button type="button" data-render-size="400x225">Medium</button><button type="button" data-render-size="800x600">Full</button></div>
+                <div class="rtdt-field-row"><div class="control-group">
+					<label for="renderWidth">Width (px):</label>
+					<input type="number" id="renderWidth" value="800" min="10" max="4000">
+				</div>
+				<div class="control-group">
+					<label for="renderHeight">Height (px):</label>
+					<input type="number" id="renderHeight" value="600" min="10" max="4000">
+				</div></div>
+				<div class="control-group">
+					<label for="renderQuality">Max ray recursion depth:</label>
+					<input type="number" id="renderQuality" value="1" min="1" max="20">
+				</div><div class="rtdt-bvh-settings">
+ <label for="bvhThreshold">BVH subdivision threshold <span title="Bounding Volume Hierarchy: number of child shapes at which a group is eligible for spatial subdivision.">ⓘ</span></label>
+ <p class="rtdt-caption">BVH (Bounding Volume Hierarchy) speeds up ray intersection tests by grouping geometry. A group is divided when it has at least this many direct children. Lower values create more subgroups; higher values do less subdivision. For small scenes, optimisation may make no change.</p>
+ <div class="rtdt-field-row"><div class="control-group"><input type="number" id="bvhThreshold" value="8" min="2" step="1" aria-describedby="bvhExplanation"><p id="bvhExplanation" class="rtdt-caption">Try 8 for a mesh-heavy scene; measure render times to tune.</p></div><div class="control-group"><button id="btnBVH" type="button">Optimise BVH</button></div></div>
+ <div id="bvhStatus" class="rtdt-bvh-status" role="status" aria-live="polite">Not optimised for this scene.</div>
+ </div></div></details><progress id="renderProgress" class="rtdt-progress" max="100" value="0" aria-label="Render progress" style="display:none;"></progress><div id="renderStatus" class="status" role="status" aria-live="polite" style="display:none;"></div></div>
+<div id="workflowSteps" class="rtdt-workflow" aria-label="Workflow status"><span class="is-active">1 · Load scene</span><span>2 · Set pose</span><span>3 · Render</span><span>4 · Export</span></div>
+            <div class="rtdt-preview"><canvas id="canvas" width="800" height="600" aria-label="RtDt rendered image"></canvas></div>
+            <div id="mainStatus" class="status info" role="status" aria-live="polite" style="display: none;"></div>
+            <p class="rtdt-caption rtdt-shortcuts-note">Shortcuts: R render · S stop · ? help</p>
+		</div>
+	</div>
+</div>
+
+
+<!-- RtDt About dialog -->
+<div id="aboutModal" class="modal" role="presentation">
+  <div class="modal-content rtdt-about-content" role="dialog" aria-modal="true" aria-labelledby="aboutModalTitle" aria-describedby="aboutModalDescription">
+    <div class="modal-header rtdt-about-header">
+      <button type="button" class="modal-close rtdt-about-close" data-close-dialog="aboutModal" aria-label="Close About RtDt dialog">&times;</button>
+      <h2 id="aboutModalTitle">About RtDt<span class="rtdt-about-dot">.</span></h2>
+    </div>
+    <p id="aboutModalDescription" class="rtdt-about-description">A Javascript implementation of a Raytracer, for Node.js and WebView. Designed and implemented by Dave. Intended as a reference implementation for porting to native C, as a modeller.</p>
+    <div class="rtdt-about-footer">
+      <span>Raytracer · Node.js · WebView</span>
+      <button type="button" class="rtdt-about-done" data-close-dialog="aboutModal">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Unified file importer: repository and local files use one workflow. -->
+<div id="importModal" class="modal" role="presentation">
+  <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="importModalTitle">
+    <div class="modal-header"><button class="modal-close" type="button" data-close-dialog="importModal" aria-label="Close import dialog">&times;</button><span id="importModalTitle">Import file</span></div>
+    <div class="control-group">
+      <label for="importKind">File type</label>
+      <select id="importKind">
+        <option value="scene">Scene (.scene JSON)</option>
+        <option value="phy">AetherOre animation (.phy)</option>
+        <option value="obj">OBJ mesh (.obj)</option>
+        <option value="image">Texture image (PNG, JPEG, BMP, PPM)</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label for="importSource">File source</label>
+      <select id="importSource">
+        <option value="repo">RtDt repository samples</option>
+        <option value="local">My computer</option>
+      </select>
+    </div>
+    <div id="importRepoGroup" class="control-group">
+      <label for="repoSampleSelect">Repository file</label>
+      <select id="repoSampleSelect">
+        <option value="scene">Orbit Studio (.scene)</option>
+        <option value="phy">Orbit animation (.phy)</option>
+        <option value="obj">Pyramid mesh (.obj)</option>
+        <option value="jpeg">Earth map (JPEG)</option>
+      </select>
+      <p class="rtdt-caption">Repository samples are hosted with RtDt on GitHub Pages; no local download is needed.</p>
+    </div>
+    <div id="importLocalGroup" class="control-group" style="display:none;">
+      <label for="importLocalFile">File from your computer</label>
+      <input id="importLocalFile" type="file" accept=".scene,application/json">
+    </div>
+    <button id="btnImportSelected" type="button">Import selected file</button>
+    <div id="repoSampleStatus" class="status" role="status" aria-live="polite" style="display:none;"></div>
+    <p class="rtdt-caption">For animated scenes, load the scene before its .phy file. JSON .scene is supported in the browser; YAML scene loading is not yet supported.</p>
+  </div>
+</div>
+<!-- Legacy camera, light and file controls migrated as accessible modal dialogs -->
+<div id="cameraModal" class="modal"><div class="modal-content" role="dialog" aria-label="Advanced camera">
+	<div class="modal-header"><button class="modal-close" data-close-dialog="cameraModal" aria-label="Close">&times;</button>Camera</div>
+	<label for="cameraPreset">Camera preset:</label><select id="cameraPreset"><option value="0">Preset 1</option><option value="1">Preset 2</option><option value="2">Preset 3</option></select>
+	<label>Look-at coordinates:</label><div class="coordinate-row">
+	<input type="number" id="lookX" value="0" step=".1" aria-label="Look-at X">
+	<input type="number" id="lookY" value="0" step=".1" aria-label="Look-at Y">
+	<input type="number" id="lookZ" value="0" step=".1" aria-label="Look-at Z"></div>
+	<label for="cameraFov">Field of view (degrees):</label><input type="number" id="cameraFov" value="45" min="1" max="179">
+	<button data-close-dialog="cameraModal">Close</button>
+</div></div>
+<div id="lightsModal" class="modal" role="presentation">
+ <div class="modal-content rtdt-help-dialog rtdt-light-dialog" role="dialog" aria-modal="true" aria-labelledby="lightSettingsTitle">
+  <div class="rtdt-dialog-header"><h2 id="lightSettingsTitle">Point light · RGB colour</h2>
+   <button type="button" class="rtdt-dialog-close" data-close-dialog="lightsModal" aria-label="Close light settings">×</button></div>
+  <div class="rtdt-dialog-body">
+   <p>Set this scene's point-light colour using 24-bit RGB. Each channel ranges from 0 to 255; the current engine uses one point light.</p>
+   <div class="rtdt-light-colour-row">
+    <input type="color" id="lightColour" value="#ffffff" aria-label="Choose point-light colour">
+    <div><label for="lightHex">Hexadecimal RGB</label><input type="text" id="lightHex" value="#FFFFFF" maxlength="7" spellcheck="false" inputmode="text" placeholder="#RRGGBB"></div>
+    <div id="lightPreview" class="rtdt-light-preview" role="img" aria-label="Current point-light colour preview"></div>
+   </div>
+   <div class="rtdt-light-channels">
+    <div><label for="lightRedChannel">Red</label><input id="lightRedChannel" type="number" min="0" max="255" step="1" value="255"></div>
+    <div><label for="lightGreenChannel">Green</label><input id="lightGreenChannel" type="number" min="0" max="255" step="1" value="255"></div>
+    <div><label for="lightBlueChannel">Blue</label><input id="lightBlueChannel" type="number" min="0" max="255" step="1" value="255"></div>
+   </div>
+   <label>Quick presets</label>
+   <div class="rtdt-light-presets">
+    <button id="lightWhite" type="button">White</button>
+    <button id="lightWarm" type="button">Warm</button>
+    <button id="lightRed" type="button">Red</button>
+    <button id="lightGreen" type="button">Green</button>
+    <button id="lightBlue" type="button">Blue</button>
+   </div>
+   <div id="lightSettingsStatus" class="rtdt-dialog-note" role="status" aria-live="polite">Load a scene to edit its point light.</div>
+  </div>
+  <div class="rtdt-dialog-footer"><button type="button" class="rtdt-btn rtdt-btn-outline" data-close-dialog="lightsModal">Cancel</button>
+    <button id="btnApplyLight" type="button" class="rtdt-btn rtdt-btn-primary">Apply RGB colour</button></div>
+ </div>
+</div>
+<div id="imageModal" class="modal"><div class="modal-content" role="dialog" aria-label="Image import">
+	<div class="modal-header"><button class="modal-close" data-close-dialog="imageModal" aria-label="Close">&times;</button>Import Image</div>
+	<label for="imageFile">PNG, JPEG or BMP (PPM also supported):</label><input type="file" id="imageFile" accept=".png,.jpg,.jpeg,.bmp,.ppm,image/png,image/jpeg,image/bmp">
+	<label for="imagePurpose">Image purpose:</label><select id="imagePurpose"><option value="albedo">Material colour</option><option value="normal">Normal map (import only)</option><option value="height">Height/bump map (import only)</option></select>
+	<label for="materialTarget">Target shape:</label><select id="materialTarget"></select>
+	<p id="imageInfo" class="info-box">Select an image to import.</p><button id="btnImportImage">Import Image</button><button id="btnApplyImage">Apply to Material</button>
+	<p class="import-note">Albedo mapping supports spheres and planes. Mesh UV and normal/height shading remain pending.</p>
+</div></div>
+<!-- Help: keyboard shortcuts -->
+<div id="keyboardModal" class="modal" role="presentation"><div class="modal-content rtdt-help-dialog" role="dialog" aria-modal="true" aria-labelledby="keyboardTitle">
+  <div class="rtdt-dialog-header"><h2 id="keyboardTitle">Keyboard shortcuts</h2><button type="button" class="rtdt-dialog-close" data-close-dialog="keyboardModal" aria-label="Close shortcuts">×</button></div>
+  <div class="rtdt-dialog-body"><p>Use these shortcuts when focus is outside an input field.</p>
+    <div class="rtdt-shortcut-row"><kbd>R</kbd><span>Start render</span></div>
+    <div class="rtdt-shortcut-row"><kbd>S</kbd><span>Stop render</span></div>
+    <div class="rtdt-shortcut-row"><kbd>?</kbd><span>Show keyboard shortcuts</span></div>
+    <div class="rtdt-shortcut-row"><kbd>Esc</kbd><span>Close dialogs or menus</span></div>
+  </div>
+  <div class="rtdt-dialog-footer"><button type="button" class="rtdt-btn rtdt-btn-primary" data-close-dialog="keyboardModal">Done</button></div>
+</div></div>
+<!-- Help: scene-object selection -->
+<div id="selectElementModal" class="modal" role="presentation"><div class="modal-content rtdt-help-dialog" role="dialog" aria-modal="true" aria-labelledby="selectElementTitle">
+  <div class="rtdt-dialog-header"><h2 id="selectElementTitle">Select scene element</h2><button type="button" class="rtdt-dialog-close" data-close-dialog="selectElementModal" aria-label="Close element selection">×</button></div>
+  <div class="rtdt-dialog-body"><p>Choose an object from the loaded scene. This selection is available for material editing.</p>
+    <label for="sceneElementSelect">Scene object</label><select id="sceneElementSelect"></select>
+    <div id="sceneElementInfo" class="rtdt-dialog-note" role="status" aria-live="polite">Load a scene to see its objects.</div>
+  </div>
+  <div class="rtdt-dialog-footer"><button type="button" class="rtdt-btn rtdt-btn-outline" data-close-dialog="selectElementModal">Cancel</button><button type="button" id="btnSelectSceneElement" class="rtdt-btn rtdt-btn-primary">Select element</button></div>
+</div></div>
+
+<!-- Local RtDt scripts, loaded in dependency order. No eval or npm. -->
+<script src="rtdt_math.js"></script>
+<script src="rtdt_core.js"></script>
+<script src="rtdt_matrix-transform.js"></script>
+<script src="rtdt_matrix.js"></script>
+<script src="rtdt_ray.js"></script>
+<script src="rtdt_light.js"></script>
+<script src="rtdt_material.js"></script>
+<script src="rtdt_world.js"></script>
+<script src="rtdt_shade.js"></script>
+<script src="rtdt_p+e.js"></script>
+<script src="rtdt_pattern.js"></script>
+<script src="rtdt_colour.js"></script>
+<script src="rtdt_examples.js"></script>
+<script src="raytracer-core.js"></script>
+<script src="rtdt_objfile.js"></script>
+<script src="rtdt_graphics.js"></script>
+<script src="rtdt_image_io_browser.js"></script>
+<script src="rtdt_ap_math.js"></script>
+<script src="rtdt_aetherore.js"></script>
+<script src="rtdt_scene_assets.js"></script>
+<script src="rtdt_scene_browser.js"></script>
+<script src="rtdt_ui_browser_20261118.js?v=bvh-head-2f9082"></script>
+</body>
+</html>

@@ -1,0 +1,199 @@
+function world()	{
+	
+	this.light;
+	this.objects = [];
+	this.background = colour(0,0,0);
+	
+}
+
+var wto_ic = []
+
+function invalidate_world_transform_cache(shape) {
+	
+	if (!shape || typeof shape.id !== "number")
+		return;
+	
+	if (wto_ic && wto_ic[shape.id] !== undefined)
+		delete wto_ic[shape.id];
+	
+	if (ntw_ic && ntw_ic[shape.id] !== undefined)
+		delete ntw_ic[shape.id];
+	
+	if (typeof ist !== "undefined")
+		delete ist[shape.id];
+}
+
+function world_to_object(s, p)	{
+	
+	if (s.parent)
+		p = world_to_object(s.parent, p)
+
+	if(!wto_ic[s.id])
+		wto_ic[s.id] = inverse(s.transform)
+	
+
+	return mul(wto_ic[s.id], p)
+}
+
+
+var ntw_ic = [];
+function normal_to_world(s, n)	{
+	
+	if(!ntw_ic[s.id])
+		ntw_ic[s.id] = transpose(inverse(s.transform))
+	
+	n = mul(ntw_ic[s.id], n)
+	n.w = 0
+	if (s.parent)
+		n = normal_to_world(s.parent, n)
+	else
+		n = normalize(n)
+
+	
+	return n
+}
+
+function default_world()	{
+	
+	var w = new world();
+	
+	var light = new point_light(point(-10,10,-10), colour(1,1,1));
+	
+	var s1 = new sphere();
+	s1.material.color.r = 0.8;
+	s1.material.color.g = 1.0;
+	s1.material.color.b = 0.6;
+	s1.material.diffuse = 0.7;
+	s1.material.specular = 0.2;
+	
+	var s2 = new sphere();
+	s2.transform = scaling(0.5, 0.5, 0.5);
+	
+	w.light = light;
+	w.objects.push(s1);
+	w.objects.push(s2);
+	
+	return w;
+}
+
+function intersect_world(w, r)	{
+
+	var oi = [];
+	
+	for (var i = 0; i < w.objects.length; i++)
+		oi[i] = intersect(w.objects[i], r);
+
+	//oi contains multiple [], each containing all the intersections for an object in the world
+	
+	// merge all oi, then sort using order(), from rt.ray.js (try intersections(), from the same TU....)
+	
+	var oi2 = [];
+	for (var i = 0; i < oi.length; i++)
+		for (var j = 0; j < oi[i].length; j++)
+			oi2.push(oi[i][j]);
+	
+	var res = order(oi2);
+	
+	return res;
+}
+
+function view_transform(from, to, up)	{
+	
+	var forward = normalize(subtract(to, from));
+	var upn = normalize(up);
+	var left = cross(forward, upn);
+	var true_up = cross(left, forward);
+	
+	var orientation = initArray(4,4);
+	orientation = [	[left.x,		left.y,		left.z,		0],
+					[true_up.x,		true_up.y,	true_up.z,	0],
+					[-forward.x,	-forward.y,	-forward.z, 0],
+					[0,				0,			0,			1]];
+					
+	var res = m_multiply(orientation, translation(-from.x, -from.y, -from.z));
+	
+	return res;
+}
+
+function camera(hsize, vsize, fov)	{
+	
+	var _transform = identity_matrix();
+	
+	this.hsize = hsize;
+	this.vsize = vsize;
+	this.fov = fov;
+	
+	Object.defineProperty(this, "transform", {
+	
+		get: function() { return _transform; },
+		set: function(m) {
+		
+			_transform = m;
+			this.it_c = inverse(m);
+		},
+		enumerable: true,
+		configurable: true
+	});
+	
+	this.transform = identity_matrix();
+	this.it_c = inverse(this.transform); // NOTE: MUST update this every time this.transform is set
+	
+	this.setCTransform = function(m)	{ // Pass output from view_transform (above) as argument 'm'
+	
+		this.transform = m
+		this.it_c = inverse(m)
+	};
+	
+	this.half_view = Math.tan(this.fov/2);
+	this.aspect = hsize / vsize;
+	
+	if (this.aspect >= 1)	{
+		
+		this.half_width = this.half_view;
+		this.half_height = this.half_view / this.aspect;
+	}
+	else	{
+		
+		this.half_width = this.half_view * this.aspect;
+		this.half_height = this.half_view;
+	}
+	
+	this.pixel_size = (this.half_width * 2)/this.hsize;
+	
+	this.ray = undefined;
+	
+	this.ray_for_pixel = function(px, py)	{
+		
+		var xoffset = (px + 0.5) * this.pixel_size;
+		var yoffset = (py + 0.5) * this.pixel_size;
+		
+		var world_x = this.half_width - xoffset;
+		var world_y = this.half_height - yoffset;
+		
+		var input1 = this.it_c; //inverse(this.transform);
+		var input2 = point(world_x, world_y, -1);
+		
+		//debugger;
+		
+		var pixel = multiply_matrix_by_tuple(input1, input2);
+		var origin = multiply_matrix_by_tuple(input1/*inverse(this.transform)*/, point(0,0,0));
+		
+		if (origin === undefined)
+			console.log("Origin Undefined!\n");
+		
+		var direction = normalize(subtract(pixel, origin));
+		
+		if ((!(origin instanceof tuple)) || (!(direction instanceof tuple)))	{
+			
+			throw new Error("Invalid camera ray origin or direction");
+		}
+		
+		var r = new ray(origin, direction);
+		
+		//console.log("ray(" + origin.x + "/" + direction.x + ")\n");
+		
+		return r
+
+	}
+}
+	
