@@ -8,10 +8,10 @@ const vm = require('node:vm');
 const root = path.resolve(__dirname, '..');
 const sampleRoot = path.join(root, 'samples');
 const scenes = fs.readdirSync(sampleRoot).filter(name => name.endsWith('.scene'));
-assert.ok(scenes.length >= 8, 'Expected all featured scenes including the head scan');
+assert.ok(scenes.length >= 9, 'Expected all featured scenes including the head scan');
 const html = fs.readFileSync(path.join(root,'webapp.html'),'utf8');
 const expected = ['orbit','rocket-to-rainbow-planet','prism-garden',
-  'cosmic-orbs','neon-city','reflection-studio','aurora-orrery','lee-perry-smith-head'];
+  'cosmic-orbs','neon-city','reflection-studio','aurora-orrery','lee-perry-smith-head','vw-beetle-psychedelia'];
 for (const name of expected) assert.ok(scenes.includes(name+'.scene'), 'Missing '+name+'.scene');
 
 for (const name of scenes) {

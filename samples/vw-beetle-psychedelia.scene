@@ -1,0 +1,236 @@
+{
+  "version": 1,
+  "name": "Beetle Psychedelia — rainbow-swirled studio car",
+  "background": [
+    0.022,
+    0.022,
+    0.04
+  ],
+  "camera": {
+    "from": [
+      3.7,
+      -6.5,
+      2.65
+    ],
+    "to": [
+      0,
+      0,
+      0.85
+    ],
+    "up": [
+      0,
+      0,
+      1
+    ],
+    "fov": 35
+  },
+  "light": {
+    "position": [
+      -4,
+      -5,
+      9
+    ],
+    "intensity": [
+      1,
+      1,
+      1
+    ]
+  },
+  "objects": [
+    {
+      "type": "mesh",
+      "name": "beetle body",
+      "mesh": "vw-beetle-psychedelia/beetle_body.obj",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "color": [
+        1,
+        1,
+        1
+      ],
+      "material": {
+        "ambient": 0.17,
+        "diffuse": 0.7,
+        "specular": 0.55,
+        "shininess": 130,
+        "reflective": 0.08
+      },
+      "texture": "vw-beetle-psychedelia/beetle_swirl_paint.ppm"
+    },
+    {
+      "type": "mesh",
+      "name": "beetle glass",
+      "mesh": "vw-beetle-psychedelia/beetle_glass.obj",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "color": [
+        0.12,
+        0.21,
+        0.31
+      ],
+      "material": {
+        "ambient": 0.12,
+        "diffuse": 0.32,
+        "specular": 0.6,
+        "shininess": 150,
+        "reflective": 0.12
+      }
+    },
+    {
+      "type": "mesh",
+      "name": "beetle chrome",
+      "mesh": "vw-beetle-psychedelia/beetle_chrome.obj",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "color": [
+        0.88,
+        0.91,
+        0.94
+      ],
+      "material": {
+        "ambient": 0.15,
+        "diffuse": 0.22,
+        "specular": 0.8,
+        "shininess": 200,
+        "reflective": 0.35
+      }
+    },
+    {
+      "type": "mesh",
+      "name": "beetle wheels",
+      "mesh": "vw-beetle-psychedelia/beetle_wheels.obj",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "color": [
+        0.08,
+        0.08,
+        0.09
+      ],
+      "material": {
+        "ambient": 0.12,
+        "diffuse": 0.69,
+        "specular": 0.15,
+        "shininess": 38
+      }
+    },
+    {
+      "type": "mesh",
+      "name": "beetle interior",
+      "mesh": "vw-beetle-psychedelia/beetle_interior.obj",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "color": [
+        0.32,
+        0.19,
+        0.12
+      ],
+      "material": {
+        "ambient": 0.16,
+        "diffuse": 0.58,
+        "specular": 0.15,
+        "shininess": 25
+      }
+    },
+    {
+      "type": "mesh",
+      "name": "studio floor",
+      "mesh": "vw-beetle-psychedelia/studio_floor.obj",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "color": [
+        0.07,
+        0.07,
+        0.11
+      ],
+      "material": {
+        "ambient": 0.08,
+        "diffuse": 0.56,
+        "specular": 0.48,
+        "shininess": 150,
+        "reflective": 0.2
+      }
+    }
+  ],
+  "assets": {
+    "mesh": [
+      {
+        "path": "vw-beetle-psychedelia/beetle_body.obj",
+        "required": true
+      },
+      {
+        "path": "vw-beetle-psychedelia/beetle_glass.obj",
+        "required": true
+      },
+      {
+        "path": "vw-beetle-psychedelia/beetle_chrome.obj",
+        "required": true
+      },
+      {
+        "path": "vw-beetle-psychedelia/beetle_wheels.obj",
+        "required": true
+      },
+      {
+        "path": "vw-beetle-psychedelia/beetle_interior.obj",
+        "required": true
+      },
+      {
+        "path": "vw-beetle-psychedelia/studio_floor.obj",
+        "required": true
+      }
+    ],
+    "texture": [
+      {
+        "path": "vw-beetle-psychedelia/beetle_swirl_paint.ppm",
+        "required": true
+      }
+    ]
+  }
+}

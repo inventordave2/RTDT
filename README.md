@@ -6,7 +6,7 @@ RtDt is a JavaScript raytracer for Node.js and a browser WebApp, with triangle m
 
 ## Try RtDt
 
-**Browser:** [Open RtDt on GitHub Pages](https://inventordave2.github.io/RTDT/webapp.html). For local development, serve this repository over HTTP rather than opening `file://`:
+**Browser:** [Open RtDt on GitHub Pages](https://inventordave2.github.io/RtDt-v3.0/webapp.html). For local development, serve this repository over HTTP rather than opening `file://`:
 
 ```sh
 python -m http.server 8000
@@ -27,6 +27,8 @@ The CLI format/config work is **in progress, not released**: `rtdt_image_io_node
 
 ## Sample scenes and assets
 
+- **[Beetle Psychedelia](samples/vw-beetle-psychedelia.scene)** — original stylised classic Beetle-inspired car with psychedelic rainbow-swirl texture, chrome trim, wheels, windows, and studio floor. Choose it from featured scenes; start at Preview resolution.
+
 - **[Aurora Orrery · Celestial Observatory](samples/aurora-orrery.scene)**: 67-object original high-detail scene featuring three independently shaded smooth-normal orbital OBJ rings ([gold](samples/aurora-orrery/orrery-gold-ring.obj), [cyan](samples/aurora-orrery/orrery-cyan-ring.obj), [rose](samples/aurora-orrery/orrery-rose-ring.obj)), reusable [faceted crystals](samples/aurora-orrery/faceted-crystal.obj), illuminated planetary spheres, a reflective floor and celestial accents. Four OBJ assets are declared and loaded automatically; large meshes receive BVH subdivision. **Start at Preview (160×90)** before increasing resolution, as triangle raytracing can be CPU-intensive.
 - [Orbit Studio](samples/orbit.scene) + [AetherOre `.phy`](samples/orbit/orbit.phy): declarative JSON v1 sample and keyframe animation.
 - [Rocket to Rainbow Planet](samples/rocket-to-rainbow-planet.scene): a **new colourful scene with 14 objects**, including [smooth-normal rocket body](samples/rocket-to-rainbow-planet/rocket_hull.obj), [fins](samples/rocket-to-rainbow-planet/rocket_fins.obj), [engine](samples/rocket-to-rainbow-planet/rocket_engine.obj) and [satellite](samples/rocket-to-rainbow-planet/rocket_satellite.obj). Four OBJ dependencies are automatically declared; the browser importer now preserves OBJ `vn` normals for smooth triangles.
@@ -37,7 +39,7 @@ The CLI format/config work is **in progress, not released**: `rtdt_image_io_node
 - [Lee Perry-Smith 3D head scan](samples/lee-perry-smith-head.scene): a scanned human portrait containing 17,684 UV-mapped triangles, with scene-private [OBJ geometry](samples/lee-perry-smith-head/lee-perry-smith-head.obj) and [CC BY 3.0 attribution](samples/lee-perry-smith-head/LICENSE.txt). **Geometry preview only:** the original photographic skin image is not yet bundled, and true area/spherical light sampling is still pending.
 - [Pyramid OBJ](obj/pyramid.obj) and the existing Earth JPEG sample.
 
-All **eight hosted scenes** are available directly in the default featured-scene dropdown. The `.scene` documents declare their hosted OBJ dependencies; no manual upload is needed. Assets are declared relative to each `.scene` file: `aurora-orrery/` or `rocket-to-rainbow-planet/` contain private OBJ geometry; `shared/` is for reusable assets. The browser JSON loader accepts a flat list of scene objects, while the renderer internally groups mesh triangles into bounding-volume hierarchies. The dedicated auto-render preview gallery remains future work. The showcase composition is newly added and needs full live-browser visual validation.
+All **nine hosted scenes** are available directly in the default featured-scene dropdown. The `.scene` documents declare their hosted OBJ dependencies; no manual upload is needed. Assets are declared relative to each `.scene` file: `aurora-orrery/` or `rocket-to-rainbow-planet/` contain private OBJ geometry; `shared/` is for reusable assets. The browser JSON loader accepts a flat list of scene objects, while the renderer internally groups mesh triangles into bounding-volume hierarchies. The dedicated auto-render preview gallery remains future work. The showcase composition is newly added and needs full live-browser visual validation.
 
 Browser JSON `.scene` files may specify a top-level `"background": [r, g, b]` (normalized RGB); the default is black. Ray misses use that colour, without changing genuinely black surfaces. The shared Node renderer uses the same behaviour.
 
