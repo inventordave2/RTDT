@@ -61,4 +61,4 @@ Version 1 JSON defines a timeline (`fps`) and object tracks by ID/index. Motion 
 
 The `examples/*.scene.yaml` files document proposed procedural generation (math functions, repetition, reusable materials). The restricted evaluator is safer than JavaScript `eval`, but the YAML loader does not yet deliver full scene construction. Do not promise users that the WebApp will render them. Avoid executable JavaScript in scene config.
 
-For the packaging workflow, see [SCENE_PACK_CREATION.md](SCENE_PACK_CREATION.md) and [SCENE_FILES_QUICKSTART.md](SCENE_FILES_QUICKSTART.md).
+For the packaging workflow, see [SCENE_PACK_CREATION.md](Scene-pack-creation.md) and [SCENE_FILES_QUICKSTART.md](Scene-files-quickstart.md).

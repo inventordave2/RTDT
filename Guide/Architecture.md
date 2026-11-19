@@ -42,7 +42,7 @@ The WebApp is a static page; same-origin repository samples can be fetched under
 
 ## Scene contract
 
-`.scene` v1 JSON supports a camera (from/to/up/fov), one point light (position/intensity), and objects (sphere, cube, plane, mesh) with position/scale/colour/material fields. External dependencies can be declared through `assets.mesh`, `assets.texture` and `assets.animation`; asset references on objects (`mesh`, `texture`) are also inspected. Check [SCENE_FILES_GUIDE.md](SCENE_FILES_GUIDE.md) for a minimal working example and documented limitations.
+`.scene` v1 JSON supports a camera (from/to/up/fov), one point light (position/intensity), and objects (sphere, cube, plane, mesh) with position/scale/colour/material fields. External dependencies can be declared through `assets.mesh`, `assets.texture` and `assets.animation`; asset references on objects (`mesh`, `texture`) are also inspected. Check [SCENE_FILES_GUIDE.md](Scene-files.md) for a minimal working example and documented limitations.
 
 The OBJ importer and renderer are not a full DCC or glTF pipeline. OBJ mesh UV albedo mapping via per-triangle barycentric coordinates is implemented; normal maps and height/bump shading are pending. Area/sphere lights and sampled soft-shadow lighting are pending.
 
@@ -59,4 +59,4 @@ The OBJ importer and renderer are not a full DCC or glTF pipeline. OBJ mesh UV a
 5. Move rendering state into per-render instances if parallel rendering is needed.
 6. Keep the removed legacy `raytracer.html`, `raytracer.js` and `raytracer-ui.js` entrypoints retired; use `webapp.html` and the shared renderer core. Historical examples are archived.
 
-See [PROJECT_INDEX.md](PROJECT_INDEX.md) for a status matrix. Older roadmaps are retained as historical context, not completion evidence.
+See [PROJECT_INDEX.md](../PROJECT_INDEX.md) for a status matrix. Older roadmaps are retained as historical context, not completion evidence.

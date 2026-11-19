@@ -1,4 +1,4 @@
-# RtDt CLI — current state (18 November 2026)
+# RtDt CLI
 
 The supported Node entry point is `cli.js`. The CLI is undergoing a format and configuration upgrade; distinguish the **currently wired CLI** from new support modules that have been committed but not integrated.
 
@@ -32,4 +32,4 @@ node tests/rgb-bmp.test.js
 
 Tests currently cover scene construction and pixels, expression evaluation and BMP encoding, **not yet a full CLI file render/decode pipeline**. A new batch/config/format end-to-end test is required before calling the upgrade complete.
 
-See [README](README.md) and [Architecture](ARCHITECTURE.md).
+See [README](../README.md) and [Architecture](Architecture.md).

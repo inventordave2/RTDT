@@ -58,4 +58,4 @@ For textured OBJ faces, add `"texture":"portrait/skin.jpg"` to the object and `"
 
 For private local scenes use **My computer** and select the scene and its dependencies manually; a public GitHub repo is not private user storage. Node root `cli.js` presently supports built-in scenes, not `--scene-file`. The YAML `.scene.yaml` examples are experimental and not supported by the WebApp.
 
-See [SCENE_FILES_GUIDE.md](SCENE_FILES_GUIDE.md) and [user/README.md](user/README.md).
+See [SCENE_FILES_GUIDE.md](Scene-files.md) and [user/README.md](../user/README.md).

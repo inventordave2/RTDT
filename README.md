@@ -81,4 +81,4 @@ node tests/scene-assets-layout.test.js
 
 `npm test` runs those four focused suites. The scene smoke test and new scene-assets-layout test check scene construction, linked assets, real OBJ UVs, bilinear texture sampling and raytraced pixels; this is **not yet a whole-image CLI or live-browser end-to-end test**.
 
-See [Architecture](ARCHITECTURE.md), [CLI guide](CLI_README.md), [Scene-file guide](SCENE_FILES_GUIDE.md), and [Deployment checklist](DEPLOYMENT_CHECKLIST.md). Historical plans and completion reports have moved to [the development archive](docs/archive/rtdt-development-docs/README.md). See [creating scene packs](SCENE_PACK_CREATION.md) and [development notes](docs/DEVELOPMENT_NOTES.md).
+See the [Guide index](Guide/Index.md) and [Architecture](Guide/Architecture.md), [CLI guide](Guide/CLI.md), [Scene-file guide](Guide/Scene-files.md), and [Deployment checklist](Guide/Deployment.md). Historical plans and completion reports have moved to [the development archive](docs/archive/rtdt-development-docs/README.md). See [creating scene packs](Guide/Scene-pack-creation.md) and [development notes](docs/DEVELOPMENT_NOTES.md).
