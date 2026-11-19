@@ -1,0 +1,35 @@
+name: Verify RtDt
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test-and-render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run regression test suite
+        run: npm test
+      - name: Smoke-render a CLI scene
+        run: |
+          node cli.js --scene scene1 --width 16 --height 16 --output /tmp/rtdt-smoke.ppm
+          node -e "
+          const fs=require('fs');
+          const assert=require('assert');
+          const ppm=fs.readFileSync('/tmp/rtdt-smoke.ppm','utf8');
+          assert.match(ppm,/^P3\s/);
+          const words=ppm.trim().split(/\s+/);
+          assert.equal(Number(words[1]),16);
+          assert.equal(Number(words[2]),16);
+          assert.equal(Number(words[3]),255);
+          assert.equal(words.length,4+16*16*3,'Expected 16x16 P3 pixels');
+          const rgb=words.slice(4).map(Number);
+          assert(rgb.every(v=>Number.isInteger(v)&&v>=0&&v<=255),'Invalid RGB channels');
+          assert(new Set(rgb).size>1,'Rendered image must not be uniform');
+          console.log('CLI render verified: 16x16 P3 PPM with nonuniform RGB');
+          "
