@@ -671,6 +671,13 @@
         .rtdt-dependencies p { font-size: 12px; color:#4b6079; line-height:1.5; margin:5px 0; }
         .rtdt-dep-item { border-top: 1px solid #dbe3ee; padding: 9px 0 3px; }
         .rtdt-dep-item b { font-size: 12px; color:#203651; }
+        /* The lifecycle is blue while downloading, green on success and red only on failure. */
+        .rtdt-dep-loading { background:#edf5ff; border-left:3px solid #2479d8; padding-left:9px; }
+        .rtdt-dep-loading b { color:#145eac; }
+        .rtdt-dep-loaded { background:#eef9f1; border-left:3px solid #2a9654; padding-left:9px; }
+        .rtdt-dep-loaded b { color:#176b39; }
+        .rtdt-dep-missing { background:#fff0ee; border-left:3px solid #ce3a31; padding-left:9px; }
+        .rtdt-dep-missing b { color:#a32721; }
         .rtdt-dep-item small { display:block; color:#61728a; font-size: 11px; margin:4px 0 6px; line-height:1.4; }
         .rtdt-dep-item button { font-size: 12px; min-height:31px; margin-top:4px; }
         .rtdt-asset-controls { margin-top: 15px; padding-top: 12px; border-top: 1px solid #e4eaf2; }
@@ -1186,6 +1193,6 @@
 <script src="rtdt_aetherore.js"></script>
 <script src="rtdt_scene_assets.js"></script>
 <script src="rtdt_scene_browser.js"></script>
-<script src="rtdt_ui_browser_20261118.js?v=bvh-head-2f9082"></script>
+<script src="rtdt_ui_browser_20261118.js?v=asset-states-20261119"></script>
 </body>
 </html>

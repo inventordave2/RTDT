@@ -169,24 +169,34 @@ var rtdt_ui_browser = (function () {
         var list = element('sceneDependencyList');
         while (list.firstChild) list.removeChild(list.firstChild);
         var note = element('sceneDependencyText');
+        var pending = assets.filter(function(asset) {
+            return asset.status === 'loading';
+        });
         var missing = assets.filter(function(asset) {
+            return asset.required && asset.status === 'missing';
+        });
+        var unresolved = assets.filter(function(asset) {
             return asset.required && asset.status !== 'loaded';
         });
         note.textContent = assets.length ?
-            (missing.length ? missing.length + ' required asset(s) unresolved. Rendering is blocked.' :
+            (pending.length ? 'Downloading ' + pending.length + ' asset(s)… Rendering is blocked until required downloads finish.' :
+                missing.length ? missing.length + ' required asset(s) missing. Rendering is blocked.' :
+                unresolved.length ? unresolved.length + ' required asset(s) unresolved. Rendering is blocked.' :
                 assets.length + ' asset(s) resolved or optional.') :
             (emptyMessage || 'No external files required.');
         assets.forEach(function(asset) {
             var item=document.createElement('div');
-            item.className='rtdt-dep-item';
+            var state = asset.status === 'loaded' ? 'loaded' :
+                asset.status === 'missing' ? 'missing' : 'loading';
+            item.className='rtdt-dep-item rtdt-dep-' + state;
             var title=document.createElement('b');
-            title.textContent=(asset.status==='loaded'?'Loaded':asset.status==='missing'?'Missing':'Declared')+
+            title.textContent=(state==='loaded'?'Loaded':state==='missing'?'Missing':'Downloading')+
                 ' · '+(asset.required?'Required ':'Optional ')+
                 (asset.kind==='obj'?'mesh':asset.kind==='image'?'texture':'animation');
             var name=document.createElement('small');
             name.textContent=asset.path+(asset.error?' · '+asset.error:'');
             item.appendChild(title); item.appendChild(name);
-            if (asset.status!=='loaded') {
+            if (state==='missing') {
                 var action=document.createElement('button');
                 action.type='button'; action.textContent='Choose replacement…';
                 action.addEventListener('click',function() {
@@ -448,7 +458,10 @@ var rtdt_ui_browser = (function () {
         var entries=scene_assets(model);
         scene_loaded=false;
         pixels=null;
-        show_scene_assets(entries);
+        show_scene_assets(entries.map(function(entry) {
+            return {path:entry.path,kind:entry.kind,required:entry.required,
+                status:'loading',target:entry.target};
+        }));
         reset_bvh_status();
         status('sceneStatus','Resolving '+entries.length+' declared asset(s)…','info');
         return rtdt_scene_assets.resolve(model,name,localFiles).then(function(resolved) {

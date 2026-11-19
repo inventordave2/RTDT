@@ -163,4 +163,13 @@ assert.ok(run("slabBox.intersects(new ray(point(-0.5,0.5,0.5),vector(0.000005,0,
 assert.equal(run("slabBox.intersects(new ray(point(-0.5,0.5,0.5),vector(0,0,1)))"),false,
   'Exactly parallel ray outside a finite slab must miss');
 
+// Asset download states must not be presented as missing while the download is pending.
+const activeUi=fs.readFileSync(path.join(root,'rtdt_ui_browser_20261118.js'),'utf8');
+assert.match(activeUi, /status:'loading',target:entry.target/, 'New scene assets start in loading state');
+assert.match(activeUi, /state==='missing'\?'Missing':'Downloading'/, 'Pending assets are labelled Downloading');
+assert.match(activeUi, /if \(state==='missing'\)/, 'Replacement action appears only for failed assets');
+assert.match(browserHTML, /\.rtdt-dep-loading\s*\{[^}]*#edf5ff/, 'Loading assets have blue styling');
+assert.match(browserHTML, /\.rtdt-dep-loaded\s*\{[^}]*#eef9f1/, 'Loaded assets have green styling');
+assert.match(browserHTML, /\.rtdt-dep-missing\s*\{[^}]*#fff0ee/, 'Missing assets have red styling');
+
 console.log('RtDt built-in and JSON scene construction + ray rendering passed');
