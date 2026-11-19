@@ -1,4 +1,4 @@
-# Current Node CLI quick start
+# CLI quickstart
 
 Run from the repository root:
 

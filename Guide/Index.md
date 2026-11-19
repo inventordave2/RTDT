@@ -16,3 +16,12 @@ The root [README](../README.md) remains the GitHub project front page.
 ## Development
 - [Architecture](Architecture.md)
 - [Historical development archive](../docs/archive/rtdt-development-docs/README.md)
+
+## Resource directories
+- [Sample scenes](Sample-scenes.md)
+- [OBJ assets](OBJ-assets.md)
+- [Image assets](Image-assets.md)
+- [User assets](User-assets.md)
+- [CLI internals](CLI-internals.md)
+- [CLI quickstart](CLI-quickstart.md)
+- [Development notes](Development-notes.md)

@@ -1,4 +1,4 @@
-# RtDt development notes
+# Development notes
 
 Last reviewed: 19 November 2026.
 
@@ -16,4 +16,4 @@ Last reviewed: 19 November 2026.
 - Sampled area/spherical lights, bump/normal maps, full Node CLI PNG/JPEG/BMP and configuration/batch handling remain incomplete.
 - Browser end-to-end rendering and the full `npm test` suite require verification.
 
-Original implementation plans and superseded completion statements are preserved under [historical development documents](archive/rtdt-development-docs/README.md). These archives are not current operational instructions.
+Original implementation plans and superseded completion statements are preserved under [historical development documents](../docs/archive/rtdt-development-docs/README.md). These archives are not current operational instructions.
