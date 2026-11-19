@@ -13,7 +13,7 @@ python -m http.server 8000
 # Open http://localhost:8000/webapp.html
 ```
 
-The WebApp now opens with **RtDt repository · featured scenes** selected. Choose a featured scene, click **Load repository scene**, then **Start render**; the built-in primitives remain available under the Scene collection dropdown. The WebApp resolves declared hosted assets automatically. For your own local `.scene` files, select any needed local `.obj`, texture and `.phy` dependencies explicitly.
+The WebApp now opens with **RtDt repository · featured scenes** selected. Choose a featured scene, click **Load repository scene**, then **Start render**; the built-in **scene presets** remain available under the Scene collection dropdown. They are complete scenes, not individual primitive shape-creation commands. The WebApp resolves declared hosted assets automatically. For your own local `.scene` files, select any needed local `.obj`, texture and `.phy` dependencies explicitly.
 
 **Node.js:** the *currently wired* CLI still writes **P3 PPM**. Prefer the WebApp for PNG/JPEG/RGB BMP until the new Node export adapter is integrated:
 

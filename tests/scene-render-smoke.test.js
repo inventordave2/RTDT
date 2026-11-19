@@ -172,4 +172,10 @@ assert.match(browserHTML, /\.rtdt-dep-loading\s*\{[^}]*#edf5ff/, 'Loading assets
 assert.match(browserHTML, /\.rtdt-dep-loaded\s*\{[^}]*#eef9f1/, 'Loaded assets have green styling');
 assert.match(browserHTML, /\.rtdt-dep-missing\s*\{[^}]*#fff0ee/, 'Missing assets have red styling');
 
+// Scene presets must not be mislabelled as selectable primitive constructors.
+assert.match(browserHTML, /<option value="built-in">Built-in scenes<\/option>/);
+assert.match(browserHTML, /<label for="sceneSelect">Preset scene<\/label>/);
+assert.match(browserHTML, /<option value="scene1">Primitives showcase · preset scene<\/option>/);
+assert.doesNotMatch(browserHTML, /<option value="built-in">Built-in primitives<\/option>/);
+
 console.log('RtDt built-in and JSON scene construction + ray rendering passed');
