@@ -1,6 +1,6 @@
 # RtDt — Raytracer for Node.js and Web UI
 
-**In active development · Architecture checked 18 November 2026.**
+In active development.
 
 RtDt is a JavaScript raytracer for Node.js and a browser WebApp, with triangle meshes (including barycentric smooth normals), reflections, refraction, configurable cameras and lights, BVH subdivision, and AetherOre `.phy` keyframe animation. Designed and implemented by Dave as a reference for native-C porting and modelling.
 
