@@ -970,8 +970,9 @@ function BB(min,max)	{
 			if (low > high)
 				return false;
 			
-			if (Math.abs(direction) < EPSILON) {
-			
+			if (direction === 0) {
+				// Truly parallel to the slab; sub-EPSILON nonzero rays still cross it.
+				// This matters for tiny geometry and transformed ray directions.
 				if (origin < low || origin > high)
 					return false;
 				continue;

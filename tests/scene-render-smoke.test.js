@@ -145,4 +145,22 @@ assert.equal(run("tinyMesh.s.every(x=>x.type==='group')"),true);
 assert.equal(run("intersect(tinyMesh,tinyMeshRay).length"),priorHits,
   'BVH subdivision must preserve hits on tiny triangles');
 
+// A tiny but nonzero ray direction must not be treated as parallel by BVH AABBs.
+// The old EPSILON=1e-5 test culled a valid hit at t=100000 for this triangle.
+run("var edgeTriangle=triangle(point(0,0,0),point(0,1,0),point(0,0,1));");
+run("var grazingRay=new ray(point(-0.5,0.25,0.25),vector(0.000005,0,0));");
+const directEdgeHits=run("intersect(edgeTriangle,grazingRay).length");
+assert.equal(directEdgeHits,1,'Control ray must hit the ungrouped triangle');
+run("var bvhEdgeGroup=group(); bvhEdgeGroup.addChild(edgeTriangle);");
+assert.equal(run("intersect(bvhEdgeGroup,grazingRay).length"),directEdgeHits,
+  'BVH must retain intersections when a nonzero ray component is below EPSILON');
+assert.equal(run("intersect(bvhEdgeGroup,new ray(point(-0.5,0.25,0.25),vector(0,0,1))).length"),0,
+  'An exactly parallel ray outside the bounding box must still miss');
+// Very small nonzero directions must also work against nonzero-width boxes.
+run("var slabBox=new BB(point(0,0,0),point(1,1,1));");
+assert.ok(run("slabBox.intersects(new ray(point(-0.5,0.5,0.5),vector(0.000005,0,0)))"),
+  'Sub-EPSILON ray must enter a finite slab from outside');
+assert.equal(run("slabBox.intersects(new ray(point(-0.5,0.5,0.5),vector(0,0,1)))"),false,
+  'Exactly parallel ray outside a finite slab must miss');
+
 console.log('RtDt built-in and JSON scene construction + ray rendering passed');
