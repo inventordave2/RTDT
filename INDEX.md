@@ -15,7 +15,7 @@
 | [samples/README.md](samples/README.md) | Hosted sample files and compatibility |
 | [Development archive](docs/archive/rtdt-development-docs/README.md) | Historical proposals and obsolete milestone reports |
 
-**Read this before relying on old documentation:** `raytracer.html` still exists as legacy UI but `webapp.html` is current. The globals `Data` / `DataR` were replaced in active modules by `RtDtState.scene`, `RtDtState.meshImport` and `RtDtState.renderOptions`. Browser image export supports PNG/JPEG/24-bit BMP; CLI output is still P3 PPM. `--config`, `--batch` and `--output-dir` are **not implemented**. The browser scene-load regression needs verification.
+**Read this before relying on old documentation:** `webapp.html` is the supported browser UI; `raytracer.html`, `raytracer.js` and `raytracer-ui.js` were removed as unused legacy entrypoints. The globals `Data` / `DataR` were replaced in active modules by `RtDtState.scene`, `RtDtState.meshImport` and `RtDtState.renderOptions`. Browser image export supports PNG/JPEG/24-bit BMP; CLI output is still P3 PPM. `--config`, `--batch` and `--output-dir` are **not implemented**. The browser scene-load regression needs verification.
 
 Older `refactoring-plan/` documents and historical completion reports are [archived](docs/archive/rtdt-development-docs/README.md) and are not current operational guidance.
 

@@ -16,7 +16,8 @@ const modules = [
 ];
 const sandbox = {
   console: { log() {}, time() {}, timeEnd() {} },
-  Math, Number, String, Array, Object, JSON, Date, Error, TypeError,
+  // Use the VM's intrinsic Array: matrix literals need the same Array.prototype as .scaling().
+  Math, Number, String, Object, JSON, Date, Error, TypeError,
   Infinity, isFinite, parseInt, parseFloat
 };
 sandbox.prepCanvas = function () {};
@@ -86,6 +87,10 @@ for (const asset of aurora.assets.mesh) {
 assert.ok(aurora.assets.mesh.some(asset => fs.readFileSync(path.join(root,'samples',asset.path),'utf8').includes('vn ')));
 
 assert.match(browserHTML, /<script src="rtdt_ui_browser_20261118\.js\?v=[^"]+"><\/script>/);
+for (const oldFile of ['raytracer.html','raytracer.js','raytracer-ui.js']) {
+  assert.equal(fs.existsSync(path.join(root,oldFile)),false,
+    'Retired legacy entrypoint must stay removed: '+oldFile);
+}
 
 run("RtDtState.meshImport.objFileContents = '# OBJ test';");
 assert.equal(run('RtDtState.meshImport.objFileContents'), '# OBJ test');

@@ -39,7 +39,7 @@ for (const name of scenes) {
   }
 }
 
-const sandbox = { Number, Math, Array, String, Object, Promise, Error, FileReader:undefined, isFinite };
+const sandbox = { Number, Math, String, Object, Promise, Error, FileReader:undefined, isFinite };
 vm.createContext(sandbox);
 vm.runInContext(fs.readFileSync(path.join(root,'rtdt_scene_assets.js'),'utf8'),sandbox);
 function pathFor(ref, scene) { return sandbox.rtdt_scene_assets.repo_path(ref,scene); }

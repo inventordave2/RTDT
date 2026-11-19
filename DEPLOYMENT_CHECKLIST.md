@@ -27,7 +27,7 @@
 
 **Open:** a user has reported red scene-load errors and inability to render after a selected scene; this has not yet been verified as fixed through a real-browser smoke test. Treat deploy as unverified until the scene/load/render checks pass.
 
-**Other limitations:** no browser YAML scene import; no area/sphere-light shading; mesh UV albedo supported; no normal/height shading; legacy `raytracer.html` is still in the tree; CLI `--config` / `--batch` / `--output-dir` and PNG/JPEG/BMP output remain unimplemented.
+**Other limitations:** no browser YAML scene import; no area/sphere-light shading; mesh UV albedo supported; no normal/height shading; legacy `raytracer.html`, `raytracer.js` and `raytracer-ui.js` have been removed; CLI `--config` / `--batch` / `--output-dir` and PNG/JPEG/BMP output remain unimplemented.
 
 ## Local validation
 

@@ -57,6 +57,6 @@ The OBJ importer and renderer are not a full DCC or glTF pipeline. OBJ mesh UV a
 3. Add Node/browser render correctness tests, then unify configuration and output encoders.
 4. Finish CLI `--config`, `--batch`, `--output-dir`, height/help shorthand and PNG/JPEG/BMP encoding.
 5. Move rendering state into per-render instances if parallel rendering is needed.
-6. Decide when to remove `raytracer.html` and the legacy `raytracer.js` / `raytracer-ui.js`. They still exist on `main`.
+6. Keep the removed legacy `raytracer.html`, `raytracer.js` and `raytracer-ui.js` entrypoints retired; use `webapp.html` and the shared renderer core. Historical examples are archived.
 
 See [PROJECT_INDEX.md](PROJECT_INDEX.md) for a status matrix. Older roadmaps are retained as historical context, not completion evidence.

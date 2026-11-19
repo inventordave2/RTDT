@@ -62,7 +62,7 @@ The current renderer supports a **24-bit RGB point light**. **Area and spherical
 ### Known limitations and validation
 
 - The `Data is not defined` scene-load regression was fixed in the group constructor. Built-in and JSON scene construction/rendered-pixel tests passed. **Full live-browser interaction/render verification remains outstanding.**
-- `raytracer.html`, `raytracer.js` and `raytracer-ui.js` are **legacy and still present**; the supported entry is `webapp.html`.
+- The obsolete `raytracer.html`, `raytracer.js` and `raytracer-ui.js` entrypoints have been removed; the supported browser entry is `webapp.html`. Historical examples remain in the documentation archive.
 - CLI image-format parity, `--config`, `--batch`, `--output-dir`, `-h` shorthand fix, and full on-disk image decoding/regression tests are **in progress**.
 - YAML parser support must not be confused with complete YAML scene construction.
 - Area and spherical light support, full renderer instance isolation, and the dedicated first-run auto-render gallery remain planned work.
