@@ -45,6 +45,7 @@ function round(n)	{ // unlike Math.round(), only rounds n if dist(n,floor/ceil(n
 }
 
 function round_t(t)	{
+
 	if (t && t.r !== undefined) { t.r=round(t.r);t.g=round(t.g);t.b=round(t.b);return t; }
 	
 	t.x = round(t.x)
@@ -58,6 +59,7 @@ function round_t(t)	{
 }
 
 function sn_round(t)	{
+
 	if (t && t.r !== undefined) { t.r=round(t.r);t.g=round(t.g);t.b=round(t.b);return t; } // round the x, y, or z entries of a tuple down to 0 when < EPSILON.
 	
 	if (equal(t.x,0))
@@ -73,6 +75,7 @@ function sn_round(t)	{
 }
 
 function cmp(a, b)	{
+
 	if (a && b && a.r !== undefined && b.r !== undefined)
 		return equal(a.r,b.r) && equal(a.g,b.g) && equal(a.b,b.b); // compares 2 tuples for equality
 	
@@ -86,6 +89,7 @@ function cmp(a, b)	{
 }
 
 function add(a, b)	{
+
 	if (a && b && a.r !== undefined && b.r !== undefined)
 		return colour(a.r + b.r, a.g + b.g, a.b + b.b);	// add 2 tuples together
 
@@ -96,6 +100,7 @@ function add(a, b)	{
 }
 
 function subtract(a, b)	{
+
 	if (a && b && a.r !== undefined && b.r !== undefined)
 		return colour(a.r - b.r, a.g - b.g, a.b - b.b);	// subtract 2 tuples, a - b
 
@@ -106,6 +111,7 @@ function subtract(a, b)	{
 }
 
 function multiply(a, b)	{
+
 	if (a && b && a.r !== undefined && b.r !== undefined)
 		return colour(a.r * b.r, a.g * b.g, a.b * b.b);	// multiply 2 tuples
 
@@ -116,6 +122,7 @@ function multiply(a, b)	{
 }
 
 function multiplyInt(_tuple, int)	{
+
 	if (_tuple && _tuple.r !== undefined)
 		return colour(_tuple.r * int, _tuple.g * int, _tuple.b * int);
 	
@@ -130,6 +137,7 @@ function multiplyInt(_tuple, int)	{
 }
 
 function divide(a, b)	{
+
 	if (a && b && a.r !== undefined && b.r !== undefined)
 		return colour(a.r / b.r, a.g / b.g, a.b / b.b);	// divide 2 tuples, a / b
 
@@ -140,6 +148,7 @@ function divide(a, b)	{
 }
 
 function negate(t)	{
+
 	if (t && t.r !== undefined) return colour(-t.r,-t.g,-t.b);
 	
 	var res = new tuple(0,0,0,0);
