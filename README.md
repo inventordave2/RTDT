@@ -17,15 +17,15 @@ python -m http.server 8000
 
 The WebApp now opens with **RtDt repository · featured scenes** selected. Choose a featured scene, click **Load repository scene**, then **Start render**; the built-in **scene presets** remain available under the Scene collection dropdown. They are complete scenes, not individual primitive shape-creation commands. The WebApp resolves declared hosted assets automatically. For your own local `.scene` files, select any needed local `.obj`, texture and `.phy` dependencies explicitly.
 
-**Node.js:** the *currently wired* CLI still writes **P3 PPM**. Prefer the WebApp for PNG/JPEG/RGB BMP until the new Node export adapter is integrated:
+**Node.js:** the root `cli.js` writes genuine PNG, JPEG, BMP and legacy PPM images. Run `npm install`, then select the format by filename:
 
 ```sh
 node cli.js --help
 node cli.js --list-scenes
-node cli.js --scene scene1 --width 160 --height 90 --output preview.ppm
+node cli.js --scene scene1 --width 160 --height 90 --output preview.png
 ```
 
-The CLI format/config work is **in progress, not released**: `rtdt_image_io_node.js` has PNG, JPEG (using `jpeg-js`), RGB BMP and compatibility PPM encoder implementations, and `rtdt_cli_config.js` has JSON/YAML configuration and batch-manifest handling, but the current `cli.js` is **not yet connected to them**. `--config`, `--batch` and `--output-dir` are therefore not yet usable. `-h` still conflicts with height; use `--height`.
+Use `--output preview.jpg` for JPEG, `--output preview.bmp` for BMP, and `--bmp-palette ansi256|ansi16|c64|html` for indexed BMP. `--output-dir` is available and creates directories. JSON/YAML `--config`, `--batch` and Node `.scene` loading remain pending.
 
 ## Sample scenes and assets
 
@@ -55,8 +55,9 @@ Browser JSON `.scene` files may specify a top-level `"background": [r, g, b]` (n
 | `rtdt_scene_assets.js` | Repository/local asset resolution, OBJ triangle and smooth-normal loading |
 | `rtdt_aetherore.js` | `.phy` keyframe interpretation and pose interpolation |
 | `rtdt_colour.js`, `rtdt_image_io_browser.js` | RGB colour, PNG/JPEG/BMP browser export, legacy PPM |
-| `cli.js` | Node rendering of built-in scenes; currently PPM output |
-| `rtdt_image_io_node.js`, `rtdt_cli_config.js` | **Staged** Node image and config support; not yet called by `cli.js` |
+| `cli.js` | Node rendering of built-in scenes; PNG/JPEG/BMP/PPM output |
+| `rtdt_image_io_node.js` | Active Node PNG/JPEG/BMP/PPM encoder, including indexed palettes |
+| `rtdt_cli_config.js` | Staged configuration and batch parser, not yet integrated |
 | `rtdt_scene_loader.js` | Separate experimental YAML scene parsing; scene construction limitations remain |
 
 ### Lighting and animation
@@ -67,7 +68,7 @@ The current renderer supports a **24-bit RGB point light**. **Area and spherical
 
 - The `Data is not defined` scene-load regression was fixed in the group constructor. Built-in and JSON scene construction/rendered-pixel tests passed. **Full live-browser interaction/render verification remains outstanding.**
 - The obsolete `raytracer.html`, `raytracer.js` and `raytracer-ui.js` entrypoints have been removed; the supported browser entry is `webapp.html`. Historical examples remain in the documentation archive.
-- CLI image-format parity, `--config`, `--batch`, `--output-dir`, `-h` shorthand fix, and full on-disk image decoding/regression tests are **in progress**.
+- CLI image format parity, indexed BMP palettes, output directory, and help/height shorthand are implemented; `--config`, `--batch` and Node `.scene` support remain planned.
 - YAML parser support must not be confused with complete YAML scene construction.
 - Area and spherical light support, full renderer instance isolation, and the dedicated first-run auto-render gallery remain planned work.
 
@@ -81,6 +82,6 @@ node tests/rgb-bmp.test.js
 node tests/scene-assets-layout.test.js
 ```
 
-`npm test` runs those four focused suites. The scene smoke test and new scene-assets-layout test check scene construction, linked assets, real OBJ UVs, bilinear texture sampling and raytraced pixels; this is **not yet a whole-image CLI or live-browser end-to-end test**.
+`npm test` runs the four focused suites plus the Node CLI image-format integration suite. The scene smoke test and new scene-assets-layout test check scene construction, linked assets, real OBJ UVs, bilinear texture sampling and raytraced pixels; this is **not yet a whole-image CLI or live-browser end-to-end test**.
 
 See the [Guide index](Guide/Index.md) and [Architecture](Guide/Architecture.md), [CLI guide](Guide/CLI.md), [Scene-file guide](Guide/Scene-files.md), and [Deployment checklist](Guide/Deployment.md). Historical plans and completion reports have moved to [the development archive](docs/archive/rtdt-development-docs/README.md). See [creating scene packs](Guide/Scene-pack-creation.md) and [development notes](Guide/Development-notes.md).

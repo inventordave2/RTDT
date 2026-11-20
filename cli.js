@@ -5,6 +5,7 @@
 const path = require('path');
 const fs = require('fs');
 const vm = require('vm');
+const imageIO = require('./rtdt_image_io_node');
 
 // ============================================================================
 // MODULE LOADING
@@ -104,7 +105,12 @@ const cliConfig = {
 	sceneName: 'scene1',
 	width: 500,
 	height: 281,
-	outputFile: 'render.ppm',
+	outputFile: 'render.png',
+	outputExplicit: false,
+	outputDir: null,
+	format: null,
+	jpegQuality: 85,
+	bmpPalette: 'rgb24',
 	quality: 1,
 	phyFile: null,
 	phyTime: null,
@@ -127,8 +133,12 @@ OPTIONS:
   --time SECONDS      Evaluate .phy at time t
   --frame INDEX       Evaluate .phy at frame INDEX (using timeline fps)
   --width NUM         Image width in pixels (default: 500)
-  --height NUM        Image height in pixels (default: 281)
-  --output FILE       PPM output file (default: render.ppm)
+  --height NUM        Image height in pixels (default: 281; shortcut -H)
+  --output FILE       Output filename (default: render.png)
+  --format FORMAT     png, jpg, jpeg, bmp, ppm (otherwise inferred from extension)
+  --jpeg-quality N    JPEG compression quality 1..100 (default: 85)
+  --bmp-palette NAME  rgb24, ansi256, c64, ansi16, html (default: rgb24)
+  --output-dir DIR    Create output directory automatically
   --quality NUM       Render quality/samples (default: 1)
   --help              Show this help message
   --list-scenes       List available scenes
@@ -141,13 +151,13 @@ EXAMPLES:
   rtdt --scene scene1 --width 900 --height 550
 
   # Small preview render
-  rtdt --scene scene1 --width 150 --height 84 --output preview.ppm
+  rtdt --scene scene1 --width 150 --height 84 --output preview.png
 
   # Animate the first scene object at t = 1.5 seconds
   rtdt --scene scene1 --phy motion.phy --time 1.5
 
   # High quality render (more samples)
-  rtdt --scene scene1 --quality 3 --output hires.ppm
+  rtdt --scene scene1 --quality 3 --output hires.jpg
 
 AVAILABLE SCENES:
   scene1              Default scene with primitives
@@ -157,9 +167,10 @@ AVAILABLE SCENES:
   endGame             End game scene
 
 NOTES:
-  - Output is P3 PPM format (plain text)
+  - Output bytes match filename extension: PNG, JPEG, BMP or legacy P3 PPM
+  - BMP palettes: 24-bit RGB, 8-bit ANSI256, 4-bit C64/ANSI16, 8-bit HTML names
+  - JPEG requires the jpeg-js npm package (installed by npm install)
   - Rendering is synchronous and may take time for high resolutions
-  - PPM files can be converted to PNG using ImageMagick: convert render.ppm render.png
 
 For interactive rendering, see webapp.html
 
@@ -238,23 +249,23 @@ function parseArguments(argv) {
 				console.error('Error: --width requires a value');
 				process.exit(1);
 			}
-			const w = parseInt(argv[++i], 10);
-			if (isNaN(w) || w < 1) {
+			const w = Number(argv[++i]);
+			if (!Number.isInteger(w) || w < 1 || w > 4096) {
 			
 				console.error('Error: width must be a positive integer');
 				process.exit(1);
 			}
 			cliConfig.width = w;
 		}
-		else if (arg === '--height' || arg === '-h') {
+		else if (arg === '--height' || arg === '-H') {
 		
 			if (i + 1 >= argv.length) {
 			
 				console.error('Error: --height requires a value');
 				process.exit(1);
 			}
-			const h = parseInt(argv[++i], 10);
-			if (isNaN(h) || h < 1) {
+			const h = Number(argv[++i]);
+			if (!Number.isInteger(h) || h < 1 || h > 4096) {
 			
 				console.error('Error: height must be a positive integer');
 				process.exit(1);
@@ -269,16 +280,43 @@ function parseArguments(argv) {
 				process.exit(1);
 			}
 			cliConfig.outputFile = argv[++i];
+			cliConfig.outputExplicit = true;
 		}
-		else if (arg === '--quality' || arg === '-q') {
+		else if (arg === '--format' || arg === '-f') {
+            if (i + 1 >= argv.length) throw new Error('--format requires png, jpeg, bmp or ppm');
+            var format = String(argv[++i]).toLowerCase().replace(/^\\./,'');
+            if (['png','jpg','jpeg','bmp','ppm'].indexOf(format) < 0)
+                throw new Error('Unsupported image format: ' + format);
+            cliConfig.format = format;
+        }
+        else if (arg === '--jpeg-quality') {
+            if (i + 1 >= argv.length) throw new Error('--jpeg-quality requires a number');
+            var jpegQuality = Number(argv[++i]);
+            if (!Number.isInteger(jpegQuality) || jpegQuality < 1 || jpegQuality > 100)
+                throw new Error('JPEG quality must be an integer from 1 to 100');
+            cliConfig.jpegQuality = jpegQuality;
+        }
+        else if (arg === '--bmp-palette') {
+            if (i + 1 >= argv.length) throw new Error('--bmp-palette requires a value');
+            var palette = String(argv[++i]).toLowerCase();
+            if (['rgb24','ansi256','c64','ansi16','vt100','html'].indexOf(palette) < 0)
+                throw new Error('Unknown BMP palette: '+palette);
+            cliConfig.bmpPalette = palette === 'vt100' ? 'ansi16' : palette;
+        }
+        else if (arg === '--output-dir') {
+            if (i + 1 >= argv.length) throw new Error('--output-dir requires a directory');
+            cliConfig.outputDir = argv[++i];
+            if (!cliConfig.outputDir.trim()) throw new Error('--output-dir cannot be blank');
+        }
+        else if (arg === '--quality' || arg === '-q') {
 		
 			if (i + 1 >= argv.length) {
 			
 				console.error('Error: --quality requires a value');
 				process.exit(1);
 			}
-			const q = parseInt(argv[++i], 10);
-			if (isNaN(q) || q < 1) {
+			const q = Number(argv[++i]);
+			if (!Number.isInteger(q) || q < 1 || q > 20) {
 			
 				console.error('Error: quality must be a positive integer');
 				process.exit(1);
@@ -374,7 +412,7 @@ function renderScene() {
 		log('');
 		
 		// Convert pixels to PPM and write file
-		writePPMFile(cliConfig.outputFile, pixels);
+		writeRenderImage(cliConfig.outputFile, pixels);
 		
 	} catch (e) {
 	
@@ -388,52 +426,28 @@ function renderScene() {
 	}
 }
 
-function writePPMFile(filename, pixels) {
+function writeRenderImage(filename, pixels) {
 
-	if (!pixels || pixels.length === 0) {
-	
-		throw new Error('No pixels to write');
-	}
-	
-	if (pixels.length !== WIDTH * HEIGHT) {
-	
-		throw new Error('Pixel count mismatch: expected ' + (WIDTH * HEIGHT) + ', got ' + pixels.length);
-	}
-	
-	try {
-	
-		// PPM P3 format (plain text)
-		let ppmData = 'P3\n';
-		ppmData += WIDTH + ' ' + HEIGHT + '\n';
-		ppmData += '255\n';
-		
-		// Write pixels
-		let pixelIndex = 0;
-		for (let y = 0; y < HEIGHT; y++) {
-		
-			let line = '';
-			for (let x = 0; x < WIDTH; x++) {
-			
-				const c = pixels[pixelIndex++];
-				const rgb = colorTo255(c);
-				
-				line += rgb.r + ' ' + rgb.g + ' ' + rgb.b + '  ';
-			}
-			ppmData += line + '\n';
-		}
-		
-		// Write to file
-		fs.writeFileSync(filename, ppmData, 'utf8');
-		
-		const stats = fs.statSync(filename);
-		const sizeKB = (stats.size / 1024).toFixed(1);
-		
-		log('✓ PPM file written: ' + filename + ' (' + sizeKB + ' KB)');
-		
-	} catch (e) {
-	
-		throw new Error('Failed to write PPM file: ' + e.message);
-	}
+    if (!pixels || pixels.length !== WIDTH * HEIGHT)
+        throw new Error('No pixels or pixel count mismatch');
+
+    var format = cliConfig.format, target = filename;
+    var canonical = function (name) { return name === 'jpeg' ? 'jpg' : name; };
+    if (format && !cliConfig.outputExplicit)
+        target = 'render.' + canonical(format);
+    else if (format && canonical(imageIO.inferFormat(target)) !== canonical(format))
+        throw new Error('--format conflicts with --output filename: ' + target);
+    if (cliConfig.outputDir)
+        target = path.join(cliConfig.outputDir, path.basename(target));
+
+    var extension = imageIO.inferFormat(target);
+    if (cliConfig.bmpPalette !== 'rgb24' && extension !== 'bmp')
+        throw new Error('--bmp-palette requires BMP output');
+    var result = imageIO.writeImage(target, pixels, WIDTH, HEIGHT, {
+        jpegQuality:cliConfig.jpegQuality, bmpPalette:cliConfig.bmpPalette
+    });
+    log('✓ ' + extension.toUpperCase() + ' image written: ' + target +
+        ' (' + (result.bytes/1024).toFixed(1) + ' KB)');
 }
 
 function main() {

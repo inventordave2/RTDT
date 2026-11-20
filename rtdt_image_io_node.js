@@ -74,8 +74,61 @@ function encodeJPEG(pixels,width,height,quality) {
         throw new Error('JPEG quality must be from 1 to 100');
     return jpeg.encode({data:rgba(pixels,width,height),width,height},q).data;
 }
-function encodeBMP(pixels,width,height) {
-    return Buffer.from(colour.rgb_bmp(pixels,width,height));
+function encodeBMP(pixels,width,height,palette) {
+    const mode = String(palette || 'rgb24').toLowerCase();
+    if (mode === 'rgb24') return Buffer.from(colour.rgb_bmp(pixels,width,height));
+    const indexed = mode === 'vt100' ? 'ansi16' : mode;
+    const supported = ['ansi256','c64','ansi16','html'];
+    if (supported.indexOf(indexed) < 0) throw new Error('Unknown BMP palette: '+mode);
+    if (indexed !== 'html')
+        return Buffer.from(colour.indexed_bmp(pixels,width,height,indexed));
+    const named = require('color-name');
+    const keys = Object.keys(named).sort();
+    const colors = [], seen = {};
+    keys.forEach(function(name) {
+        const rgb = named[name], key = rgb.join(',');
+        if (!seen[key]) { seen[key] = true; colors.push(rgb); }
+    });
+    if (colors.length > 256) throw new Error('Too many HTML named colours for BMP');
+    return encodeIndexedBMP(pixels,width,height,colors);
+}
+function encodeIndexedBMP(pixels,width,height,palette) {
+    rgba(pixels,width,height); // validates dimensions and RGB
+    const bits = palette.length <= 16 ? 4 : 8;
+    const row = Math.ceil(width*bits/32)*4;
+    const offset = 54+palette.length*4;
+    const out = Buffer.alloc(offset+height*row);
+    out.write('BM',0,'ascii');
+    out.writeUInt32LE(out.length,2);
+    out.writeUInt32LE(offset,10);
+    out.writeUInt32LE(40,14);
+    out.writeInt32LE(width,18);
+    out.writeInt32LE(height,22);
+    out.writeUInt16LE(1,26);
+    out.writeUInt16LE(bits,28);
+    out.writeUInt32LE(height*row,34);
+    out.writeUInt32LE(palette.length,46);
+    for(let i=0;i<palette.length;i++){
+        out[54+i*4]=palette[i][2];
+        out[55+i*4]=palette[i][1];
+        out[56+i*4]=palette[i][0];
+    }
+    for(let y=0;y<height;y++){
+        const rowStart=offset+(height-y-1)*row;
+        for(let x=0;x<width;x++){
+            const color=pixels[y*width+x];
+            const r=colour.byte(color.r),g=colour.byte(color.g),b=colour.byte(color.b);
+            let best=0,dist=Infinity;
+            for(let k=0;k<palette.length;k++){
+                const p=palette[k],d=(r-p[0])**2+(g-p[1])**2+(b-p[2])**2;
+                if(d<dist){dist=d;best=k;}
+            }
+            if(bits===8)out[rowStart+x]=best;
+            else if((x&1)===0)out[rowStart+(x>>1)]=best<<4;
+            else out[rowStart+(x>>1)]|=best;
+        }
+    }
+    return out;
 }
 function encodePPM(pixels,width,height) {
     const data = rgba(pixels,width,height);
@@ -90,11 +143,12 @@ function encodePPM(pixels,width,height) {
     }
     return Buffer.from(lines.join('\n')+'\n','ascii');
 }
-function encode(pixels,width,height,format) {
+function encode(pixels,width,height,format,options) {
+    const opts=options || {};
     switch (String(format).toLowerCase()) {
         case 'png': return encodePNG(pixels,width,height);
-        case 'jpeg': case 'jpg': return encodeJPEG(pixels,width,height);
-        case 'bmp': return encodeBMP(pixels,width,height);
+        case 'jpeg': case 'jpg': return encodeJPEG(pixels,width,height,opts.jpegQuality);
+        case 'bmp': return encodeBMP(pixels,width,height,opts.bmpPalette);
         case 'ppm': return encodePPM(pixels,width,height);
         default: throw new Error('Unsupported image format: '+format+
             ' (choose PNG, JPEG, BMP or legacy PPM)');
@@ -107,9 +161,9 @@ function inferFormat(filename) {
             ' (choose .png, .jpg, .jpeg, .bmp or .ppm)');
     return format;
 }
-function writeImage(filename,pixels,width,height) {
+function writeImage(filename,pixels,width,height,options) {
     const format=inferFormat(filename);
-    const encoded=encode(pixels,width,height,format);
+    const encoded=encode(pixels,width,height,format,options);
     fs.mkdirSync(path.dirname(path.resolve(filename)),{recursive:true});
     fs.writeFileSync(filename,encoded);
     return {filename,format,bytes:encoded.length};

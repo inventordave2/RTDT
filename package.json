@@ -9,9 +9,9 @@
   "type": "commonjs",
   "scripts": {
     "start": "node cli.js --help",
-    "render": "node cli.js --scene scene1 --output render.ppm",
-    "render:preview": "node cli.js --scene scene1 --width 150 --height 84 --output preview.ppm",
-    "test": "node tests/scene-render-smoke.test.js && node tests/scene-expressions.test.js && node tests/rgb-bmp.test.js && node tests/scene-assets-layout.test.js",
+    "render": "node cli.js --scene scene1 --output render.png",
+    "render:preview": "node cli.js --scene scene1 --width 150 --height 84 --output preview.png",
+    "test": "node tests/scene-render-smoke.test.js && node tests/scene-expressions.test.js && node tests/rgb-bmp.test.js && node tests/scene-assets-layout.test.js && node tests/cli-image-formats.test.js",
     "test:scene-expressions": "node tests/scene-expressions.test.js",
     "test:scene-assets": "node tests/scene-assets-layout.test.js"
   },
@@ -25,5 +25,9 @@
   "license": "MIT",
   "engines": {
     "node": ">=12.0.0"
+  },
+  "dependencies": {
+    "jpeg-js": "0.4.4",
+    "color-name": "1.1.4"
   }
 }

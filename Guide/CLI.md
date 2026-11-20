@@ -1,35 +1,30 @@
 # RtDt CLI
 
-The supported Node entry point is `cli.js`. The CLI is undergoing a format and configuration upgrade; distinguish the **currently wired CLI** from new support modules that have been committed but not integrated.
+The single supported Node.js entrypoint is `cli.js` at the repository root, also installed as the `rtdt` command by npm.
 
-## Currently available
+Run `npm install` once. Then render without an external converter:
 
 ```sh
-node cli.js --help
-node cli.js --list-scenes
+node cli.js --scene scene1 --width 160 --height 90
+node cli.js --scene scene1 --width 160 --height 90 --output preview.png
+node cli.js --scene scene1 --width 160 --height 90 --output preview.jpg --jpeg-quality 92
+node cli.js --scene scene1 --width 160 --height 90 --output preview.bmp
 node cli.js --scene scene1 --width 160 --height 90 --output preview.ppm
+node cli.js --scene scene1 --width 160 --height 90 --output c64.bmp --bmp-palette c64
+node cli.js --scene scene1 --width 160 --height 90 --output ansi256.bmp --bmp-palette ansi256
+node cli.js --scene scene1 --width 160 --height 90 --output ansi16.bmp --bmp-palette ansi16
+node cli.js --scene scene1 --width 160 --height 90 --output html.bmp --bmp-palette html
+node cli.js --scene scene1 --format png --output-dir renders
 ```
 
-Current option names include `--scene/-s`, `--width/-w`, `--height`, `--output/-o`, `--quality/-q`, `--phy`, `--time`, `--frame` and `--help/-h`. The CLI **still writes plain-text P3 PPM**, irrespective of output extension. Use `.ppm` for now. The `-h` help/height collision has not yet been fixed; use `--height`.
+Without an output filename, PNG is written to `render.png`. The extension selects the actual encoder; conflicting `--format` and filename extensions produce an error rather than incorrect bytes. `--output-dir` creates the directory. `--jpeg-quality` sets JPEG quality (1–100), distinct from the renderer's `--quality` sample count.
 
-## In-progress Node image/config support
+BMP output supports true-colour 24-bit RGB (default), 8-bit ANSI256, 4-bit Commodore 64, 4-bit ANSI/VT100 (use `ansi16` or `vt100`), and 8-bit HTML named colours. The HTML indexed palette contains 139 unique RGB entries from the canonical 148 named CSS colour names, deduplicating aliases. Quantisation maps each pixel to the nearest palette entry.
 
-- `rtdt_image_io_node.js` implements a PNG encoder, JPEG encoder through the `jpeg-js` dependency, 24-bit RGB BMP through the shared colour adapter, plus optional legacy PPM. It rejects unsupported extensions.
-- `rtdt_cli_config.js` implements JSON and YAML config parsing, job validation and batch manifests through the `yaml` dependency.
-- **Neither module is yet called from `cli.js` on `main`**. The CLI does **not** yet accept `--config`, `--batch`, `--output-dir`, or a JSON `.scene` file as a scene argument. Do not run those examples until CLI integration and npm dependency installation are committed and tested.
-- The historical `config.rdt` uses a JavaScript-like schema and is not a supported executable configuration.
+Use `--height` or `-H` for height. `-h` is reserved for help.
 
-## Architecture and testing
+Scene input remains built-in scene constructors; `--config`, `--batch`, and `--scene-file` are pending separate integration. AetherOre `.phy` animation support remains available through `--phy`, `--time`, and `--frame`.
 
-The CLI loads shared renderer modules via Node `vm.runInThisContext`, uses `RtDtState.scene` to hold the active world and camera, optionally applies a `.phy` pose, renders with `renderSceneSync`, then currently writes PPM.
+## Checks
 
-```sh
-npm test
-node tests/scene-render-smoke.test.js
-node tests/scene-expressions.test.js
-node tests/rgb-bmp.test.js
-```
-
-Tests currently cover scene construction and pixels, expression evaluation and BMP encoding, **not yet a full CLI file render/decode pipeline**. A new batch/config/format end-to-end test is required before calling the upgrade complete.
-
-See [README](../README.md) and [Architecture](Architecture.md).
+`npm test` runs scene/geometry checks and real CLI render/signature assertions for PNG, JPEG, all BMP palettes, and PPM. See [Guide index](Index.md).
