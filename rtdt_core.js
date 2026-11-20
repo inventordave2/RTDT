@@ -113,6 +113,7 @@ function prepare_computations(i, r, xs)	{
 	// Triangle intersections provide barycentric weights (u,v).
 	// OBJ UVs are per face corner; neighbouring faces may use distinct seam UVs.
 	if (i.object.uvs && Number.isFinite(i.u) && Number.isFinite(i.v)) {
+
 		var uv=i.object.uvs, a=1-i.u-i.v;
 		comps.uv={u:a*uv[0][0]+i.u*uv[1][0]+i.v*uv[2][0],
 			v:a*uv[0][1]+i.u*uv[1][1]+i.v*uv[2][1]};
