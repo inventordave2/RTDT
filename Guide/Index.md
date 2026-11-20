@@ -25,3 +25,7 @@ The root [README](../README.md) remains the GitHub project front page.
 - [CLI internals](CLI-internals.md)
 - [CLI quickstart](CLI-quickstart.md)
 - [Development notes](Development-notes.md)
+
+## Refactoring references
+- [Render control flow](Render-control-flow.md)
+- [Coding style](Coding-style.md)
