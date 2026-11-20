@@ -233,6 +233,7 @@ function parseArguments(argv) {
 			if (arg === '--phy')
 				cliConfig.phyFile = raw;
 			else {
+
 				var value = Number(raw);
 				if (!isFinite(value) || value < 0 ||
 					(arg === '--frame' && Math.floor(value) !== value))
@@ -283,6 +284,7 @@ function parseArguments(argv) {
 			cliConfig.outputExplicit = true;
 		}
 		else if (arg === '--format' || arg === '-f') {
+
             if (i + 1 >= argv.length) throw new Error('--format requires png, jpeg, bmp or ppm');
             var format = String(argv[++i]).toLowerCase().replace(/^\\./,'');
             if (['png','jpg','jpeg','bmp','ppm'].indexOf(format) < 0)
@@ -290,6 +292,7 @@ function parseArguments(argv) {
             cliConfig.format = format;
         }
         else if (arg === '--jpeg-quality') {
+
             if (i + 1 >= argv.length) throw new Error('--jpeg-quality requires a number');
             var jpegQuality = Number(argv[++i]);
             if (!Number.isInteger(jpegQuality) || jpegQuality < 1 || jpegQuality > 100)
@@ -297,6 +300,7 @@ function parseArguments(argv) {
             cliConfig.jpegQuality = jpegQuality;
         }
         else if (arg === '--bmp-palette') {
+
             if (i + 1 >= argv.length) throw new Error('--bmp-palette requires a value');
             var palette = String(argv[++i]).toLowerCase();
             if (['rgb24','ansi256','c64','ansi16','vt100','html'].indexOf(palette) < 0)
@@ -304,6 +308,7 @@ function parseArguments(argv) {
             cliConfig.bmpPalette = palette === 'vt100' ? 'ansi16' : palette;
         }
         else if (arg === '--output-dir') {
+
             if (i + 1 >= argv.length) throw new Error('--output-dir requires a directory');
             cliConfig.outputDir = argv[++i];
             if (!cliConfig.outputDir.trim()) throw new Error('--output-dir cannot be blank');
@@ -444,6 +449,7 @@ function writeRenderImage(filename, pixels) {
     if (cliConfig.bmpPalette !== 'rgb24' && extension !== 'bmp')
         throw new Error('--bmp-palette requires BMP output');
     var result = imageIO.writeImage(target, pixels, WIDTH, HEIGHT, {
+
         jpegQuality:cliConfig.jpegQuality, bmpPalette:cliConfig.bmpPalette
     });
     log('✓ ' + extension.toUpperCase() + ' image written: ' + target +
